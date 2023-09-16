@@ -1,0 +1,27 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Lunasima&family=Ubuntu:ital,wght@0,300;0,400;1,500&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500&display=swap');
+
+* {
+    font-family: 'Red Hat Display', sans-serif;;
+    outline: none
+}
+*::-webkit-scrollbar{
+    display: none;
+}
+*::-webkit-scrollbar-track{
+    width: 10px;
+    background: #08d3c536;
+    border-radius: 10px
+}
+*::-webkit-scrollbar-thumb{
+    width: 10px;
+    background: #06565142;
+    border-radius: 10px
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background: #f3f3f3;
+}

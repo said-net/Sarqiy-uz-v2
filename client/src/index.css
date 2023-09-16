@@ -1,0 +1,22 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Lunasima&family=Ubuntu:ital,wght@0,300;0,400;1,500&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500&display=swap');
+
+* {
+    font-family: sans-serif;;
+    outline: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background: #f7f7f7;
+    max-width: 512px;
+    margin: 0 auto;
+    min-width: 375px;
+    padding: 70px 0;
+}
