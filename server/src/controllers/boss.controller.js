@@ -70,7 +70,14 @@ module.exports = {
         const archive = await shopModel.find({ status: 'archive' }).countDocuments();
         const delivered = await shopModel.find({ status: 'delivered' }).countDocuments();
         const wait = await shopModel.find({ status: 'wait' }).countDocuments();
-        const neworders = await shopModel.find({ status: 'pending' }).countDocuments();
+        const neworders = await shopModel.find({ status: 'pending', operator: null }).countDocuments();
+        const $inoperator = await shopModel.find({ status: 'pending' });
+        let inoperator = 0;
+        $inoperator?.forEach(i => {
+            if (i?.operator) {
+                inoperator++;
+            }
+        })
         res.send({
             ok: true,
             data: {
@@ -83,7 +90,8 @@ module.exports = {
                 archive,
                 delivered,
                 wait,
-                neworders
+                neworders,
+                inoperator,
             }
         });
     },

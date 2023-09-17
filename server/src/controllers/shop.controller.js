@@ -118,7 +118,7 @@ module.exports = {
         }
     },
     getNewOrders: async (req, res) => {
-        const $orders = await shopModel.find({ status: 'pending' }).populate('product', 'title images price')
+        const $orders = await shopModel.find({ status: 'pending', operator: null }).populate('product', 'title images price')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
         $operators.forEach(o => {
@@ -134,6 +134,7 @@ module.exports = {
                 const $admin = await userModel.findOne({ id: o?.flow });
                 $modlist.push({
                     id: o?.id,
+                    _id: o?._id,
                     title: o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin.name,
@@ -145,6 +146,7 @@ module.exports = {
             } else {
                 $modlist.push({
                     id: o?.id,
+                    _id: o?._id,
                     title: o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: '',
@@ -160,5 +162,44 @@ module.exports = {
             data: $modlist,
             operators: $modopers
         })
+    },
+    transferOrder: async (req, res) => {
+        const { id, operator } = req?.params;
+        if (!id || !operator) {
+            res.send({
+                ok: false,
+                msg: "operator tanlansin"
+            });
+        } else {
+            try {
+                const $order = await shopModel.findById(id);
+                const $operator = await operatorModel.findById(operator);
+                if (!$order || !$operator) {
+                    res.send({
+                        ok: false,
+                        msg: "Operator yoki order topilmadi!"
+                    })
+                } else {
+                    $order.set({ operator }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: `${$operator?.name}ga - #${$order?.id}-buyurtma biriktirildi!`
+                        });
+                    }).catch(err => {
+                        console.log(err);
+                        res.send({
+                            ok: false,
+                            msg: "Xatolik!"
+                        })
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
     }
 }
