@@ -151,64 +151,140 @@ module.exports = {
             })
         }
     },
-    getNewOrders: async (req, res) => {
-        const $orders = await shopModel.find({ status: 'pending' }).populate('product')
-        const $modded = [];
-        const $settings = await settingModel.find();
-        $orders.forEach((order) => {
-            if (order.status === 'pending' && !order.operator) {
-                $modded.push({
-                    ...order._doc,
-                    id: order._id,
-                    created: moment.unix(order?.created).format("DD.MM.YYYY | HH:mm"),
-                    oid: order.id,
-                    image: SERVER_LINK + order.product.images[0],
-                    comming_pay: $settings[0]?.for_operators
-                });
+    // 
+    getStats: async (req, res) => {
+        const new_orders = await shopModel.find({ status: 'pending', operator: req?.operator?.id }).countDocuments();
+
+        const re_contacts = await shopModel.find({ status: 'wait', operator: req?.operator?.id }).countDocuments();
+
+        res.send({
+            ok: true,
+            data: {
+                new_orders,
+                re_contacts
             }
+        })
+    },
+    getMyOrders: async (req, res) => {
+        const $orders = await shopModel.find({ operator: req.operator.id, status: 'pending' }).populate('product');
+        const myOrders = [];
+        $orders.forEach(e => {
+            myOrders.push({
+                _id: e?._id,
+                id: e?.id,
+                name: e?.name,
+                phone: e?.phone,
+                location: '-',
+                product: e?.product?.title,
+                product_id: e?.product?.id,
+                about: e?.about || "Yangi lid",
+                count: e?.count,
+                bonus_about: e?.product?.bonus_about,
+                bonus_count: e?.product?.bonus_count,
+                bonus_given: e?.product?.bonus_given,
+                bonus: e?.product?.bonus_duration > moment.now() / 1000,
+                price: e?.product?.price,
+                created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
+                // recontact: e?.reconnect ? moment.unix(e?.reconnect).format('DD-MM-YYYY') : 'KK-OO-YYYY'
+            });
         });
         res.send({
             ok: true,
-            data: $modded
+            data: myOrders
         });
     },
-    takeOrder: async (req, res) => {
-        const { id } = req?.params;
+    setStatus: async (req, res) => {
+        const { id } = req.params;
+        const { bonus_gived: bonus, about, city, region, status, count, phone, name, price, recontact, delivery } = req.body;
         const $order = await shopModel.findById(id);
-        if ($order?.operator) {
-            res.send({
-                ok: false,
-                msg: "Ushbu buyurtma boshqa operator tomonidan qabul qilingan!"
-            });
-        } else {
-            $order.set({ operator: req.operator.id }).save().then(() => {
+        if (status === 'archive') {
+            if (!about) {
+                res.send({
+                    ok: false,
+                    msg: "Izoh kiriting!"
+                });
+            } else {
+                $order.set({
+                    status: 'archive',
+                    about
+                }).save().then(async () => {
+                    res.send({
+                        ok: true,
+                        msg: "Arxivlandi qilindi!"
+                    });
+                });
+            }
+        } else if (status === 'wait') {
+            if (!recontact || !about) {
+                res.send({
+                    ok: false,
+                    msg: "Qatorlarni to'ldiring!"
+                })
+            } else {
+                $order.set({
+                    status: 'wait',
+                    recontact: moment.utc(recontact).unix(),
+                    about
+                }).save().then(async () => {
+                    res.send({
+                        ok: true,
+                        msg: "Keyinroqqa qoldirildi!"
+                    });
+                });
+            }
+        } else if (status === 'success') {
+            $order.set({
+                status: 'success',
+                about, city, region, bonus, count, phone, name, price, delivery_price: delivery
+            }).save().then(async () => {
                 res.send({
                     ok: true,
-                    msg: "Buyurtma egallanganlar bo'limiga o'tkazildi!"
+                    msg: "Yetkazish bo'limiga yuborildi!"
                 });
+                if ($order?.flow) {
+                    const $flower = await userModel.findOne({ id: $order?.flow });
+                    if ($flower && $flower?.telegram) {
+                        bot.telegram.sendMessage($flower?.telegram, `sharqiy.uz\n📦Buyurtma dostavkaga tayyor!\n🆔Buyurtma uchun id: #${$order?.id}`).catch(err => {
+                            console.log(err);
+                        });
+                    }
+                }
+
             });
         }
     },
-    getMyOrders: async (req, res) => {
+    getWaitOrders: async (req, res) => {
         const $orders = await shopModel.find({ operator: req.operator.id }).populate('product')
         const myOrders = [];
-        const $settings = await settingModel.find();
         $orders.forEach(e => {
-            if (e?.status !== 'wait') {
+            if (e?.status === 'wait') {
                 myOrders.push({
                     _id: e?._id,
-                    ...e?._doc,
+                    id: e?.id,
+                    name: e?.name,
+                    phone: e?.phone,
+                    location: '-',
+                    product: e?.product?.title,
+                    product_id: e?.product?.id,
+                    about: e?.about || "Yangi lid",
+                    count: e?.count,
+                    bonus_about: e?.product?.bonus_about,
+                    bonus_count: e?.product?.bonus_count,
+                    bonus_given: e?.product?.bonus_given,
+                    bonus: e?.product?.bonus_duration > moment.now() / 1000,
+                    price: e?.product?.price,
                     created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
-                    image: SERVER_LINK + e?.product?.images[0],
-                    comming_pay: $settings[0]?.for_operators
+                    recontact: e?.recontact ? moment.unix(e?.recontact).format('YYYY-MM-DD') : 'KK-OO-YYYY'
                 });
             }
         });
         res.send({
             ok: true,
             data: myOrders.reverse()
-        })
+        });
     },
+    // 
+
     getInfoOrder: async (req, res) => {
         const { id } = req.params;
         console.log(id);
@@ -249,83 +325,6 @@ module.exports = {
             })
         }
     },
-    setStatus: async (req, res) => {
-        const { id } = req.params;
-        const { bonus_gived: bonus, about, city, region, status, count, phone, name, price } = req.body;
-        console.log(status);
-        const $order = await shopModel.findById(id);
-        if (status === 'archive' && ($order?.status === 'pending' || $order?.status === 'wait' || $order?.status === 'success')) {
-            $order.set({
-                status: 'archive',
-                about, city, region, bonus, count: 0, phone, name, price: 0
-            }).save().then(async () => {
-                res.send({
-                    ok: true,
-                    msg: "Arxivlandi qilindi!"
-                });
-                // if ($order?.flow) {
-                //     const $flower = await userModel.findOne({ id: $order?.flow });
-                //     if ($flower && $flower?.telegram) {
-                //         bot.telegram.sendMessage($flower?.telegram, `sharqiy.uz\n❌Buyurtma bekor qilindi!\n🆔Buyurtma uchun id: #${$order?.id}`).catch(err => {
-                //             console.log(err);
-                //         });
-                //     }
-                // }
-            });
-        } else if (status === 'wait' && ($order?.status === 'pending' || $order?.status === 'success' || $order?.status === 'wait')) {
-            $order.set({
-                status: 'wait',
-                about, city, region, bonus, count: 0, phone, name, price: 0
-            }).save().then(async () => {
-                res.send({
-                    ok: true,
-                    msg: "Keyinroqqa qoldirildi!"
-                });
-                // if ($order?.flow) {
-                //     const $flower = await userModel.findOne({ id: $order?.flow });
-                //     if ($flower && $flower?.telegram) {
-                //         bot.telegram.sendMessage($flower?.telegram, `sharqiy.uz\n🔃Buyurtma uchun qayta aloqa!\n🆔Buyurtma uchun id: #${$order?.id}`).catch(err => {
-                //             console.log(err);
-                //         });
-                //     }
-                // }
-            });
-        } else if (status === 'success' && ($order?.status === 'pending' || $order?.status === 'wait' || $order?.status === 'success')) {
-            $order.set({
-                status: 'success',
-                about, city, region, bonus, count, phone, name, price
-            }).save().then(async () => {
-                if ($order.status === 'success') {
-                    res.send({
-                        ok: true,
-                        msg: "Taxrirlandi"
-                    });
-                    if ($order?.flow) {
-                        const $flower = await userModel.findOne({ id: $order?.flow });
-                        if ($flower && $flower?.telegram) {
-                            bot.telegram.sendMessage($flower?.telegram, `sharqiy.uz\n📦Buyurtma dostavkaga tayyor!\n🆔Buyurtma uchun id: #${$order?.id}`).catch(err => {
-                                console.log(err);
-                            });
-                        }
-                    }
-                } else {
-                    res.send({
-                        ok: true,
-                        msg: "Yetkazish bo'limiga yuborildi!"
-                    });
-                    if ($order?.flow) {
-                        const $flower = await userModel.findOne({ id: $order?.flow });
-                        if ($flower && $flower?.telegram) {
-                            bot.telegram.sendMessage($flower?.telegram, `sharqiy.uz\n📦Buyurtma dostavkaga tayyor!\n🆔Buyurtma uchun id: #${$order?.id}`).catch(err => {
-                                console.log(err);
-                            });
-                        }
-                    }
-                }
-
-            });
-        }
-    },
     editOrder: async (req, res) => {
         try {
             const { id } = req.params;
@@ -345,26 +344,7 @@ module.exports = {
             })
         }
     },
-    getWaitOrders: async (req, res) => {
-        const $orders = await shopModel.find({ operator: req.operator.id }).populate('product')
-        const myOrders = [];
-        const $settings = await settingModel.find();
-        $orders.forEach(e => {
-            if (e?.status === 'wait') {
-                myOrders.push({
-                    _id: e?._id,
-                    ...e?._doc,
-                    created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
-                    image: SERVER_LINK + e?.product?.images[0],
-                    comming_pay: $settings[0]?.for_operators
-                });
-            }
-        });
-        res.send({
-            ok: true,
-            data: myOrders.reverse()
-        });
-    },
+
     createPay: async (req, res) => {
         const $lastPay = await payOperatorModel.findOne({ from: req.operator.id, status: 'pending' });
         if ($lastPay) {

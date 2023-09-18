@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
 import { Button, Chip, Dialog, DialogBody, DialogFooter, DialogHeader, IconButton, Input, Menu, MenuHandler, MenuItem, MenuList, Spinner } from "@material-tailwind/react";
-import { BiDotsVertical, BiMoney, BiPencil, BiSearch, BiTrash } from "react-icons/bi";
+import { BiDotsVertical, BiGift, BiMoney, BiPencil, BiSearch, BiTrash } from "react-icons/bi";
 import { FaEye } from "react-icons/fa";
 import { setRefresh } from "../managers/refresh.manager";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,8 @@ function Products() {
     const [search, setSearch] = useState('');
     const dp = useDispatch();
     const nv = useNavigate();
-    const [openPrice, setOpenPrice] = useState({ id: '', price: '', new_price:'' });
+    const [openPrice, setOpenPrice] = useState({ id: '', price: '', new_price: '' });
+    const [bonus, setBonus] = useState({ id: '', bonus_about: '', bonus_duration: 7, bonus_count: '', bonus_given: '' });
     useEffect(() => {
         setIsLoad(false);
         axios(`${API_LINK}/boss/get-all-products`, {
@@ -69,6 +70,24 @@ function Products() {
         }).catch(() => {
             toast.error("Aloqani tekshirib qayta urinib ko'ring!")
         })
+    }
+    function SetBonus() {
+        axios.post(`${API_LINK}/product/set-bonus/${bonus?.id}`, bonus, {
+            headers: {
+                'x-auth-token': `Bearer ${localStorage.getItem('access')}`
+            }
+        }).then(res => {
+            const { ok, msg } = res.data;
+            if (!ok) {
+                toast.error(msg);
+            } else {
+                toast.success(msg);
+                dp(setRefresh());
+                setBonus({ id: '', bonus_about: '', bonus_duration: 7, bonus_count: '', bonus_given: '' })
+            }
+        }).catch(() => {
+            toast.error("Aloqani tekshirib qayta urinib ko'ring!")
+        });
     }
     return (
         <div className="flex items-start justify-start flex-col w-full overflow-x-scroll mt-[60px]">
@@ -134,10 +153,16 @@ function Products() {
                                                 <BiPencil className="mr-[10px]" />
                                                 Taxrirlash
                                             </MenuItem>
-                                            <MenuItem onClick={() => setOpenPrice({id: p?._id, price: p?.price})} className="flex items-center justify-start">
+                                            <MenuItem onClick={() => setOpenPrice({ id: p?._id, price: p?.price })} className="flex items-center justify-start">
                                                 <BiMoney className="mr-[10px]" />
                                                 Yangi narx
                                             </MenuItem>
+                                            {!p?.bonus &&
+                                                <MenuItem onClick={() => setBonus({ ...bonus, id: p?._id })} className="flex items-center justify-start">
+                                                    <BiGift className="mr-[10px]" />
+                                                    Bonus biriktirish
+                                                </MenuItem>
+                                            }
                                             <MenuItem onClick={() => window.open('https://sharqiy.uz/product/' + p?.id)} className="flex items-center justify-start">
                                                 <FaEye className="mr-[10px]" />
                                                 Ko'rish
@@ -169,6 +194,35 @@ function Products() {
                     <DialogFooter className="w-full">
                         <Button onClick={() => setOpenPrice({ id: '', price: '', new_price: '' })} className="rounded ml-[10px]" color="orange">Bekor qilish</Button>
                         <Button disabled={openPrice?.new_price < 10 || !openPrice?.price} className="rounded ml-[10px]" color="green" onClick={EditPrice}>Saqlash</Button>
+                    </DialogFooter>
+                </div>
+            </Dialog>
+            {/* BONUS */}
+            <Dialog open={bonus?.id !== ''} size="xxl" className="flex items-center justify-center bg-[#1b424a80] backdrop-blur-md">
+                <div className="flex items-center justify-start flex-col md:w-[700px] w-[90%] p-[10px] bg-white shadow-lg rounded-md">
+                    <DialogHeader className="w-full">
+                        <h1 className="text-[20px]">Bonus biriktirish</h1>
+                    </DialogHeader>
+                    <DialogBody className="w-full border-y">
+                        <div className="flex items-center justify-center w-full mb-[10px]">
+                            <Input value={bonus?.bonus_about} label="Bonus haqida(1+1=3)" onChange={e => setBonus({ ...bonus, bonus_about: e.target.value })} type="text" required />
+                        </div>
+                        {/*  */}
+                        <div className="flex items-center justify-center w-full mb-[10px]">
+                            <Input value={bonus?.bonus_count} label="Nechta sotib olsa?" onChange={e => setBonus({ ...bonus, bonus_count: e.target.value })} type="number" required />
+                        </div>
+                        {/*  */}
+                        <div className="flex items-center justify-center w-full mb-[10px]">
+                            <Input value={bonus?.bonus_given} label="Nechta qo'shib beriladi?" onChange={e => setBonus({ ...bonus, bonus_given: e.target.value })} type="number" required />
+                        </div>
+                        {/*  */}
+                        <div className="flex items-center justify-center w-full mb-[10px]">
+                            <Input value={bonus?.bonus_duration} label="Necha kun davom etadi?" onChange={e => setBonus({ ...bonus, bonus_duration: e.target.value })} type="number" required />
+                        </div>
+                    </DialogBody>
+                    <DialogFooter className="w-full">
+                        <Button onClick={() => { setBonus({ id: '', bonus_about: '', bonus_duration: 7, bonus_count: '', bonus_given: '' }) }} className="rounded ml-[10px]" color="orange">Bekor qilish</Button>
+                        <Button className="rounded ml-[10px]" color="green" onClick={SetBonus}>Saqlash</Button>
                     </DialogFooter>
                 </div>
             </Dialog>

@@ -1,15 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit/dist";
 
-const OrderManager = createSlice({
-    name: 'order',
+const refreshManager = createSlice({
+    name: 'refresh',
     initialState: {
         refresh: false
     },
     reducers: {
-        setRefreshOrders: state => {
+        setRefresh: state => {
             state.refresh = !state.refresh;
         }
     }
 });
-export const { setRefreshOrders } = OrderManager.actions;
-export default OrderManager.reducer
+export const { setRefresh } = refreshManager.actions;
+export default refreshManager.reducer

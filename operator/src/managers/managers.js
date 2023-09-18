@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authManager from "./auth.manager";
-import orderManager from "./order.manager";
+import refreshManager from "./refresh.manager";
 const Manager = configureStore({
     reducer: {
         auth: authManager,
-        order: orderManager
+        refresh: refreshManager
     }
 })
 export default Manager;

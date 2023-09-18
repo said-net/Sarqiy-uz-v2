@@ -115,7 +115,8 @@ module.exports = {
                 category: p?.category?.title,
                 coin: p?.coin,
                 views,
-                shops: $shops
+                shops: $shops,
+                bonus: p?.bonus_duration > moment.now() / 1000
             });
         }
         res.send({

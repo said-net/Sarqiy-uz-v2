@@ -21,10 +21,10 @@ const schema = new Schema({
     },
     count: {
         type: Number,
-        default: 0
+        default: 1
     },
     region: Number,
-    city: Number,
+    city: String,
     phone: String,
     week: Number,
     flow: {
@@ -57,7 +57,8 @@ const schema = new Schema({
         ref: 'Operator'
     },
     courier_comment: String,
-    comment: String,
+    recontact: Number,
+    delivery_price: Number,
     status: {
         type: String,
         default: 'pending'

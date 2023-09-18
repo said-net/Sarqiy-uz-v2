@@ -29,4 +29,3 @@ app.listen(APP_PORT, () => {
         console.log(error);
     }
 });
-// console.log(md5('555555'))
