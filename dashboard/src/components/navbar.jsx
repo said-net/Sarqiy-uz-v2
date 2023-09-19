@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoney, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming } from 'react-icons/bi';
+import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoney, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming, BiUserPlus } from 'react-icons/bi';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_LINK } from "../config";
@@ -7,7 +7,7 @@ import { IconButton } from "@material-tailwind/react";
 import { useSelector } from "react-redux";
 function Navbar() {
     const { pathname: path } = useLocation();
-    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0 });
+    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0, couriers: 0 });
     const { refresh } = useSelector(e => e.refresh);
     const [open, setOpen] = useState(false);
     useEffect(() => {
@@ -79,6 +79,17 @@ function Navbar() {
                 <Link onClick={() => setOpen(false)} to='/pay-operators' className={classLink + `${path === '/pay-operators' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiMoneyWithdraw className="mr-[10px]" />
                     Operatorlar to'lovi
+                </Link>
+                {/*  */}
+                <Link onClick={() => setOpen(false)} to='/couriers' className={classLink + `${path === '/couriers' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                    <BiSolidTruck className="mr-[10px]" />
+                    Kuryerlar
+                    <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.couriers}</span>
+                </Link>
+                {/*  */}
+                <Link onClick={() => setOpen(false)} to='/add-courier' className={classLink + `${path === '/add-courier' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                    <BiUserPlus className="mr-[10px]" />
+                    Kuryer qo'shish
                 </Link>
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/users' className={classLink + `${path === '/users' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>

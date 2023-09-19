@@ -59,6 +59,15 @@ const schema = new Schema({
     courier_comment: String,
     recontact: Number,
     delivery_price: Number,
+    up_time: Number,
+    courier: {
+        type: Types?.ObjectId,
+        ref: 'Courier'
+    },
+    verified: {
+        type: Boolean,
+        default: false
+    },
     status: {
         type: String,
         default: 'pending'

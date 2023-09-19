@@ -10,7 +10,6 @@ const app = express();
 require('mongoose').connect(MONGO_URI);
 require('./src/controllers/boss.controller').default();
 require('./src/controllers/setting.controller').default();
-require('./src/controllers/setting.controller').createDelivery();
 require('./src/configs/folder.config')()
 app.use(cors());
 app.use(express.json());

@@ -195,7 +195,7 @@ module.exports = {
     },
     setStatus: async (req, res) => {
         const { id } = req.params;
-        const { bonus_gived: bonus, about, city, region, status, count, phone, name, price, recontact, delivery } = req.body;
+        const { bonus_gived: bonus, about, city, region, status, count, price, recontact, delivery } = req.body;
         const $order = await shopModel.findById(id);
         if (status === 'archive') {
             if (!about) {
@@ -235,7 +235,7 @@ module.exports = {
         } else if (status === 'success') {
             $order.set({
                 status: 'success',
-                about, city, region, bonus, count, phone, name, price, delivery_price: delivery
+                about, city, region, bonus, count, price, delivery_price: delivery
             }).save().then(async () => {
                 res.send({
                     ok: true,

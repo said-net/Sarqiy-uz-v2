@@ -141,7 +141,7 @@ module.exports = {
                         let p_his = 0;
                         let sh_his = 0;
                         const $histpory = await payOperatorModel.find({ from: id, status: 'success' });
-                        const $shoph = await shopModel.find({ operator: id });
+                        const $shoph = await shopModel.find({ operator: id, status: 'delivered' });
                         $histpory.forEach(h => {
                             p_his += h.count;
                         });

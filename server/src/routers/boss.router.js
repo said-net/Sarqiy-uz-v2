@@ -13,6 +13,13 @@ module.exports = require('express').Router()
     .get('/set-ban-user/:id', authMiddleware.boss, bossController.setBanUser)
     .get('/remove-ban-user/:id', authMiddleware.boss, bossController.removeBanUser)
     .get('/get-all-cheques/:page', authMiddleware.boss, bossController.getCheques)
+    .get('/get-wait-delivery', authMiddleware.boss, bossController.getWaitDelivery)
+    .get('/get-sended-orders', authMiddleware.boss, bossController.getSendedOrders)
+    // 
+    .post('/create-courier', authMiddleware.boss, bossController.createCourier)
+    .get('/get-all-couriers', authMiddleware.boss, bossController.getAllCouriers)
+    .post('/set-courier', authMiddleware.boss, bossController.setCourier)
+    
 
     // .get('/get-new-orders', authMiddleware.boss, bossController.getNewOrders)
     // .get('/get-info-order/:id', authMiddleware.boss, bossController.getOrder)
