@@ -8,10 +8,6 @@ const schema = new Schema({
     verify_code: String,
     created: Number,
     telegram: Number,
-    balance: {
-        type: Number,
-        default: 0
-    },
     password: String,
     ref_id: String,
     access: String,
@@ -19,6 +15,10 @@ const schema = new Schema({
     etc: Object,
     targetolog: {
         type: Boolean, 
+        default: false
+    },
+    ban: {
+        type:Boolean,
         default: false
     }
 });

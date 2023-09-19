@@ -1,7 +1,7 @@
 import { FaUser } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { BiCreditCard, BiHistory, BiLogOut, BiMenu, BiPhoneCall, BiShoppingBag, BiSolidDashboard, BiX } from 'react-icons/bi'
+import { BiCreditCard, BiHistory, BiLogOut, BiMenu, BiPhoneCall, BiShoppingBag, BiSolidDashboard, BiTargetLock, BiX } from 'react-icons/bi'
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -77,6 +77,11 @@ function Navbar() {
                     <div className="flex items-center justify-center w-[10px] h-[20px] absolute right-[20px] border-l-[2px] pl-[10px] text-[14px]">
                         {stats?.re_contacts}
                     </div>
+                </Link>
+                {/*  */}
+                <Link to='/target-orders' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/target-orders' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
+                    <BiTargetLock className="mr-[10px]" />
+                    Tragetolog
                 </Link>
                 {/*  */}
                 <Link to='/withdraw' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/withdraw' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>

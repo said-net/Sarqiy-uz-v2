@@ -19,6 +19,8 @@ import AddOperator from "./pages/add-operator";
 import EditOperator from "./pages/edit-operator";
 import NewOrders from "./pages/new-orders";
 import OwnedOrders from "./pages/owned-orders";
+import Users from "./pages/users";
+import PrintChques from "./pages/print-chques";
 function App() {
   const { refresh, phone } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -61,6 +63,9 @@ function App() {
             {/*  */}
             <Route path="/new-orders" element={<NewOrders />} />
             <Route path="/owned-orders" element={<OwnedOrders />} />
+            <Route path="/print-cheques" element={<PrintChques />} />
+            {/*  */}
+            <Route path="/users" element={<Users />} />
           </Routes>
         </div>
         <ToastContainer position="top-center" autoClose={1000} closeButton={false} style={{ zIndex: '9999999999' }} />

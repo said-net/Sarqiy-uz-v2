@@ -65,6 +65,7 @@ module.exports = {
         const categories = await categoryModel.find({ hidden: false }).countDocuments();
         const operators = await operatorModel.find({ hidden: false }).countDocuments();
         const wait_delivery = await shopModel.find({ status: 'success' }).countDocuments();
+        const users = await userModel.find().countDocuments();
         const sended = await shopModel.find({ status: 'sended' }).countDocuments();
         const reject = await shopModel.find({ status: 'reject' }).countDocuments();
         const archive = await shopModel.find({ status: 'archive' }).countDocuments();
@@ -92,6 +93,7 @@ module.exports = {
                 wait,
                 neworders,
                 inoperator,
+                users
             }
         });
     },
@@ -123,145 +125,91 @@ module.exports = {
             ok: true,
             data: list
         });
+    },
+    getAllUsers: async (req, res) => {
+        const $users = await userModel.find();
+        const list = [];
+        $users?.forEach(u => {
+            list.push({
+                id: u?.id,
+                _id: u?._id,
+                name: u?.name,
+                phone: u?.phone,
+                targetolog: u?.targetolog,
+                ban: u?.ban,
+                ref_id: u?.ref_id,
+                created: moment.unix(u?.created).format('YYYY-MM-DD'),
+                location: Regions?.find(r => r.id === u?.location).name
+            });
+        });
+        res.send({
+            ok: true,
+            data: list
+        })
+    },
+    setTargetlolog: async (req, res) => {
+        const $user = await userModel.findById(req.params.id);
+        $user.set({ targetolog: true }).save().then(() => {
+            res.send({
+                ok: true,
+                msg: "Targetolog deb belgilandi!"
+            });
+        });
+    },
+    removeTargetolog: async (req, res) => {
+        const $user = await userModel.findById(req.params.id);
+        $user.set({ targetolog: false }).save().then(() => {
+            res.send({
+                ok: true,
+                msg: "Targetolog safidan olindi!"
+            });
+        });
+    },
+    setBanUser: async (req, res) => {
+        const $user = await userModel.findById(req.params.id);
+        $user.set({ ban: true }).save().then(() => {
+            res.send({
+                ok: true,
+                msg: "Blocklandi!"
+            });
+        });
+    },
+    removeBanUser: async (req, res) => {
+        const $user = await userModel.findById(req.params.id);
+        $user.set({ ban: false }).save().then(() => {
+            res.send({
+                ok: true,
+                msg: "Blokdan olindi!"
+            });
+        });
+    },
+    getCheques: async (req, res) => {
+        const $cheques = await shopModel.find({ status: 'success' }).populate('operator')
+        const cheques = [];
+        $cheques?.forEach(c => {
+            cheques?.push({
+                id: c?.id,
+                _id: c?._id,
+                title: c?.title,
+                about: c?.about,
+                price: c?.price,
+                delivery_price: c?.delivery_price,
+                total_price: c?.price + c?.delivery_price,
+                count: c?.count,
+                bonus: c?.bonus,
+                operator_name: c?.operator?.name,
+                operator_phone: c?.operator?.phone,
+                name: c?.name,
+                phone: c?.phone,
+                date: `${(c?.day < 10 ? '0' + c?.day : c?.day) + '-' + ((c?.month + 1) < 10 ? '0' + (c?.month + 1) : (c?.month + 1)) + '-' + c?.year}`,
+                location: `${Regions?.find(e => e.id === c?.region)?.name} - ${c?.city}`
+            })
+        });
+        res.send({
+            ok: true,
+            data: cheques
+        })
     }
-    // getDashboard: async (req, res) => {
-    //     const { date } = req.params;
-    //     if (date === 'all') {
-    //         const categories = await categoryModel.find().countDocuments();
-    //         const products = await productModel.find();
-    //         // 
-    //         let shopHistory = 0;
-    //         let delivered = 0;
-    //         let archived = 0;
-    //         let rejected = 0;
-    //         // let sales = 0;
-    //         // let profit = 0;
-    //         const shp = await shopModel.find();
-    //         shp.forEach(e => {
-    //             if (e.status === 'delivered') {
-    //                 delivered++;
-    //                 // sales += e?.price;
-    //                 shopHistory++;
-    //                 // profit += e?.price - (e?.for_admin + e?.for_operator + e?.for_ref)
-    //             } else if (e?.status === 'sended' || e?.status === 'success') {
-    //                 shopHistory++
-    //             } else if (e?.status === 'reject') {
-    //                 rejected++;
-    //             } else if (e?.status === 'archive') {
-    //                 archived++
-    //             }
-    //         })
-    //         const waiting = shopHistory - delivered;
-    //         // 
-
-    //         const users = await userModel.find();
-    //         const operators = await operatorModel.find();
-    //         // 
-    //         // let deposit = 0;
-    //         // 
-    //         // products?.forEach(e => {
-    //         //     deposit += e.value * e?.original_price
-    //         // });
-    //         let p_his = 0;
-    //         let sh_his = 0;
-    //         let r_his = 0;
-    //         let adminsBalance = 0;
-    //         for (let $user of users) {
-    //             const $histpory = await payModel.find({ from: $user._id, status: 'success' });
-    //             const $shoph = await shopModel.find({ flow: $user.id });
-    //             const $refs = await userModel.find({ ref_id: $user.id });
-    //             for (let ref of $refs) {
-    //                 const $rflows = await shopModel.find({ flow: ref.id });
-    //                 $rflows.forEach(rf => {
-    //                     r_his += rf.for_ref
-    //                     adminsBalance += rf.for_ref
-    //                 });
-    //             };
-    //             $histpory.forEach(h => {
-    //                 p_his -= h.count;
-    //                 adminsBalance -= h.count;
-    //             });
-    //             $shoph.forEach(s => {
-    //                 sh_his += s.for_admin;
-    //                 adminsBalance += s.for_admin
-    //             });
-    //         }
-    //         // adminsBalance += (sh_his + r_his) - p_his
-    //         let sh = 0;
-    //         let p = 0;
-    //         let operatorsBalance = 0;
-    //         for (let o of operators) {
-    //             const $shops = await shopModel.find({ operator: o?._id, status: 'delivered' });
-    //             const $pays = await payOperatorModel.find({ from: o?._id, status: 'success' });
-    //             $shops?.forEach($sh => {
-    //                 sh += $sh.for_operator
-    //                 operatorsBalance += $sh?.for_operator;
-    //             });
-    //             $pays?.forEach($p => {
-    //                 p += $p?.count
-    //                 operatorsBalance -= $p?.count;
-    //             });
-    //         }
-    //         bot.telegram.sendMessage(5991285234, `${sh}\n${p}`)
-    //         res.send({
-    //             ok: true,
-    //             data: {
-    //                 categories,
-    //                 products: products?.length,
-    //                 shops: shopHistory,
-    //                 delivered,
-    //                 archived,
-    //                 waiting,
-    //                 users: users.length,
-    //                 operators: operators.length,
-    //                 // deposit,
-    //                 // profit,
-    //                 // sales,
-    //                 rejected,
-    //                 adminsBalance,
-    //                 operatorsBalance
-    //             }
-    //         });
-    //     } else {
-    //         const year = +date?.split('-')[0];
-    //         const month = +date?.split('-')[1];
-    //         // 
-    //         let shopHistory = 0;
-    //         let delivered = 0;
-    //         let rejected = 0;
-    //         // let sales = 0;
-    //         let archived = 0
-    //         // let profit = 0;
-    //         const shp = await shopModel.find({ year, month: month - 1 });
-    //         shp.forEach(e => {
-    //             if (e.status === 'delivered') {
-    //                 delivered++;
-    //                 // sales += e?.price;
-    //                 shopHistory++;
-    //                 // profit += e?.price - (e?.for_admin + e?.for_operator + e?.for_ref)
-    //             } else if (e?.status === 'sended' || e?.status === 'success') {
-    //                 shopHistory++
-    //             } else if (e?.status === 'reject') {
-    //                 rejected++;
-    //             } else if (e?.status === 'archive') {
-    //                 archived++
-    //             }
-    //         })
-    //         const waiting = shopHistory - delivered;
-    //         res.send({
-    //             ok: true,
-    //             data: {
-    //                 shops: shopHistory,
-    //                 delivered,
-    //                 waiting,
-    //                 // profit,
-    //                 archived,
-    //                 // sales,
-    //                 rejected,
-    //             }
-    //         });
-    //     }
-    // },
     // getNewOrders: async (req, res) => {
     //     const $orders = await shopModel.find({ status: 'success' }).populate('product operator');
     //     const $deliveries = await deliveryModel.find();
@@ -777,31 +725,6 @@ module.exports = {
     //             msg: "Saqlashda xatolik!"
     //         })
     //     }
-    // },
-    // getAllUsers: async (req, res) => {
-    //     const $users = await userModel.find();
-    //     res.send({
-    //         ok: true,
-    //         data: $users
-    //     });
-    // },
-    // setTargetlolog: async (req, res) => {
-    //     const $user = await userModel.findById(req.params.id);
-    //     $user.set({ targetolog: true }).save().then(() => {
-    //         res.send({
-    //             ok: true,
-    //             msg: "Targetolog deb belgilandi!"
-    //         });
-    //     });
-    // },
-    // removeTargetolog: async (req, res) => {
-    //     const $user = await userModel.findById(req.params.id);
-    //     $user.set({ targetolog: false }).save().then(() => {
-    //         res.send({
-    //             ok: true,
-    //             msg: "Targetolog safidan olindi!"
-    //         });
-    //     });
     // },
     // addMoneyToOperator: async (req, res) => {
     //     const { id } = req.params;

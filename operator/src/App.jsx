@@ -10,6 +10,7 @@ import Navbar from "./components/navbar";
 import { Route, Routes } from "react-router-dom";
 import MyOrders from "./pages/my-orders";
 import ReConnects from "./pages/re-connects";
+import Targetolog from "./pages/targetolog";
 function App() {
   const { id, refresh, name } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -43,6 +44,7 @@ function App() {
           <Routes>
             <Route path="/my-orders" element={<MyOrders />} />
             <Route path="/re-connects" element={<ReConnects />} />
+            <Route path="/target-orders" element={<Targetolog />} />
           </Routes>
         </div>
         <ToastContainer autoClose={2000} closeButton={false} position="top-center" style={{ zIndex: '9999999' }} />

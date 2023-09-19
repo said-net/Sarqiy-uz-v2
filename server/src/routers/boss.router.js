@@ -7,6 +7,13 @@ module.exports = require('express').Router()
     // 
     .get('/get-stats', authMiddleware.boss, bossController.getStats)
     .get('/get-all-products', authMiddleware.boss, bossController.getAllProducts)
+    .get('/get-all-users', authMiddleware.boss, bossController.getAllUsers)
+    .get('/set-targetolog/:id', authMiddleware.boss, bossController.setTargetlolog)
+    .get('/remove-targetolog/:id', authMiddleware.boss, bossController.removeTargetolog)
+    .get('/set-ban-user/:id', authMiddleware.boss, bossController.setBanUser)
+    .get('/remove-ban-user/:id', authMiddleware.boss, bossController.removeBanUser)
+    .get('/get-all-cheques/:page', authMiddleware.boss, bossController.getCheques)
+
     // .get('/get-new-orders', authMiddleware.boss, bossController.getNewOrders)
     // .get('/get-info-order/:id', authMiddleware.boss, bossController.getOrder)
     // .get('/get-cheque-order/:id', authMiddleware.boss, bossController.getChequeOrder)
