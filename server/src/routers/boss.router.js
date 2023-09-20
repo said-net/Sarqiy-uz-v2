@@ -19,6 +19,12 @@ module.exports = require('express').Router()
     .post('/create-courier', authMiddleware.boss, bossController.createCourier)
     .get('/get-all-couriers', authMiddleware.boss, bossController.getAllCouriers)
     .post('/set-courier', authMiddleware.boss, bossController.setCourier)
+    // 
+    .get('/get-rejected-orders', authMiddleware.boss, bossController.getRejectedOrders)
+    .get('/get-delivered-orders', authMiddleware.boss, bossController.getDeliveredOrders)
+    .post('/confirm-rejecteds', authMiddleware.boss, bossController.confirmRejecteds)
+    .post('/confirm-delivereds', authMiddleware.boss, bossController.confirmDelivereds)
+
     
 
     // .get('/get-new-orders', authMiddleware.boss, bossController.getNewOrders)

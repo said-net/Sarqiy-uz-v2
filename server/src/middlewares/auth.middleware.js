@@ -143,7 +143,7 @@ module.exports = {
                         let p_his = 0;
                         let sh_his = 0;
                         const $histpory = await payOperatorModel.find({ from: id, status: 'success' });
-                        const $shoph = await shopModel.find({ operator: id, status: 'delivered' });
+                        const $shoph = await shopModel.find({ operator: id, courier_status: 'delivered', verified: true });
                         $histpory.forEach(h => {
                             p_his += h.count;
                         });
@@ -191,16 +191,16 @@ module.exports = {
                     else {
                         let p_his = 0;
                         let sh_his = 0;
-                        const $histpory = await payCourierModel.find({ from: id, status: 'success' });
-                        const $shoph = await shopModel.find({ courier: id, status: 'delivered' });
-                        $histpory.forEach(h => {
-                            p_his += h.count;
-                        });
-                        $shoph.forEach(s => {
-                            sh_his += s.delivery_price
-                        });
-                        const { name, phone, telegram } = $operator;
-                        req.operator = { id, name, phone, balance: sh_his - p_his, telegram };
+                        // const $histpory = await payCourierModel.find({ from: id, status: 'success' });
+                        // const $shoph = await shopModel.find({ courier: id, status: 'delivered' });
+                        // $histpory.forEach(h => {
+                        //     p_his += h.count;
+                        // });
+                        // $shoph.forEach(s => {
+                        //     sh_his += s.delivery_price
+                        // });
+                        const { name, phone } = $courier;
+                        req.courier = { id, name, phone, balance: sh_his - p_his };
                         next();
                     }
                 }

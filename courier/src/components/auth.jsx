@@ -10,7 +10,7 @@ function Auth() {
     const dp = useDispatch()
     const [state, setState] = useState({ phone: '+998', password: '' });
     function Submit() {
-        axios.post(`${API_LINK}/operator/sign-in`, state).then((res) => {
+        axios.post(`${API_LINK}/courier/sign-in`, state).then((res) => {
             const { ok, msg, token } = res.data;
             if (!ok) {
                 toast.error(msg);
@@ -24,7 +24,7 @@ function Auth() {
     }
     return (<div className="flex items-center justify-center w-full h-[100vh]">
         <div className="flex items-center justify-start flex-col w-[90%] sm:w-[400px] p-[10px] rounded shadow-sm bg-white">
-            <h1 className="text-black mb-[10px]">OPERATOR PANELIGA KIRISH</h1>
+            <h1 className="text-black mb-[10px]">KURYER PANELIGA KIRISH</h1>
             <div className="flex items-center justify-center w-full mb-[10px]">
                 <Input type="tel" label="Raqamingiz" variant="standard" required onChange={e => setState({ ...state, phone: e.target.value })} value={state.phone} icon={<FaPhone />} />
             </div>

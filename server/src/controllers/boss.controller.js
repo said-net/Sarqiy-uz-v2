@@ -67,10 +67,10 @@ module.exports = {
         const operators = await operatorModel.find({ hidden: false }).countDocuments();
         const wait_delivery = await shopModel.find({ status: 'success' }).countDocuments();
         const users = await userModel.find().countDocuments();
-        const sended = await shopModel.find({ status: 'sended' }).countDocuments();
-        const reject = await shopModel.find({ status: 'reject' }).countDocuments();
+        const sended = await shopModel.find({ status: 'sended', courier_status: 'sended', verified: false }).countDocuments();
+        const reject = await shopModel.find({ courier_status: 'reject', verified: false }).countDocuments();
         const archive = await shopModel.find({ status: 'archive' }).countDocuments();
-        const delivered = await shopModel.find({ status: 'delivered' }).countDocuments();
+        const delivered = await shopModel.find({ courier_status: 'delivered', verified: false }).countDocuments();
         const wait = await shopModel.find({ status: 'wait' }).countDocuments();
         const neworders = await shopModel.find({ status: 'pending', operator: null }).countDocuments();
         const couriers = await courierModel.find().countDocuments();
@@ -321,7 +321,7 @@ module.exports = {
             try {
                 for (let l of list) {
                     const $order = await shopModel.findById(l)
-                    if (l !== undefined) {
+                    if (l) {
                         $order.set({ status: 'sended', courier, up_time: moment.now() / 1000 }).save();
                     }
                 }
@@ -339,7 +339,7 @@ module.exports = {
         }
     },
     getSendedOrders: async (req, res) => {
-        const $orders = await shopModel.find({ status: 'sended' }).populate('product operator courier', 'title images price name phone region')
+        const $orders = await shopModel.find({ status: 'sended', courier_status: 'sended', verified: false }).populate('product operator courier', 'title images price name phone region')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
         $operators.forEach(o => {
@@ -402,6 +402,188 @@ module.exports = {
             data: $modlist,
             couriers: $mcouriers
         })
+    },
+    getRejectedOrders: async (req, res) => {
+        const $orders = await shopModel.find({ courier_status: 'reject', verified: false }).populate('product operator courier', 'title images price name phone region')
+        const $operators = await operatorModel.find({ hidden: false });
+        const $modopers = [];
+        $operators.forEach(o => {
+            $modopers.push({
+                id: o._id,
+                name: o.name,
+                phone: o.phone,
+            });
+        });
+        const $couriers = await courierModel.find();
+        const $mcouriers = [];
+        $couriers.forEach(o => {
+            $mcouriers.push({
+                _id: o._id,
+                name: o.name,
+                phone: o.phone,
+            });
+        });
+        const $modlist = [];
+        for (let o of $orders) {
+            if (!o.flow) {
+                const $admin = await userModel.findOne({ id: o?.flow });
+                $modlist.push({
+                    id: o?.id,
+                    _id: o?._id,
+                    title: o?.product?.title,
+                    image: SERVER_LINK + o?.product?.images[0],
+                    admin: $admin.name,
+                    admin_id: $admin.id,
+                    price: o?.product?.price,
+                    name: o?.name,
+                    phone: o?.phone,
+                    courier_id: o?.courier?._id,
+                    courier: o?.courier?.name,
+                    courier_phone: o?.courier?.phone,
+                    courier_region: o?.courier?.region,
+                    operator: o?.operator?.name,
+                    operator_phone: o?.operator?.phone
+                });
+            } else {
+                $modlist.push({
+                    id: o?.id,
+                    _id: o?._id,
+                    title: o?.product?.title,
+                    image: SERVER_LINK + o?.product?.images[0],
+                    admin: '',
+                    admin_id: '',
+                    price: o?.product?.price,
+                    name: o?.name,
+                    phone: o?.phone,
+                    courier_id: o?.courier?._id,
+                    courier: o?.courier?.name,
+                    courier_phone: o?.courier?.phone,
+                    courier_region: o?.courier?.region,
+                    operator: o?.operator?.name,
+                    operator_phone: o?.operator?.phone
+                });
+            }
+        }
+        res.send({
+            ok: true,
+            data: $modlist,
+            couriers: $mcouriers
+        })
+    },
+    getDeliveredOrders: async (req, res) => {
+        const $orders = await shopModel.find({ courier_status: 'delivered', verified: false }).populate('product operator courier', 'title images price name phone region');
+        const $couriers = await courierModel.find();
+        const $mcouriers = [];
+        $couriers.forEach(o => {
+            $mcouriers.push({
+                _id: o._id,
+                name: o.name,
+                phone: o.phone,
+            });
+        });
+        const $modlist = [];
+        for (let o of $orders) {
+            if (!o.flow) {
+                const $admin = await userModel.findOne({ id: o?.flow });
+                $modlist.push({
+                    id: o?.id,
+                    _id: o?._id,
+                    title: o?.product?.title,
+                    image: SERVER_LINK + o?.product?.images[0],
+                    admin: $admin.name,
+                    admin_id: $admin.id,
+                    price: o?.product?.price,
+                    name: o?.name,
+                    phone: o?.phone,
+                    delivery_price: o?.delivery_price,
+                    courier: o?.courier?.name,
+                    courier_phone: o?.courier?.phone,
+                    courier_region: o?.courier?.region,
+                    operator: o?.operator?.name,
+                    operator_phone: o?.operator?.phone
+                });
+            } else {
+                $modlist.push({
+                    id: o?.id,
+                    _id: o?._id,
+                    title: o?.product?.title,
+                    image: SERVER_LINK + o?.product?.images[0],
+                    admin: '',
+                    admin_id: '',
+                    price: o?.product?.price,
+                    name: o?.name,
+                    phone: o?.phone,
+                    delivery_price: o?.delivery_price,
+                    courier: o?.courier?.name,
+                    courier_phone: o?.courier?.phone,
+                    courier_region: o?.courier?.region,
+                    operator: o?.operator?.name,
+                    operator_phone: o?.operator?.phone
+                });
+            }
+        }
+        res.send({
+            ok: true,
+            data: $modlist,
+            couriers: $mcouriers
+        })
+    },
+    confirmRejecteds: async (req, res) => {
+        const { list } = req.body;
+        if (!list) {
+            res.send({
+                ok: false,
+                msg: "Order yoki status tanlanmagan!"
+            });
+        } else {
+            try {
+                for (let l of list) {
+                    const $order = await shopModel.findById(l)
+                    if (l) {
+                        $order.set({ verified: true }).save();
+                    }
+                }
+                res.send({
+                    ok: true,
+                    msg: "Qaytgan buyurtmalar tasdiqlandi!"
+                })
+            } catch (error) {
+                console.log(error);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
+    },
+    confirmDelivereds: async (req, res) => {
+        const { list } = req.body;
+        console.log(list);
+        if (!list) {
+            res.send({
+                ok: false,
+                msg: "Order yoki status tanlanmagan!"
+            });
+        } else {
+            try {
+                for (let l of list) {
+                    const $order = await shopModel.findById(l)
+                    if (l) {
+                        $order.set({ status: 'delivered', verified: true }).save();
+                    }
+                }
+                res.send({
+                    ok: true,
+                    msg: "Yetkazilgan buyurtmalar tasdiqlandi!"
+                })
+            } catch (error) {
+                console.log(error);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
     }
     // getNewOrders: async (req, res) => {
     //     const $orders = await shopModel.find({ status: 'success' }).populate('product operator');

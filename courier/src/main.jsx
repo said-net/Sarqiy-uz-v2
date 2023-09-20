@@ -9,12 +9,12 @@ import Manager from "./managers/managers";
 import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <>
     <ThemeProvider>
       <Provider store={Manager}>
         <BrowserRouter>
           <App /></BrowserRouter>
       </Provider>
     </ThemeProvider>
-  </React.StrictMode>,
+  </>,
 );

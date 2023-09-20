@@ -26,6 +26,8 @@ import AddCourier from "./pages/add-courier";
 import Couriers from "./pages/couriers";
 import SendedOrders from "./pages/get-sended-orders";
 import PrintCheques from "./pages/print-cheques";
+import RejectedOrders from "./pages/get-rejected-orders";
+import DeliveredOrders from "./pages/get-delivered-orders";
 function App() {
   const { refresh, phone } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -74,6 +76,8 @@ function App() {
             <Route path="/print-cheques" element={<PrintCheques />} />
             <Route path="/wait-delivery" element={<GetWaitDeliveries />} />
             <Route path="/sended" element={<SendedOrders />} />
+            <Route path="/reject" element={<RejectedOrders />} />
+            <Route path="/delivered" element={<DeliveredOrders />} />
             {/*  */}
             <Route path="/users" element={<Users />} />
           </Routes>

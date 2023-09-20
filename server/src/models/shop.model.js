@@ -68,6 +68,10 @@ const schema = new Schema({
         type: Boolean,
         default: false
     },
+    courier_status: {
+        type: String,
+        default: 'sended'
+    },
     status: {
         type: String,
         default: 'pending'
