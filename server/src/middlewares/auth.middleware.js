@@ -1,5 +1,5 @@
 const JWT = require('jsonwebtoken');
-const { BOSS_SECRET, SERVER_LINK, USER_SECRET, OPERATOR_SECRET } = require('../configs/env');
+const { BOSS_SECRET, SERVER_LINK, USER_SECRET, OPERATOR_SECRET, COURIER_SECRET } = require('../configs/env');
 const adminModel = require('../models/boss.model');
 const userModel = require('../models/user.model');
 const moment = require('moment/moment');
@@ -7,6 +7,8 @@ const operatorModel = require('../models/operator.model');
 const payOperatorModel = require('../models/pay.operator.model');
 const shopModel = require('../models/shop.model');
 const payModel = require('../models/pay.model');
+const courierModel = require('../models/courier.model');
+const payCourierModel = require('../models/pay.courier.model');
 module.exports = {
     boss: (req, res, next) => {
         const token = req.headers['x-auth-token'];
@@ -147,6 +149,55 @@ module.exports = {
                         });
                         $shoph.forEach(s => {
                             sh_his += s.for_operator
+                        });
+                        const { name, phone, telegram } = $operator;
+                        req.operator = { id, name, phone, balance: sh_his - p_his, telegram };
+                        next();
+                    }
+                }
+            });
+        }
+    },
+    courier: (req, res, next) => {
+        const token = req.headers['x-auth-token'];
+        if (!token || !token.startsWith('Bearer ')) {
+            res.send({
+                ok: false,
+                msg: "Avtorizatsiya qiling!"
+            });
+        } else {
+            const signature = token.replace('Bearer ', '');
+            JWT.verify(signature, COURIER_SECRET, async (err, data) => {
+                if (err) {
+                    res.send({
+                        ok: false,
+                        msg: "Signatura hato yoki avtorizatsiya vaqti tugagan!"
+                    });
+                } else {
+                    const { id } = data;
+                    const $courier = await courierModel.findById(id);
+                    if (!$courier) {
+                        res.send({
+                            ok: false,
+                            msg: "Kuryer topilmadi!"
+                        });
+                    }
+                    else if ($courier.hidden) {
+                        res.send({
+                            ok: false,
+                            msg: "Operator o'chirib tashlangan!"
+                        });
+                    }
+                    else {
+                        let p_his = 0;
+                        let sh_his = 0;
+                        const $histpory = await payCourierModel.find({ from: id, status: 'success' });
+                        const $shoph = await shopModel.find({ courier: id, status: 'delivered' });
+                        $histpory.forEach(h => {
+                            p_his += h.count;
+                        });
+                        $shoph.forEach(s => {
+                            sh_his += s.delivery_price
                         });
                         const { name, phone, telegram } = $operator;
                         req.operator = { id, name, phone, balance: sh_his - p_his, telegram };

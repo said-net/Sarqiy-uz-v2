@@ -8,13 +8,12 @@ import { BiSearch, BiTransfer } from "react-icons/bi";
 import { setRefresh } from "../managers/refresh.manager";
 
 function SendedOrders() {
-    const [operators, setOperators] = useState([]);
     const [couriers, setCouriers] = useState([]);
     const [orders, setOrders] = useState([]);
     const [isLoad, setIsLoad] = useState(false);
     const { refresh } = useSelector(e => e.refresh);
     const [search, setSearch] = useState('');
-    const [openTransfer, setOpenTransfer] = useState({ id: '', _id: '', title: '', operator: '' });
+    const [openTransfer, setOpenTransfer] = useState({ id: '', _id: '', title: '', courier: '' });
     const [disable, setDisable] = useState(false);
     const dp = useDispatch();
     useEffect(() => {
@@ -25,12 +24,12 @@ function SendedOrders() {
             }
         }).then((res) => {
             setIsLoad(true)
-            const { data, ok, msg, operators } = res.data;
+            const { data, ok, msg, couriers } = res.data;
             if (!ok) {
                 toast.error(msg);
             } else {
                 setOrders(data)
-                setOperators(operators)
+                setCouriers(couriers)
             }
         }).catch(() => {
             setIsLoad(true)
@@ -39,7 +38,7 @@ function SendedOrders() {
     }, [refresh]);
     function TransferOrder() {
         setDisable(true)
-        axios.post(`${API_LINK}/shop/transfer-order/${openTransfer?._id}/${openTransfer?.operator}`, {}, {
+        axios.post(`${API_LINK}/shop/transfer-courier/${openTransfer?._id}/${openTransfer?.courier}`, {}, {
             headers: {
                 'x-auth-token': `Bearer ${localStorage.getItem('access')}`
             }
@@ -116,7 +115,7 @@ function SendedOrders() {
                                         {o?.courier_phone}
                                     </p>
                                     <p className="w-[60px] text-center border-l h-[70px] flex items-center justify-center text-[13px]">
-                                        <IconButton onClick={() => setOpenTransfer({ _id: o?._id, id: o?.id, title: o?.title, operator: '' })} color="blue-gray" className="rounded-full w-[35px] h-[35px] text-[20px]">
+                                        <IconButton onClick={() => setOpenTransfer({ _id: o?._id, id: o?.id, title: o?.title, courier: '' })} color="blue-gray" className="rounded-full w-[35px] h-[35px] text-[20px]">
                                             <BiTransfer />
                                         </IconButton>
                                     </p>
@@ -131,16 +130,16 @@ function SendedOrders() {
                     <p className="text-[16px]">#{openTransfer?.id} - {openTransfer?.title}</p>
                 </DialogHeader>
                 <DialogBody>
-                    <Select disabled={disable} label="Operator tanlang" variant="standard" value={openTransfer?.operator} onChange={e => setOpenTransfer({ ...openTransfer, operator: e })}>
-                        {operators?.map((o, i) => {
+                    <Select disabled={disable} label="Kuryer tanlang" variant="standard" value={openTransfer?.courier} onChange={e => setOpenTransfer({ ...openTransfer, courier: e })}>
+                        {couriers?.map((o, i) => {
                             return (
-                                <Option value={o?.id} key={i}>{o?.name} | {o?.phone}</Option>
+                                <Option value={o?._id} key={i}>{o?.name} | {o?.phone}</Option>
                             )
                         })}
                     </Select>
                 </DialogBody>
                 <DialogFooter className="flex items-center justify-between">
-                    <Button color="red" className="rounded font-sans font-light" onClick={() => setOpenTransfer({ id: '', _id: '', title: '', operator: '' })}>Ortga</Button>
+                    <Button color="red" className="rounded font-sans font-light" onClick={() => setOpenTransfer({ id: '', _id: '', title: '', courier: '' })}>Ortga</Button>
                     <Button disabled={disable} color="green" className="rounded font-sans font-light" onClick={TransferOrder}>Biriktirish</Button>
                 </DialogFooter>
             </Dialog>

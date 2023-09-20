@@ -20,11 +20,12 @@ import EditOperator from "./pages/edit-operator";
 import NewOrders from "./pages/new-orders";
 import OwnedOrders from "./pages/owned-orders";
 import Users from "./pages/users";
-import PrintChques from "./pages/print-chques";
+
 import GetWaitDeliveries from "./pages/get-wait-deliveries";
 import AddCourier from "./pages/add-courier";
 import Couriers from "./pages/couriers";
 import SendedOrders from "./pages/get-sended-orders";
+import PrintCheques from "./pages/print-cheques";
 function App() {
   const { refresh, phone } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -70,7 +71,7 @@ function App() {
             {/*  */}
             <Route path="/new-orders" element={<NewOrders />} />
             <Route path="/owned-orders" element={<OwnedOrders />} />
-            <Route path="/print-cheques" element={<PrintChques />} />
+            <Route path="/print-cheques" element={<PrintCheques />} />
             <Route path="/wait-delivery" element={<GetWaitDeliveries />} />
             <Route path="/sended" element={<SendedOrders />} />
             {/*  */}

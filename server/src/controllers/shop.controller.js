@@ -6,6 +6,7 @@ const userModel = require("../models/user.model");
 const competitionModel = require("../models/competition.model");
 const { SERVER_LINK } = require("../configs/env");
 const operatorModel = require("../models/operator.model");
+const courierModel = require("../models/courier.model");
 
 module.exports = {
     create: async (req, res) => {
@@ -206,6 +207,35 @@ module.exports = {
             }
         }
     },
+    transferSelecteds: async (req, res) => {
+        const { list, operator } = req?.body;
+        if (!list || !list[0] || !operator) {
+            res.send({
+                ok: false,
+                msg: "Tanlanmagan!"
+            });
+        } else {
+            try {
+                const $operator = await operatorModel.findById(operator);
+                for (let l of list) {
+                    const $order = await shopModel.findById(l);
+                    if (l !== undefined) {
+                        $order.set({ operator, up_time: moment.now() / 1000 }).save();
+                    }
+                }
+                res.send({
+                    ok: true,
+                    msg: `${$operator.name}ga biriktirildi!`
+                })
+            } catch (err) {
+                console.log(err);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
+    },
     getOwnedOrders: async (req, res) => {
         const $orders = await shopModel.find({ status: 'pending' }).populate('product operator', 'title images price phone name')
         const $operators = await operatorModel.find({ hidden: false });
@@ -240,4 +270,44 @@ module.exports = {
             operators: $modopers
         })
     },
+    transferCourier: async (req, res) => {
+        const { id, courier } = req?.params;
+        console.log(req.params);
+        if (!id || !courier) {
+            res.send({
+                ok: false,
+                msg: "operator tanlansin"
+            });
+        } else {
+            try {
+                const $order = await shopModel.findById(id);
+                const $courier = await courierModel.findById(courier);
+                if (!$order || !$courier) {
+                    res.send({
+                        ok: false,
+                        msg: "Operator yoki order topilmadi!"
+                    })
+                } else {
+                    $order.set({ courier }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: `${$courier?.name}ga - #${$order?.id}-buyurtma biriktirildi!`
+                        });
+                    }).catch(err => {
+                        console.log(err);
+                        res.send({
+                            ok: false,
+                            msg: "Xatolik!"
+                        })
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
+    }
 }

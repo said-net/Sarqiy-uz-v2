@@ -20,6 +20,7 @@ const schema = new Schema({
     hidden: {
         type: Boolean,
         default: false
-    }
+    },
+    card: String,
 });
 module.exports = mongoose.model('Operator', schema);

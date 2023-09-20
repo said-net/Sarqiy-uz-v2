@@ -187,13 +187,17 @@ module.exports = {
         });
     },
     getCheques: async (req, res) => {
-        const $cheques = await shopModel.find({ status: 'success' }).populate('operator')
+        const $cheques = await shopModel.find({ status: 'success' }).populate('operator product')
         const cheques = [];
-        $cheques?.forEach(c => {
+        const pageSize = 6;
+        const pageNumber = req?.params?.page || 1;
+        const startIndex = (pageNumber - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+
+        $cheques?.slice(startIndex, endIndex)?.forEach(c => {
             cheques?.push({
                 id: c?.id,
-                _id: c?._id,
-                title: c?.title,
+                product: c?.product?.title,
                 about: c?.about,
                 price: c?.price,
                 delivery_price: c?.delivery_price,
@@ -210,7 +214,8 @@ module.exports = {
         });
         res.send({
             ok: true,
-            data: cheques
+            data: cheques,
+            page: pageNumber
         })
     },
     getWaitDelivery: async (req, res) => {
@@ -348,7 +353,7 @@ module.exports = {
         const $mcouriers = [];
         $couriers.forEach(o => {
             $mcouriers.push({
-                id: o._id,
+                _id: o._id,
                 name: o.name,
                 phone: o.phone,
             });
@@ -395,7 +400,6 @@ module.exports = {
         res.send({
             ok: true,
             data: $modlist,
-            operators: $modopers,
             couriers: $mcouriers
         })
     }

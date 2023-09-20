@@ -158,7 +158,7 @@ function GetWaitDeliveries() {
                     </div>
                     {orders?.filter(e => !region ? e : e?.region === +region).filter(e => !search ? e : type === 'id' ? e?.id === +search : e?.phone?.includes(search))?.map((c, i) => {
                         return (
-                            <div key={i} className="flex items-start justify-start w-full h-[100px] border-b border-l border-r border-black ">
+                            <div key={i} className="flex items-start justify-start w-full min-h-[100px] border-b border-l border-r border-black ">
                                 <div className="w-[50px] h-[100px] flex items-center justify-center ">
                                     <Checkbox onChange={e => SelectOrder(c?._id, e.target.checked)} checked={selecteds?.includes(c?._id)} />
                                 </div>

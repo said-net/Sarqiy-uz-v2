@@ -8,6 +8,7 @@ const schema = new Schema({
     },
     password: String,
     access: String,
-    region: Number
+    region: Number,
+    card: String,
 });
 module.exports = model('Courier', schema);

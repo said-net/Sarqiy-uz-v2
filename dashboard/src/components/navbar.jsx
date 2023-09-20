@@ -117,7 +117,7 @@ function Navbar() {
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/print-cheques' className={classLink + `${path === '/print-cheques' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiPrinter className="mr-[10px]" />
-                    Pechat kuryerga
+                    Cheklar
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.wait_delivery}</span>
                 </Link>
                 {/*  */}
