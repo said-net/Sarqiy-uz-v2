@@ -11,6 +11,7 @@ import { Route, Routes } from "react-router-dom";
 import GetMyOrders from "./pages/get-my-orders";
 import GetWaitOrders from "./pages/get-wait-orders";
 import GetRejectedOrders from "./pages/get-rejected-orders";
+import GetDeliveredOrders from "./pages/get-delivered-orders";
 function App() {
   const { id, refresh, name } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -44,6 +45,7 @@ function App() {
             <Route path={'*'} element={<GetMyOrders />} />
             <Route path={'/re-connects'} element={<GetWaitOrders />} />
             <Route path={'/rejected-orders'} element={<GetRejectedOrders />} />
+            <Route path={'/delivered-orders'} element={<GetDeliveredOrders />} />
           </Routes>
         </div>
         <ToastContainer autoClose={2000} closeButton={false} position="top-center" style={{ zIndex: '9999999' }} />

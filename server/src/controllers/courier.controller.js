@@ -43,12 +43,14 @@ module.exports = {
         const new_orders = await shopModel.find({ courier: req?.courier?.id, status: 'sended', courier_status: 'sended', verified: false }).countDocuments();
         const re_contacts = await shopModel.find({ courier: req?.courier?.id, status: 'sended', courier_status: 'wait' }).countDocuments();
         const rejecteds = await shopModel.find({ courier: req?.courier?.id, status: 'sended', courier_status: 'reject', verified: false }).countDocuments();
+        const delivereds = await shopModel.find({ courier: req?.courier?.id, status: 'delivered', courier_status: 'delivered', verified: false }).countDocuments();
         res.send({
             ok: true,
             data: {
                 new_orders,
                 re_contacts,
-                rejecteds
+                rejecteds,
+                delivereds
             }
         })
     },
@@ -187,4 +189,33 @@ module.exports = {
             data: list
         })
     },
+    getDeliveredOrders: async (req, res) => {
+        const $orders = await shopModel.find({ status: 'delivered', courier_status: 'delivered', courier: req?.courier?.id, verified: false }).populate('product operator');
+        const list = [];
+        $orders?.forEach(e => {
+            list.push({
+                _id: e?._id,
+                id: e?.id,
+                name: e?.name,
+                phone: e?.phone,
+                operator_name: e?.operator?.name,
+                operator_phone: e?.operator?.phone,
+                location: regions?.find(r => r?.id === e?.region).name + ' ' + e?.city,
+                product: e?.product?.title,
+                product_id: e?.product?.id,
+                about: e?.about || "Operator izoh yozmagan",
+                count: e?.count,
+                price: e?.price,
+                delivery_price: e?.delivery_price,
+                courier_comment: e?.courier_comment || "Qayta aloqa",
+                created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
+                up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm"),
+                recontact: moment.unix(e?.recontact).format("DD.MM.YYYY")
+            });
+        });
+        res.send({
+            ok: true,
+            data: list
+        })
+    }
 }

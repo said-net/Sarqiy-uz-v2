@@ -7,7 +7,7 @@ import { IconButton } from "@material-tailwind/react";
 import { useSelector } from "react-redux";
 function Navbar() {
     const { pathname: path } = useLocation();
-    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0, couriers: 0 });
+    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0, couriers: 0, oper_pays: 0 });
     const { refresh } = useSelector(e => e.refresh);
     const [open, setOpen] = useState(false);
     useEffect(() => {
@@ -79,6 +79,7 @@ function Navbar() {
                 <Link onClick={() => setOpen(false)} to='/pay-operators' className={classLink + `${path === '/pay-operators' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiMoneyWithdraw className="mr-[10px]" />
                     Operatorlar to'lovi
+                    <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.oper_pays}</span>
                 </Link>
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/couriers' className={classLink + `${path === '/couriers' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
@@ -139,11 +140,11 @@ function Navbar() {
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.reject}</span>
                 </Link>
                 {/*  */}
-                <Link onClick={() => setOpen(false)} to='/archive' className={classLink + `${path === '/archive' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                {/* <Link onClick={() => setOpen(false)} to='/archive' className={classLink + `${path === '/archive' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiArchive className="mr-[10px]" />
                     Arxivlangan
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.archive}</span>
-                </Link>
+                </Link> */}
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/delivered' className={classLink + `${path === '/delivered' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiCheckCircle className="mr-[10px]" />

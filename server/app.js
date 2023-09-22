@@ -16,6 +16,7 @@ app.use(express.json());
 app.use(file());
 app.use('/public', express.static('public'));
 app.post('/target', shopController.getTargetApi)
+// require('./src/controllers/user.controller').defaultUsers()
 try {
     app.use('/api', router);
 } catch (error) {

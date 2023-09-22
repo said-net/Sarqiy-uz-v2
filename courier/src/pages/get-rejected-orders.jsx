@@ -126,7 +126,7 @@ function GetRejectedOrders() {
                     <p>DIQQAT</p>
                 </DialogHeader>
                 <DialogBody>
-                    <p>#{selected?.id} / {selected?.product} - buyurtma uchun o'zgarish saqlansinmi?</p>
+                    <p className="font-bold">#{selected?.id} / {selected?.product} - buyurtma uchun o'zgarish saqlansinmi?</p>
                 </DialogBody>
                 <DialogFooter className="flex items-center justify-between w-full">
                     <Button onClick={() => setOpen(false)} className="rounded" color="red">Ortga</Button>

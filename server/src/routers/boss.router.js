@@ -6,6 +6,7 @@ module.exports = require('express').Router()
     .get('/verify', authMiddleware.boss, bossController.verify)
     // 
     .get('/get-stats', authMiddleware.boss, bossController.getStats)
+    .get('/get-dashboard', authMiddleware.boss, bossController.getDashboard)
     .get('/get-all-products', authMiddleware.boss, bossController.getAllProducts)
     .get('/get-all-users', authMiddleware.boss, bossController.getAllUsers)
     .get('/set-targetolog/:id', authMiddleware.boss, bossController.setTargetlolog)
@@ -24,7 +25,9 @@ module.exports = require('express').Router()
     .get('/get-delivered-orders', authMiddleware.boss, bossController.getDeliveredOrders)
     .post('/confirm-rejecteds', authMiddleware.boss, bossController.confirmRejecteds)
     .post('/confirm-delivereds', authMiddleware.boss, bossController.confirmDelivereds)
-
+    // 
+    .get('/get-operator-pays', authMiddleware.boss, bossController.getOperatorPays)
+    .post('/set-operator-pay-status', authMiddleware.boss, bossController.setStatusOperatorPay)
     
 
     // .get('/get-new-orders', authMiddleware.boss, bossController.getNewOrders)
@@ -38,8 +41,7 @@ module.exports = require('express').Router()
     // .get('/get-wait-orders', authMiddleware.boss, bossController.getWaitOrders)
     // .post('/set-status-to-new', authMiddleware.boss, bossController.setStatusToNew)
     // // 
-    // .get('/get-operator-pays', authMiddleware.boss, bossController.getOperatorPays)
-    // .post('/set-operator-pay-status', authMiddleware.boss, bossController.setStatusOperatorPay)
+    
     // .get('/get-operator-stats/:id/:date', authMiddleware.boss, bossController.getOperatorStats)
     // .get('/search-base/:search', authMiddleware.boss, bossController.searchBase)
     // .get('/view-info-order/:id', authMiddleware.boss, bossController.getInfoOrder)

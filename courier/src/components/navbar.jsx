@@ -1,7 +1,7 @@
 import { FaUser } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { BiCreditCard, BiHistory, BiLogOut, BiMenu, BiPhoneCall, BiShoppingBag, BiSolidDashboard, BiTargetLock, BiX, BiXCircle } from 'react-icons/bi'
+import { BiCheckCircle, BiCreditCard, BiHistory, BiLogOut, BiMenu, BiPhoneCall, BiShoppingBag, BiSolidDashboard, BiTargetLock, BiX, BiXCircle } from 'react-icons/bi'
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -11,7 +11,7 @@ import { setInfoAuth, setRefreshAuth } from "../managers/auth.manager";
 function Navbar() {
     const { auth: { name, phone, balance }, refresh: { refresh } } = useSelector(e => e);
     const path = useLocation().pathname;
-    const [stats, setStats] = useState({ new_orders: 0, re_contacts: 0, rejecteds: 0 });
+    const [stats, setStats] = useState({ new_orders: 0, re_contacts: 0, rejecteds: 0, delivereds: 0 });
     const [open, setOpen] = useState(false);
     const dp = useDispatch();
     function LogOut() {
@@ -84,6 +84,13 @@ function Navbar() {
                     Otkaz tovarlar
                     <div className="flex items-center justify-center w-[10px] h-[20px] absolute right-[20px] border-l-[2px] pl-[10px] text-[14px]">
                         {stats?.rejecteds}
+                    </div>
+                </Link>
+                <Link to='/delivered-orders' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/delivered-orders' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
+                    <BiCheckCircle className="mr-[10px]" />
+                    Yetkazilganlar
+                    <div className="flex items-center justify-center w-[10px] h-[20px] absolute right-[20px] border-l-[2px] pl-[10px] text-[14px]">
+                        {stats?.delivereds}
                     </div>
                 </Link>
                 {/* */}

@@ -73,13 +73,12 @@ module.exports = {
                             msg: "Foydalanuvchi topilmadi!"
                         });
                     }
-                    //  else if ($user.access !== signature) {
-                    //     res.send({
-                    //         ok: false,
-                    //         msg: "Ushbu qurulmada avtorizatsiya vaqti tugagan!"
-                    //     });
-                    // }
-                    else {
+                    else if ($user.ban) {
+                        res.send({
+                            ok: false,
+                            msg: "Siz tizimdan ban olgansiz!"
+                        });
+                    } else {
                         const { id: uId, name, phone, created, location, telegram } = $user;
                         //
                         let p_his = 0;
@@ -132,26 +131,24 @@ module.exports = {
                             ok: false,
                             msg: "Operator topilmadi!"
                         });
-                    }
-                    else if ($operator.hidden) {
+                    } else if ($operator.hidden) {
                         res.send({
                             ok: false,
                             msg: "Operator o'chirib tashlangan!"
                         });
-                    }
-                    else {
+                    } else {
                         let p_his = 0;
                         let sh_his = 0;
                         const $histpory = await payOperatorModel.find({ from: id, status: 'success' });
-                        const $shoph = await shopModel.find({ operator: id, courier_status: 'delivered', verified: true });
+                        const $shoph = await shopModel.find({ operator: id, courier_status: 'delivered', status: 'delivered' });
                         $histpory.forEach(h => {
                             p_his += h.count;
                         });
                         $shoph.forEach(s => {
                             sh_his += s.for_operator
                         });
-                        const { name, phone, telegram } = $operator;
-                        req.operator = { id, name, phone, balance: sh_his - p_his, telegram };
+                        const { name, phone, telegram, card } = $operator;
+                        req.operator = { id, name, phone, balance: sh_his - p_his, telegram, card };
                         next();
                     }
                 }

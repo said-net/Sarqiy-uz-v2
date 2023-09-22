@@ -99,6 +99,7 @@ function ReConnects() {
                                 <Option value="archive">Rad etildi</Option>
                                 <Option value="success">Dostavkaga</Option>
                                 <Option value="wait">Qayta aloqa</Option>
+                                <Option value="spam">Spam</Option>
                             </Select>
                         </div>
                         {edit?.status === "archive" &&

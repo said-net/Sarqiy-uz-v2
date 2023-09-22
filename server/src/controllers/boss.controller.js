@@ -69,12 +69,13 @@ module.exports = {
         const users = await userModel.find().countDocuments();
         const sended = await shopModel.find({ status: 'sended', courier_status: 'sended', verified: false }).countDocuments();
         const reject = await shopModel.find({ courier_status: 'reject', verified: false }).countDocuments();
-        const archive = await shopModel.find({ status: 'archive' }).countDocuments();
+        // const archive = await shopModel.find({ status: 'archive' }).countDocuments();
         const delivered = await shopModel.find({ courier_status: 'delivered', verified: false }).countDocuments();
         const wait = await shopModel.find({ status: 'wait' }).countDocuments();
         const neworders = await shopModel.find({ status: 'pending', operator: null }).countDocuments();
         const couriers = await courierModel.find().countDocuments();
         const $inoperator = await shopModel.find({ status: 'pending' });
+        const oper_pays = await payOperatorModel.find({ status: 'pending' }).countDocuments()
         let inoperator = 0;
         $inoperator?.forEach(i => {
             if (i?.operator) {
@@ -90,13 +91,143 @@ module.exports = {
                 wait_delivery,
                 sended,
                 reject,
-                archive,
+                // archive,
                 delivered,
                 wait,
                 neworders,
                 inoperator,
                 users,
-                couriers
+                couriers,
+                oper_pays
+            }
+        });
+    },
+    getDashboard: async (req, res) => {
+        const users = await userModel.find({ ban: false }).countDocuments();
+        const blocked_users = await userModel.find({ ban: true }).countDocuments();
+        const operators = await operatorModel.find({ hidden: false }).countDocuments();
+        const shops = await shopModel.find({ status: 'delivered' });
+        let admin_balance = 0;
+        let operator_balance = 0;
+        let admin_shops = 0;
+        shops?.forEach((shop) => {
+            admin_balance += (shop?.for_admin + shop?.for_ref);
+            operator_balance += shop?.for_operator;
+            if (shop?.flow) {
+                admin_shops += 1;
+            }
+        });
+        const admin_pays = await payModel.find({ status: 'success' });
+        const operator_pays = await payOperatorModel.find({ status: 'success' });
+        admin_pays?.forEach((payment) => {
+            admin_balance -= payment?.count;
+        });
+        operator_pays?.forEach((payment) => {
+            operator_balance -= payment?.count;
+        });
+        // 
+        // 
+        // 
+        let today_shops = 0;
+        let today_profit = 0;
+        let yesterday_shops = 0;
+        let yesterday_profit = 0;
+        let weekly_shops = 0;
+        let weekly_profit = 0;
+        let last_weekly_shops = 0;
+        let last_weekly_profit = 0;
+        let monthly_shops = 0;
+        let monthly_profit = 0;
+        let last_monthly_shops = 0;
+        let last_monthly_profit = 0;
+        let yearly_shops = 0;
+        let yearly_profit = 0;
+        let total_shops = 0;
+        let total_profit = 0;
+
+        // 
+
+        let d = new Date();
+        let day = d.getDate();
+        let month = d.getMonth();
+        let year = d.getFullYear();
+        let week = moment().week()
+        // 
+
+        let today = await shopModel.find({ day, month, year, status: 'delivered' });
+        let yesterday = await shopModel.find({ day: day - 1, month, year, status: 'delivered' });
+        let weekly = await shopModel.find({ week, month, year, status: 'delivered' });
+        let last_weekly = await shopModel.find({ week: week - 1, month, year, status: 'delivered' });
+        let monthly = await shopModel.find({ month, year, status: 'delivered' });
+        let last_monthly = await shopModel.find({ month: month - 1, year, status: 'delivered' });
+        let yearly = await shopModel.find({ year, status: 'delivered' });
+
+        today?.forEach(({ price }) => {
+            today_profit += price;
+            today_shops += 1;
+        });
+
+        yesterday?.forEach(({ price }) => {
+            yesterday_profit += price;
+            yesterday_shops += 1;
+        })
+
+        weekly?.forEach(({ price }) => {
+            weekly_profit += price;
+            weekly_shops += 1;
+        })
+
+        last_weekly?.forEach(({ price }) => {
+            last_weekly_profit += price;
+            last_weekly_shops += 1;
+        })
+
+        monthly?.forEach(({ price }) => {
+            monthly_profit += price;
+            monthly_shops += 1;
+        })
+
+        last_monthly?.forEach(({ price }) => {
+            last_monthly_profit += price;
+            last_monthly_shops += 1;
+        })
+
+        yearly?.forEach(({ price }) => {
+            yearly_profit += price;
+            yearly_shops += 1;
+        })
+
+        shops?.forEach(({ price }) => {
+            total_profit += price;
+            total_shops += 1;
+        })
+
+        res.send({
+            ok: true,
+            data: {
+                users,
+                blocked_users,
+                operators,
+                shops: shops?.length,
+                admin_balance,
+                operator_balance,
+                admin_shops,
+                today_shops,
+                today_profit,
+                yesterday_shops,
+                yesterday_profit,
+                weekly_shops,
+                weekly_profit,
+                last_weekly_shops,
+                last_weekly_profit,
+                monthly_shops,
+                monthly_profit,
+                last_monthly_shops,
+                last_monthly_profit,
+                yearly_shops,
+                yearly_profit,
+                total_shops,
+                total_profit
             }
         });
     },
@@ -142,7 +273,7 @@ module.exports = {
                 ban: u?.ban,
                 ref_id: u?.ref_id,
                 created: moment.unix(u?.created).format('YYYY-MM-DD'),
-                location: Regions?.find(r => r.id === u?.location).name
+                location: Regions?.find(r => r.id === u?.location)?.name
             });
         });
         res.send({
@@ -360,7 +491,7 @@ module.exports = {
         });
         const $modlist = [];
         for (let o of $orders) {
-            if (!o.flow) {
+            if (o.flow) {
                 const $admin = await userModel.findOne({ id: o?.flow });
                 $modlist.push({
                     id: o?.id,
@@ -425,7 +556,7 @@ module.exports = {
         });
         const $modlist = [];
         for (let o of $orders) {
-            if (!o.flow) {
+            if (o.flow) {
                 const $admin = await userModel.findOne({ id: o?.flow });
                 $modlist.push({
                     id: o?.id,
@@ -483,7 +614,7 @@ module.exports = {
         });
         const $modlist = [];
         for (let o of $orders) {
-            if (!o.flow) {
+            if (o.flow) {
                 const $admin = await userModel.findOne({ id: o?.flow });
                 $modlist.push({
                     id: o?.id,
@@ -497,6 +628,7 @@ module.exports = {
                     phone: o?.phone,
                     delivery_price: o?.delivery_price,
                     courier: o?.courier?.name,
+                    courier_id: o?.courier?._id,
                     courier_phone: o?.courier?.phone,
                     courier_region: o?.courier?.region,
                     operator: o?.operator?.name,
@@ -515,6 +647,7 @@ module.exports = {
                     phone: o?.phone,
                     delivery_price: o?.delivery_price,
                     courier: o?.courier?.name,
+                    courier_id: o?.courier?._id,
                     courier_phone: o?.courier?.phone,
                     courier_region: o?.courier?.region,
                     operator: o?.operator?.name,
@@ -558,7 +691,6 @@ module.exports = {
     },
     confirmDelivereds: async (req, res) => {
         const { list } = req.body;
-        console.log(list);
         if (!list) {
             res.send({
                 ok: false,
@@ -584,811 +716,48 @@ module.exports = {
                 })
             }
         }
-    }
-    // getNewOrders: async (req, res) => {
-    //     const $orders = await shopModel.find({ status: 'success' }).populate('product operator');
-    //     const $deliveries = await deliveryModel.find();
-    //     const $modded = [];
-    //     $orders?.forEach(o => {
-    //         $modded?.push({
-    //             _id: o?._id,
-    //             id: o?.id,
-    //             name: o?.name,
-    //             phone: o?.phone,
-    //             operator_name: o?.operator?.name,
-    //             operator_phone: o?.operator?.phone,
-    //             title: o?.product?.title,
-    //             about: o?.about,
-    //             count: o?.count,
-    //             price: o?.price,
-    //             region: o?.region,
-    //             bonus: o?.bonus,
-    //             location: Regions?.find(e => e.id === o?.region).name + ', ' + Cities?.find(e => e.id === o?.city).name,
-    //             image: SERVER_LINK + o?.product?.images[0],
-    //             delivery_price: $deliveries?.find(e => e?.id === o?.region)?.price,
-    //         });
-    //     });
-    //     res.send({
-    //         ok: true,
-    //         data: $modded
-    //     });
-
-    // },
-    // getOrder: async (req, res) => {
-    //     const { id } = req.params;
-    //     const $settings = await settingModel.find();
-    //     try {
-    //         const o = await shopModel.findById(id).populate('product operator');
-    //         const f = await userModel.findOne({ phone: o?.phone });
-    //         const a = await userModel.findOne({ id: o?.flow }) || null;
-    //         const data = {
-    //             _id: o?._id,
-    //             id: o?.id,
-    //             title: o?.product?.title,
-    //             bonus: o?.bonus,
-    //             flow: o?.flow,
-    //             count: o?.count,
-    //             price: o?.price,
-    //             // image: SERVER_LINK + o?.product?.images[0],
-    //             region: o?.region,
-    //             city: o?.city,
-    //             name: o?.name,
-    //             phone: o?.phone,
-    //             about: o?.about,
-    //             date: `${(o?.day < 10 ? '0' + o?.day : o?.day) + '-' + ((o?.month + 1) < 10 ? '0' + (o?.month + 1) : (o?.month + 1)) + '-' + o?.year}`,
-    //             for_admin: o?.flow ? o?.product?.for_admins : 0,
-    //             for_operator: $settings[0]?.for_operators,
-    //             for_ref: !a ? 0 : $settings[0]?.for_ref
-    //         }
-    //         res.send({
-    //             ok: true,
-    //             data
-    //         });
-    //     } catch (error) {
-    //         res.send({
-    //             ok: false,
-    //             msg: "Nimadur xato!"
-    //         })
-    //     }
-    // },
-    // getChequeOrder: async (req, res) => {
-    //     const { id } = req.params;
-    //     const o = await shopModel.findById(id).populate('product operator');
-    //     const $deliveries = await deliveryModel.find();
-    //     const data = {
-    //         _id: o?._id,
-    //         id: o?.id,
-    //         title: o?.product?.title,
-    //         bonus: o?.bonus,
-    //         about: o?.about,
-    //         count: o?.count,
-    //         price: o?.price,
-    //         region: o?.region,
-    //         city: o?.city,
-    //         operator_name: o?.operator?.name,
-    //         operator_phone: o?.operator?.phone,
-    //         name: o?.name,
-    //         delivery_price: $deliveries?.find(e => e?.id === o?.region)?.price,
-    //         phone: o?.phone,
-    //         date: `${(o?.day < 10 ? '0' + o?.day : o?.day) + '-' + ((o?.month + 1) < 10 ? '0' + (o?.month + 1) : (o?.month + 1)) + '-' + o?.year}`,
-    //     }
-    //     chequeMaker(data).then(() => {
-    //         res.send({
-    //             ok: true,
-    //             data: SERVER_LINK + '/public/cheques/' + o?.id + '.pdf'
-    //         })
-    //     }).catch((err) => {
-    //         console.log(err);
-    //         res.send({
-    //             ok: false,
-    //             msg: "Nimadir hato"
-    //         });
-    //     });
-    // },
-    // setStatusOrder: async (req, res) => {
-    //     const { id } = req.params;
-    //     const o = await shopModel.findById(id).populate('product operator');
-    //     const { status, comment } = req.body;
-    //     if (status === 'reject') {
-    //         o.set({ status: 'reject', courier_comment: comment }).save().then(async () => {
-    //             res.send({
-    //                 ok: true,
-    //                 msg: "Buyurtma bekor qilindi!"
-    //             });
-    //         });
-    //     } else if (status === 'sended') {
-    //         o.set({ status: 'sended' }).save().then(() => {
-    //             const data = {
-    //                 _id: o?._id,
-    //                 id: o?.id,
-    //                 title: o?.product?.title,
-    //                 bonus: o?.bonus,
-    //                 about: o?.about,
-    //                 count: o?.count,
-    //                 price: o?.price,
-    //                 region: o?.region,
-    //                 city: o?.city,
-    //                 operator_name: o?.operator?.name,
-    //                 operator_phone: o?.operator?.phone,
-    //                 name: o?.name,
-    //                 phone: o?.phone,
-    //                 date: `${(o?.day < 10 ? '0' + o?.day : o?.day) + '-' + ((o?.month + 1) < 10 ? '0' + (o?.month + 1) : (o?.month + 1)) + '-' + o?.year}`,
-    //             }
-    //             chequeMaker(data).then(async () => {
-    //                 res.send({
-    //                     ok: true,
-    //                     msg: "Buyurtma yuborildi!",
-    //                     data: SERVER_LINK + '/public/cheques/' + o?.id + '.pdf'
-    //                 });
-    //             }).catch((err) => {
-    //                 console.log(err);
-    //                 res.send({
-    //                     ok: false,
-    //                     msg: "Nimadir hato"
-    //                 });
-    //             });
-    //         });
-    //     } else if (status === 'delivered') {
-    //         const p = await productModel.findById(o?.product?._id);
-    //         const s = await settingModel.find();
-    //         if (o?.flow) {
-    //             const $admin = await userModel.findOne({ id: o?.flow });
-    //             if ($admin?.ref_id && $admin.ref_id !== $admin.id) {
-    //                 const $ref = await userModel?.findOne({ id: $admin.ref_id });
-    //                 // 
-    //                 bot.telegram.sendMessage($ref?.telegram, `sharqiy.uz\n👥Hisobga +${Number(s[0]?.for_ref).toLocaleString()} so'm referaldan qo'shildi`).catch(err => {
-    //                     console.log(err);
-    //                 });
-    //                 o?.set({ status: 'delivered', for_operator: s[0]?.for_operators, for_admin: o?.product?.for_admins, for_ref: s[0]?.for_ref, ref_id: $admin.ref_id }).save().then(() => {
-    //                     p.set({ solded: o?.product?.solded + o?.count }).save().then(() => {
-    //                         res.send({
-    //                             ok: true,
-    //                             msg: "Tasdiqlandi!"
-    //                         });
-    //                     })
-    //                 })
-    //             } else {
-    //                 o?.set({ status: 'delivered', for_operator: s[0]?.for_operators, for_admin: o?.product?.for_admins }).save().then(() => {
-    //                     p.set({ solded: o?.product?.solded + o?.count }).save().then(() => {
-    //                         res.send({
-    //                             ok: true,
-    //                             msg: "Tasdiqlandi!"
-    //                         });
-    //                     })
-    //                 })
-    //             }
-    //             if ($admin && $admin?.telegram) {
-    //                 bot.telegram.sendMessage($admin?.telegram, `sharqiy.uz\n🚚Buyurtma buyurtmachiga yetkazildi!\n🆔Buyurtma uchun id: #${o?.id}\n💳Hisobga +${Number(o?.for_admin).toLocaleString()} so'm qo'shildi`).catch(err => {
-    //                     console.log(err);
-    //                 });
-    //             }
-    //         } else {
-    //             o?.set({ status: 'delivered', for_operator: s[0]?.for_operators }).save();
-    //             p.set({ solded: p?.solded + o?.count }).save();
-    //             res.send({
-    //                 ok: true,
-    //                 msg: "Tasdiqlandi!"
-    //             });
-    //         }
-    //     }
-    // },
-    // getSendedOrders: async (req, res) => {
-    //     const $orders = await shopModel.find({ status: 'sended' }).populate('product');
-    //     const $modded = [];
-    //     $orders?.forEach(o => {
-    //         $modded?.push({
-    //             _id: o?._id,
-    //             id: o?.id,
-    //             title: o?.product?.title,
-    //             count: o?.count,
-    //             name: o?.name,
-    //             created: moment.unix(o?.created)?.format('DD-MM-YYYY HH:mm'),
-    //             phone: o?.phone,
-    //             price: o?.price,
-    //             bonus: o?.bonus,
-    //             image: SERVER_LINK + o?.product?.images[0],
-    //         });
-    //     });
-    //     res.send({
-    //         ok: true,
-    //         data: $modded
-    //     })
-    // },
-    // getSearchedSendedOrders: async (req, res) => {
-    //     const { search } = req.params;
-    //     const $orders = await shopModel.find({ status: 'sended' }).populate('product');
-    //     const $modded = [];
-    //     $orders?.forEach(o => {
-    //         if (String(o?.id)?.startsWith(search) || o?.phone?.includes(search)) {
-    //             $modded?.push({
-    //                 _id: o?._id,
-    //                 id: o?.id,
-    //                 title: o?.product?.title,
-    //                 count: o?.count,
-    //                 name: o?.name,
-    //                 price: o?.price,
-    //                 created: moment.unix(o?.created)?.format('DD-MM-YYYY HH:mm'),
-    //                 bonus: o?.bonus,
-    //                 phone: o?.phone,
-    //                 image: SERVER_LINK + o?.product?.images[0],
-    //             });
-    //         }
-    //     });
-    //     res.send({
-    //         ok: true,
-    //         data: $modded
-    //     });
-    // },
-    // getHistoryOrders: async (req, res) => {
-    //     const $orders = await shopModel.find().populate('product operator')
-    //     const $modded = [];
-    //     $orders?.forEach(o => {
-    //         if (o?.status !== 'pending' && o?.status !== 'wait' && o?.status !== 'success') {
-    //             $modded.push({
-    //                 _id: o?._id,
-    //                 id: o?.id,
-    //                 title: o?.product?.title,
-    //                 count: o?.count,
-    //                 price: o?.price,
-    //                 bonus: o?.bonus,
-    //                 status: o?.status,
-    //                 image: SERVER_LINK + o?.product?.images[0],
-    //                 cheque: SERVER_LINK + '/public/cheques/' + o?.id + '.pdf',
-    //                 operator_name: o?.operator?.name,
-    //                 operator_phone: o?.operator?.phone
-    //             });
-    //         }
-    //     });
-    //     res.send({
-    //         ok: true,
-    //         data: $modded.reverse()
-    //     });
-    // },
-    // setStatusByDate: async (req, res) => {
-    //     const { date } = req.body;
-    //     const month = +date.split('-')[1] - 1;
-    //     const year = +date.split('-')[0];
-    //     const $orders = await shopModel.find({ month, year, status: 'sended' }).populate('product operator');
-    //     const s = await settingModel.find();
-    //     for (let o of $orders) {
-    //         const $operator = await operatorModel.findById(o?.operator?._id);
-    //         const p = await productModel.findById(o?.product?._id);
-    //         if (o?.flow) {
-    //             const $admin = await userModel.findOne({ id: o?.flow });
-    //             if ($admin?.ref_id) {
-    //                 const $ref = await userModel?.findOne({ id: $admin.ref_id });
-    //                 // 
-    //                 // 
-    //                 bot.telegram.sendMessage($ref?.telegram, `sharqiy.uz\n👥Hisobga +${Number(s[0]?.for_ref).toLocaleString()} so'm referaldan qo'shildi`).catch(err => {
-    //                     console.log(err);
-    //                 });
-    //                 // 
-    //                 o?.set({ status: 'delivered', for_operator: s[0]?.for_operators, for_admin: o?.product?.for_admins, for_ref: s[0]?.for_ref, ref_id: $admin.ref_id }).save();
-    //                 // 
-    //                 p.set({ solded: o?.product?.solded + o?.count }).save();
-    //             } else {
-    //                 $operator?.set({ balance: Number($operator?.balance + s[0]?.for_operators) }).save();
-    //                 $admin.set({ balance: $admin?.balance + o?.product?.for_admins }).save();
-    //                 o?.set({ status: 'delivered', for_operator: s[0]?.for_operators, for_admin: o?.product?.for_admins }).save();
-
-    //                 p.set({ solded: o?.product?.solded + o?.count }).save();
-    //             }
-    //             bot.telegram.sendMessage($admin?.telegram, `sharqiy.uz\n🚚Buyurtma buyurtmachiga yetkazildi!\n🆔Buyurtma uchun id: #${o?.id}\n💳Hisobga +${Number(o?.for_admin).toLocaleString()} so'm qo'shildi`).catch(err => {
-    //                 console.log(err);
-    //             });
-    //         } else {
-    //             $operator?.set({ balance: Number($operator?.balance + s[0]?.for_operators) }).save();
-    //             o?.set({ status: 'delivered', for_operator: s[0]?.for_operators }).save();
-    //             p.set({ solded: p?.solded + o?.count }).save();
-    //         }
-    //     }
-    //     res.send({
-    //         ok: true,
-    //         msg: "Saqlandi!"
-    //     })
-    // },
-    // getWaitOrders: async (req, res) => {
-    //     const $orders = await shopModel.find({ status: 'wait' }).populate('product')
-    //     const myOrders = [];
-    //     $orders.forEach(e => {
-    //         myOrders.push({
-    //             _id: e?._id,
-    //             ...e?._doc,
-    //             image: SERVER_LINK + e?.product?.images[0],
-    //         });
-    //     });
-    //     res.send({
-    //         ok: true,
-    //         data: myOrders.reverse()
-    //     });
-    // },
-    // setStatusToNew: async (req, res) => {
-    //     await shopModel.updateMany({ status: 'wait' }, { status: 'pending' }).then(() => {
-    //         res.send({
-    //             ok: true,
-    //             msg: "O'tkazildi!"
-    //         })
-    //     }).catch(err => {
-    //         console.log(err);
-    //         res.send({
-    //             ok: false,
-    //             msg: "nimadir xato!"
-    //         })
-    //     })
-    // },
-    // getOperatorPays: async (req, res) => {
-    //     const $pays = await payOperatorModel.find({ status: 'pending' }).populate('from');
-    //     res.send({
-    //         ok: true,
-    //         data: $pays
-    //     });
-    // },
-    // setStatusOperatorPay: async (req, res) => {
-    //     const { id, status } = req.body;
-    //     if (!id || !status) {
-    //         res.send({
-    //             ok: false,
-    //             msg: "Xatolik!"
-    //         })
-    //     } else {
-    //         try {
-    //             const $pay = await payOperatorModel.findById(id);
-    //             if (status === 'success') {
-    //                 const $operator = await operatorModel.findById($pay.from);
-    //                 $pay.set({ status: 'success' }).save().then(() => {
-    //                     $operator.set({ balance: $operator.balance - $pay.count }).save().then(() => {
-    //                         res.send({
-    //                             ok: true,
-    //                             msg: "Saqlandi!"
-    //                         });
-    //                     })
-    //                 })
-    //             } else if (status === 'reject') {
-    //                 $pay.set({ status: 'reject' }).save().then(() => {
-    //                     res.send({
-    //                         ok: true,
-    //                         msg: "Rad etildi!"
-    //                     });
-    //                 })
-    //             }
-    //         } catch (error) {
-    //             res.send({
-    //                 ok: false,
-    //                 msg: "Xatolik!"
-    //             })
-    //         }
-    //     }
-    // },
-    // getOperatorStats: async (req, res) => {
-    //     const { date } = req.params;
-    //     const d = new Date();
-    //     try {
-    //         const $operator = await operatorModel.findById(req.params.id);
-    //         const $shops = await (
-    //             date === 'all' ?
-    //                 shopModel.find({ operator: $operator._id })
-    //                 : date === 'month' ?
-    //                     shopModel.find({ operator: $operator._id, year: d.getFullYear(), month: d.getMonth() })
-    //                     : date === 'last_mont' ?
-    //                         shopModel.find({ operator: $operator._id, year: d.getFullYear(), month: d.getMonth() - 1 })
-    //                         : date === 'today' ?
-    //                             shopModel.find({ operator: $operator._id, year: d.getFullYear(), month: d.getMonth(), day: d.getDate() })
-    //                             : date === 'yesterday' ?
-    //                                 shopModel.find({ operator: $operator._id, year: d.getFullYear(), month: d.getMonth(), day: d.getDate() - 1 }) : null
-
-    //         );
-    //         const mod = {
-    //             id: $operator?.id,
-    //             name: $operator.name,
-    //             phone: $operator.phone,
-    //             success: 0,
-    //             reject: 0,
-    //             wait: 0,
-    //             sended: 0,
-    //             delivered: 0,
-    //             // 
-    //             profit: 0,
-    //             company_profit: 0
-    //         };
-    //         $shops?.forEach(s => {
-    //             if (s.status === 'reject') {
-    //                 mod.reject += 1;
-    //             } else if (s.status === 'wait') {
-    //                 mod.wait += 1;
-    //             } else if (s.status === 'success') {
-    //                 mod.success += 1;
-    //             } else if (s.status === 'sended') {
-    //                 mod.sended += 1;
-    //             } else if (s.status === 'delivered') {
-    //                 mod.delivered += 1;
-    //                 mod.profit += s?.for_operator ? s?.for_operator : 0;
-    //                 mod.company_profit += s?.price;
-    //             }
-    //         });
-    //         res.send({
-    //             ok: true,
-    //             data: mod
-    //         });
-    //     } catch (error) {
-    //         console.log(error);
-    //         res.send({
-    //             ok: false,
-    //             msg: "Xatolik!"
-    //         })
-    //     }
-    // },
-    // searchBase: async (req, res) => {
-    //     const { search } = req.params;
-    //     const $orders = await shopModel.find().populate('product');
-    //     const orders = [];
-    //     const $settings = await settingModel.find();
-    //     $orders.filter(o => o?.id === Number(search) || o?.phone?.includes(search)).forEach(e => {
-    //         orders.push({
-    //             _id: e?._id,
-    //             ...e?._doc,
-    //             image: SERVER_LINK + e?.product?.images[0],
-    //             comming_pay: $settings[0]?.for_operators
-    //         });
-    //     });
-    //     res.send({
-    //         ok: true,
-    //         data: orders.reverse()
-    //     })
-    // },
-    // getInfoOrder: async (req, res) => {
-    //     const { id } = req.params;
-    //     console.log(id);
-    //     try {
-    //         const $order = await shopModel.findById(id).populate('product operator');
-    //         const $settings = await settingModel.find();
-    //         if ($order?.flow > 0) {
-    //             const $admin = await userModel.findOne({ id: $order.flow });
-    //             const order = {
-    //                 ...$order._doc,
-    //                 admin: {
-    //                     ...$admin._doc
-    //                 },
-    //                 image: SERVER_LINK + $order?.product?.images[0],
-    //                 for_operators: $settings[0].for_operators,
-    //                 bonus: $order?.product?.bonus && $order?.product?.bonus_duration > moment.now() / 1000,
-    //                 bonus_duration: $order?.product?.bonus ? moment.unix($order?.product?.bonus_duration).format('DD.MM.YYYY HH:mm') : 0,
-    //                 bonus_count: $order?.product?.bonus ? $order?.product?.bonus_count : 0,
-    //                 bonus_given: $order?.product?.bonus ? $order?.product?.bonus_given : 0,
-    //             }
-    //             res.send({
-    //                 ok: true,
-    //                 data: order
-    //             });
-    //         } else {
-    //             const order = {
-    //                 ...$order._doc,
-    //                 image: SERVER_LINK + $order?.product?.images[0],
-    //                 for_operators: $settings[0].for_operators,
-    //                 bonus: $order?.product?.bonus && $order?.product?.bonus_duration > moment.now() / 1000,
-    //                 bonus_duration: $order?.product?.bonus ? moment.unix($order?.product?.bonus_duration).format('DD.MM.YYYY HH:mm') : 0,
-    //                 bonus_count: $order?.product?.bonus ? $order?.product?.bonus_count : 0,
-    //                 bonus_given: $order?.product?.bonus ? $order?.product?.bonus_given : 0,
-    //             }
-    //             res.send({
-    //                 ok: true,
-    //                 data: order
-    //             });
-    //         }
-    //     } catch {
-    //         res.send({
-    //             ok: false,
-    //             msg: "Nimadir xato 2 daqiqdan so'ng urunib ko'ring!"
-    //         })
-    //     }
-    // },
-    // setInfoOrder: async (req, res) => {
-    //     const { id } = req.params;
-    //     try {
-    //         const { name, count, price, bonus_gived, phone, region, city, about } = req.body;
-    //         const $order = await shopModel.findById(id);
-    //         $order.set({
-    //             name, count, price, bonus: bonus_gived, phone, region, city, about
-    //         }).save().then(() => {
-    //             res.send({
-    //                 ok: true,
-    //                 msg: "Saqlandi!"
-    //             })
-    //         })
-    //     } catch {
-    //         res.send({
-    //             ok: false,
-    //             msg: "Saqlashda xatolik!"
-    //         })
-    //     }
-    // },
-    // addMoneyToOperator: async (req, res) => {
-    //     const { id } = req.params;
-    //     try {
-    //         const $operator = await operatorModel.findById(id);
-    //         if (!$operator) {
-    //             res.send({
-    //                 ok: false,
-    //                 msg: "Operator topilmadi!"
-    //             });
-    //         } else {
-    //             const { value, comment } = req.body;
-    //             new payOperatorModel({
-    //                 from: id,
-    //                 count: value > 0 ? -value : Number(value.slice(1)),
-    //                 comment,
-    //                 status: 'success',
-    //                 created: moment.now() / 1000
-    //             }).save().then(() => {
-    //                 res.send({
-    //                     ok: true,
-    //                     msg: "Qabul qilindi",
-    //                 })
-    //             })
-    //         }
-    //     } catch (error) {
-    //         res.send({
-    //             ok: false,
-    //             msg: "Xatolik",
-    //             data: error
-    //         })
-    //     }
-    // },
-    // getStatAdmins: async (req, res) => {
-    //     const { date } = req.params;
-    //     const $users = await userModel.find();
-    //     if (date === 'all') {
-    //         const data = [];
-    //         for (let user of $users) {
-    //             const reject = await shopModel.find({ flow: user.id, status: 'reject' }).countDocuments();
-    //             const archive = await shopModel.find({ flow: user.id, status: 'archive' }).countDocuments();
-    //             const wait = await shopModel.find({ flow: user.id, status: 'wait' }).countDocuments();
-    //             const success = await shopModel.find({ flow: user.id, status: 'success' }).countDocuments();
-    //             const pending = await shopModel.find({ flow: user.id, status: 'pending' }).countDocuments();
-    //             const sended = await shopModel.find({ flow: user.id, status: 'sended' }).countDocuments();
-    //             const delivered = await shopModel.find({ flow: user.id, status: 'delivered' }).countDocuments();
-    //             data.push({
-    //                 name: user.name,
-    //                 id: user.id,
-    //                 phone: user.phone,
-    //                 telegram: user.telegram,
-    //                 reject,
-    //                 archive,
-    //                 wait,
-    //                 success,
-    //                 pending,
-    //                 sended,
-    //                 delivered
-    //             });
-    //         }
-    //         res.send({
-    //             ok: true,
-    //             data
-    //         })
-    //     } else if (date === 'week') {
-    //         const data = [];
-    //         for (let user of $users) {
-    //             const reject = await shopModel.find({ flow: user.id, status: 'reject', week: moment().week() }).countDocuments();
-    //             const archive = await shopModel.find({ flow: user.id, status: 'archive', week: moment().week() }).countDocuments();
-    //             const wait = await shopModel.find({ flow: user.id, status: 'wait', week: moment().week() }).countDocuments();
-    //             const success = await shopModel.find({ flow: user.id, status: 'success', week: moment().week() }).countDocuments();
-    //             const pending = await shopModel.find({ flow: user.id, status: 'pending', week: moment().week() }).countDocuments();
-    //             const sended = await shopModel.find({ flow: user.id, status: 'sended', week: moment().week() }).countDocuments();
-    //             const delivered = await shopModel.find({ flow: user.id, status: 'delivered', week: moment().week() }).countDocuments();
-    //             data.push({
-    //                 name: user.name,
-    //                 id: user.id,
-    //                 phone: user.phone,
-    //                 telegram: user.telegram,
-    //                 reject,
-    //                 archive,
-    //                 wait,
-    //                 success,
-    //                 pending,
-    //                 sended,
-    //                 delivered
-    //             });
-    //         }
-    //         res.send({
-    //             ok: true,
-    //             data
-    //         })
-    //     } else if (date === 'today') {
-    //         const data = [];
-    //         const day = new Date().getDate();
-    //         const month = new Date().getMonth();
-    //         const year = new Date().getFullYear();
-    //         for (let user of $users) {
-    //             const reject = await shopModel.find({ flow: user.id, status: 'reject', day, month, year }).countDocuments();
-    //             const archive = await shopModel.find({ flow: user.id, status: 'archive', day, month, year }).countDocuments();
-    //             const wait = await shopModel.find({ flow: user.id, status: 'wait', day, month, year }).countDocuments();
-    //             const success = await shopModel.find({ flow: user.id, status: 'success', day, month, year }).countDocuments();
-    //             const pending = await shopModel.find({ flow: user.id, status: 'pending', day, month, year }).countDocuments();
-    //             const sended = await shopModel.find({ flow: user.id, status: 'sended', day, month, year }).countDocuments();
-    //             const delivered = await shopModel.find({ flow: user.id, status: 'delivered', day, month, year }).countDocuments();
-    //             data.push({
-    //                 name: user.name,
-    //                 id: user.id,
-    //                 phone: user.phone,
-    //                 telegram: user.telegram,
-    //                 reject,
-    //                 archive,
-    //                 wait,
-    //                 success,
-    //                 pending,
-    //                 sended,
-    //                 delivered
-    //             });
-    //         }
-    //         res.send({
-    //             ok: true,
-    //             data
-    //         })
-    //     } else if (date === 'yesterday') {
-    //         const data = [];
-    //         const day = new Date().getDate() - 1;
-    //         const month = new Date().getMonth();
-    //         const year = new Date().getFullYear();
-    //         for (let user of $users) {
-    //             const reject = await shopModel.find({ flow: user.id, status: 'reject', day, month, year }).countDocuments();
-    //             const archive = await shopModel.find({ flow: user.id, status: 'archive', day, month, year }).countDocuments();
-    //             const wait = await shopModel.find({ flow: user.id, status: 'wait', day, month, year }).countDocuments();
-    //             const success = await shopModel.find({ flow: user.id, status: 'success', day, month, year }).countDocuments();
-    //             const pending = await shopModel.find({ flow: user.id, status: 'pending', day, month, year }).countDocuments();
-    //             const sended = await shopModel.find({ flow: user.id, status: 'sended', day, month, year }).countDocuments();
-    //             const delivered = await shopModel.find({ flow: user.id, status: 'delivered', day, month, year }).countDocuments();
-    //             data.push({
-    //                 name: user.name,
-    //                 id: user.id,
-    //                 phone: user.phone,
-    //                 telegram: user.telegram,
-    //                 reject,
-    //                 archive,
-    //                 wait,
-    //                 success,
-    //                 pending,
-    //                 sended,
-    //                 delivered
-    //             });
-    //         }
-    //         res.send({
-    //             ok: true,
-    //             data
-    //         })
-    //     } else if (date === 'month') {
-    //         const data = [];
-    //         const month = new Date().getMonth();
-    //         const year = new Date().getFullYear();
-    //         for (let user of $users) {
-    //             const reject = await shopModel.find({ flow: user.id, status: 'reject', month, year }).countDocuments();
-    //             const archive = await shopModel.find({ flow: user.id, status: 'archive', month, year }).countDocuments();
-    //             const wait = await shopModel.find({ flow: user.id, status: 'wait', month, year }).countDocuments();
-    //             const success = await shopModel.find({ flow: user.id, status: 'success', month, year }).countDocuments();
-    //             const pending = await shopModel.find({ flow: user.id, status: 'pending', month, year }).countDocuments();
-    //             const sended = await shopModel.find({ flow: user.id, status: 'sended', month, year }).countDocuments();
-    //             const delivered = await shopModel.find({ flow: user.id, status: 'delivered', month, year }).countDocuments();
-    //             data.push({
-    //                 name: user.name,
-    //                 id: user.id,
-    //                 phone: user.phone,
-    //                 telegram: user.telegram,
-    //                 reject,
-    //                 archive,
-    //                 wait,
-    //                 success,
-    //                 pending,
-    //                 sended,
-    //                 delivered
-    //             });
-    //         }
-    //         res.send({
-    //             ok: true,
-    //             data
-    //         })
-    //     } else if (date === 'lastmonth') {
-    //         const data = [];
-    //         const month = new Date().getMonth() - 1;
-    //         const year = new Date().getFullYear();
-    //         for (let user of $users) {
-    //             const reject = await shopModel.find({ flow: user.id, status: 'reject', month, year }).countDocuments();
-    //             const archive = await shopModel.find({ flow: user.id, status: 'archive', month, year }).countDocuments();
-    //             const wait = await shopModel.find({ flow: user.id, status: 'wait', month, year }).countDocuments();
-    //             const success = await shopModel.find({ flow: user.id, status: 'success', month, year }).countDocuments();
-    //             const pending = await shopModel.find({ flow: user.id, status: 'pending', month, year }).countDocuments();
-    //             const sended = await shopModel.find({ flow: user.id, status: 'sended', month, year }).countDocuments();
-    //             const delivered = await shopModel.find({ flow: user.id, status: 'delivered', month, year }).countDocuments();
-    //             data.push({
-    //                 name: user.name,
-    //                 id: user.id,
-    //                 phone: user.phone,
-    //                 telegram: user.telegram,
-    //                 reject,
-    //                 archive,
-    //                 wait,
-    //                 success,
-    //                 pending,
-    //                 sended,
-    //                 delivered
-    //             });
-    //         }
-    //         res.send({
-    //             ok: true,
-    //             data
-    //         })
-    //     }
-    // },
-    // getAllCheques: async (req, res) => {
-    //     const $deliveries = await deliveryModel.find();
-    //     try {
-    //         const $cheques = await shopModel.find({ status: "success" }).populate('operator product');
-    //         const $modded = [];
-    //         $cheques?.forEach((o) => {
-    //             $modded.push(
-    //                 {
-    //                     _id: o?._id,
-    //                     id: o?.id,
-    //                     title: o?.product?.title,
-    //                     bonus: o?.bonus,
-    //                     about: o?.about,
-    //                     count: o?.count,
-    //                     price: o?.price,
-    //                     location: `${Regions?.find(e => e.id === o?.region)?.name} - ${Cities?.find(e => e.id === o?.city)?.name}`,
-    //                     operator_name: o?.operator?.name,
-    //                     operator_phone: o?.operator?.phone,
-    //                     name: o?.name,
-    //                     phone: o?.phone,
-    //                     delivery_price: $deliveries?.find(e => e?.id === o?.region)?.price,
-    //                     date: `${(o?.day < 10 ? '0' + o?.day : o?.day) + '-' + ((o?.month + 1) < 10 ? '0' + (o?.month + 1) : (o?.month + 1)) + '-' + o?.year}`,
-    //                 }
-    //             )
-    //         });
-    //         res.send({
-    //             ok: true,
-    //             data: $modded
-    //         })
-    //     } catch (error) {
-    //         res.send({
-    //             ok: false,
-    //             msg: "Xatolik!"
-    //         })
-    //     }
-    // },
-    // setStatusById: async (req, res) => {
-    //     const { list, status } = req.body;
-    //     if (!list || !list[0] || !status) {
-    //         res.send({
-    //             ok: false,
-    //             msg: "Order yoki status tanlanmagan!"
-    //         });
-    //     } else {
-    //         try {
-    //             for (let l of list) {
-    //                 if (l !== undefined) {
-    //                     const $order = await shopModel.findById(l);
-    //                     if (status === 'reject') {
-    //                         $order.set({ status: 'reject' }).save();
-    //                     } else if (status === 'sended') {
-    //                         $order.set({ status: 'sended' }).save();
-    //                     }
-    //                 }
-    //             }
-    //             if (status === 'reject') {
-    //                 res.send({
-    //                     ok: true,
-    //                     msg: "Bekor qilindi!"
-    //                 });
-    //             } else if (status === 'sended') {
-    //                 res.send({
-    //                     ok: true,
-    //                     msg: "Tasdiqlandi"
-    //                 })
-    //             }
-    //         } catch (error) {
-    //             console.log(error);
-    //             res.send({
-    //                 ok: false,
-    //                 msg: "Xatolik!"
-    //             })
-    //         }
-    //     }
-    // }
+    },
+    getOperatorPays: async (req, res) => {
+        const $pays = await payOperatorModel.find({ status: 'pending' }).populate('from');
+        res.send({
+            ok: true,
+            data: $pays
+        });
+    },
+    setStatusOperatorPay: async (req, res) => {
+        const { id, status } = req.body;
+        if (!id || !status) {
+            res.send({
+                ok: false,
+                msg: "Xatolik!"
+            })
+        } else {
+            try {
+                const $pay = await payOperatorModel.findById(id);
+                if (status === 'success') {
+                    const $operator = await operatorModel.findById($pay.from);
+                    $pay.set({ status: 'success' }).save().then(() => {
+                        $operator.set({ balance: $operator.balance - $pay.count }).save().then(() => {
+                            res.send({
+                                ok: true,
+                                msg: "Saqlandi!"
+                            });
+                        })
+                    })
+                } else if (status === 'reject') {
+                    $pay.set({ status: 'reject' }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: "Rad etildi!"
+                        });
+                    })
+                }
+            } catch (error) {
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
+    },
 }

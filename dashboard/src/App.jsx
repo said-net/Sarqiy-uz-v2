@@ -28,6 +28,8 @@ import SendedOrders from "./pages/get-sended-orders";
 import PrintCheques from "./pages/print-cheques";
 import RejectedOrders from "./pages/get-rejected-orders";
 import DeliveredOrders from "./pages/get-delivered-orders";
+import GetOperatorPays from "./pages/get-operator-pays";
+import Dashboard from "./pages/dashboard";
 function App() {
   const { refresh, phone } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -56,6 +58,8 @@ function App() {
         <Navbar />
         <div className="flex items-center justify-start flex-col w-[100%] h-[100vh] overflow-y-scroll">
           <Routes>
+            <Route path="*" element={<Dashboard />} />
+            {/*  */}
             <Route path="/products" element={<Products />} />
             <Route path="/add-product" element={<AddProduct />} />
             <Route path="/edit-product/:id" element={<EditProduct />} />
@@ -78,6 +82,8 @@ function App() {
             <Route path="/sended" element={<SendedOrders />} />
             <Route path="/reject" element={<RejectedOrders />} />
             <Route path="/delivered" element={<DeliveredOrders />} />
+            {/*  */}
+            <Route path="/pay-operators" element={<GetOperatorPays />} />
             {/*  */}
             <Route path="/users" element={<Users />} />
           </Routes>

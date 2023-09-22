@@ -8,6 +8,7 @@ const moment = require("moment");
 const userModel = require("../models/user.model");
 const bot = require("../bot/app");
 const payOperatorModel = require("../models/pay.operator.model");
+const region = require('../configs/regions.json')
 module.exports = {
     create: async (req, res) => {
         const { name, phone, password } = req.body;
@@ -157,11 +158,14 @@ module.exports = {
 
         const re_contacts = await shopModel.find({ status: 'wait', operator: req?.operator?.id }).countDocuments();
 
+        const rejecteds = await shopModel.find({ status: 'sended', operator: req?.operator?.id, courier_status: 'reject' }).countDocuments();
+
         res.send({
             ok: true,
             data: {
                 new_orders,
-                re_contacts
+                re_contacts,
+                rejecteds
             }
         })
     },
@@ -179,11 +183,11 @@ module.exports = {
                 product_id: e?.product?.id,
                 about: e?.about || "Yangi lid",
                 count: e?.count,
-                bonus_about: e?.product?.bonus_about,
-                bonus_count: e?.product?.bonus_count,
-                bonus_given: e?.product?.bonus_given,
-                bonus: e?.product?.bonus_duration > moment.now() / 1000,
-                price: e?.product?.price,
+                // bonus_about: e?.product?.bonus_about,
+                // bonus_count: e?.product?.bonus_count,
+                // bonus_given: e?.product?.bonus_given,
+                // bonus: e?.product?.bonus_duration > moment.now() / 1000,
+                price: e?.price,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                 // recontact: e?.reconnect ? moment.unix(e?.reconnect).format('DD-MM-YYYY') : 'KK-OO-YYYY'
             });
@@ -251,6 +255,30 @@ module.exports = {
                 }
 
             });
+        } else if (status === 'spam') {
+            $order.set({
+                status: 'archive',
+                about
+            }).save().then(async () => {
+                res.send({
+                    ok: true,
+                    msg: "Spam qilindi!"
+                });
+            });
+            try {
+                const $user = await userModel.findOne({ phone: $order?.phone });
+                if ($user) {
+                    $user.set({ ban: true }).save()
+                } else {
+                    const $users = await userModel.find().countDocuments()
+                    new userModel({
+                        id: $users + 1,
+                        name: "SPAM" + $users + 1,
+                        phone: $order?.phone,
+                        ban: true
+                    }).save()
+                }
+            } catch { }
         }
     },
     getWaitOrders: async (req, res) => {
@@ -268,11 +296,11 @@ module.exports = {
                     product_id: e?.product?.id,
                     about: e?.about || "Yangi lid",
                     count: e?.count,
-                    bonus_about: e?.product?.bonus_about,
-                    bonus_count: e?.product?.bonus_count,
-                    bonus_given: e?.product?.bonus_given,
-                    bonus: e?.product?.bonus_duration > moment.now() / 1000,
-                    price: e?.product?.price,
+                    // bonus_about: e?.product?.bonus_about,
+                    // bonus_count: e?.product?.bonus_count,
+                    // bonus_given: e?.product?.bonus_given,
+                    // bonus: e?.product?.bonus_duration > moment.now() / 1000,
+                    price: e?.price,
                     created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                     recontact: e?.recontact ? moment.unix(e?.recontact).format('YYYY-MM-DD') : 'KK-OO-YYYY'
                 });
@@ -281,6 +309,33 @@ module.exports = {
         res.send({
             ok: true,
             data: myOrders.reverse()
+        });
+    },
+    getRejectedOrders: async (req, res) => {
+        const $orders = await shopModel.find({ operator: req.operator.id, status: 'sended', courier_status: 'reject' }).populate('product courier');
+        const myOrders = [];
+        $orders.forEach(e => {
+            myOrders.push({
+                _id: e?._id,
+                id: e?.id,
+                name: e?.name,
+                phone: e?.phone,
+                location: region?.find(r => r?.id === e?.region).name + ', ' + e?.city,
+                product: e?.product?.title,
+                product_id: e?.product?.id,
+                about: e?.about || "Yangi lid",
+                count: e?.count,
+                courier_comment: e?.courier_comment,
+                courier_name: e?.courier?.name,
+                courier_phone: e?.courier?.phone,
+                price: e?.price,
+                created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
+                up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm")
+            });
+        });
+        res.send({
+            ok: true,
+            data: myOrders
         });
     },
     // 
@@ -344,7 +399,6 @@ module.exports = {
             })
         }
     },
-
     createPay: async (req, res) => {
         const $lastPay = await payOperatorModel.findOne({ from: req.operator.id, status: 'pending' });
         if ($lastPay) {
@@ -375,6 +429,8 @@ module.exports = {
                     msg: "Ko'pi bilan " + req?.operator?.balance + " so'm to'lov bo'ladi!"
                 });
             } else {
+                const $operator = await operatorModel.findById(req?.operator?.id);
+                $operator.set({ card }).save();
                 new payOperatorModel({
                     from: req.operator.id,
                     count: amount,

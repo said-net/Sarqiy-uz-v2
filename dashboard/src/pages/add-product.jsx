@@ -26,7 +26,24 @@ function AddProduct() {
             toast.error("Qatorlarni to'ldiring!")
         } else {
             setDisable(true);
-            axios.postForm(API_LINK + '/product/create', state, {
+
+            const form = new FormData();
+            form.append('title', title);
+            form.append('about', about);
+            form.append('category', category);
+            form.append('price', price);
+            form.append('original_price', original_price);
+            form.append('value', value);
+            form.append('video', video);
+            form.append('coin', coin);
+            form.append('for_admins', for_admins);
+            form.append('for_operators', for_operators);
+
+            [...images].forEach(image => {
+                form.append('images', image)
+            });
+
+            axios.post(API_LINK + '/product/create', form, {
                 headers: {
                     'x-auth-token': `Bearer ${localStorage.getItem('access')}`
                 }
