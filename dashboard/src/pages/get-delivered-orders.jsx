@@ -75,8 +75,6 @@ function DeliveredOrders() {
             setSelecteds([...selecteds, id]);
         }
     }
-    console.log(selecteds);
-
     function confirmChanges() {
         setDisable(true)
         axios.post(`${API_LINK}/boss/confirm-delivereds`, { list: selecteds }, {
@@ -99,6 +97,7 @@ function DeliveredOrders() {
             toast.error("Aloqani tekshirib qayta urunib ko'ring!");
         })
     }
+
     useEffect(() => {
         let p = 0;
         let cp = 0;
@@ -111,6 +110,25 @@ function DeliveredOrders() {
         setTotalPrice(p);
         setTotalCourierPrice(cp)
     }, [selecteds]);
+    const [checked, setChecked] = useState(false);
+    useEffect(() => {
+        setSelecteds([]);
+        setChecked(false);
+    }, [courier]);
+
+    function SelectAllOrders(checked) {
+        if (checked) {
+            const arr = [];
+            orders?.forEach(o => {
+                arr.push(o?._id)
+            })
+            setSelecteds(arr);
+            setChecked(true);
+        } else if (!checked) {
+            setSelecteds([]);
+            setChecked(false)
+        }
+    }
     return (
         <div className="flex items-start justify-start flex-col w-full overflow-x-scroll">
             <div className="flex items-center justify-center w-full h-[50px] mb-[20px]">
@@ -138,7 +156,9 @@ function DeliveredOrders() {
                 </div>
                 <div className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
                     <div className="flex items-center justify-between">
-                        <p className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]"></p>
+                        <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
+                            <Checkbox disabled={!courier || !orders?.filter(e => e?.courier_id === courier)[0]} onChange={e => SelectAllOrders(e.target.checked)} checked={checked} />
+                        </div>
                         <p className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">ID</p>
                         <p className="w-[140px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">RASMI</p>
                         <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">NOMI</p>
@@ -197,7 +217,7 @@ function DeliveredOrders() {
                     })
                 }
                 <div className="flex items-start justify-normal flex-col w-full p-[10px] bg-white">
-                    <p>Narx: {Number(totalPrice).toLocaleString()} so'm</p>
+                    <p>Narx: {Number(totalPrice - totalCourierPrice).toLocaleString()} so'm</p>
                     <p>kuryerga: {Number(totalCourierPrice).toLocaleString()} so'm</p>
                 </div>
             </div>

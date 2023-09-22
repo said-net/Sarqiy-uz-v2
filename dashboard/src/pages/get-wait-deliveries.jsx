@@ -167,7 +167,7 @@ function GetWaitDeliveries() {
                                 </p>
                                 <p className="text-[12px] w-[150px] h-[100px] flex items-center justify-center border-r border-black flex-col">
                                     Sharqiy.uz
-                                    <span>+998938003800</span>
+                                    {/* <span>+998938003800</span> */}
                                 </p>
                                 <div className="text-[12px] w-[150px] h-[100px] flex items-center justify-center border-r border-black flex-col">
                                     <p>{c?.name}</p>

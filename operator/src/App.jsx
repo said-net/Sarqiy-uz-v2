@@ -10,13 +10,22 @@ import Navbar from "./components/navbar";
 import { Route, Routes } from "react-router-dom";
 import MyOrders from "./pages/my-orders";
 import ReConnects from "./pages/re-connects";
-import Targetolog from "./pages/targetolog";
 import RejectedOrders from "./pages/rejected-orders";
 import Payment from "./pages/payment";
+import { setRefresh } from "./managers/refresh.manager";
+import SearchOrder from "./pages/search";
 function App() {
   const { id, refresh, name } = useSelector(e => e.auth);
   const dp = useDispatch();
   document.title = name ? `Operator: ${name}` : 'Kirish';
+  setInterval(() => {
+    const d = new Date().getTime();
+    const last = localStorage.getItem('last_update');
+    if (!last || Number(last) + 120 < d) {
+      dp(setRefresh());
+      localStorage.setItem('last_update', d)
+    }
+  }, 9000 * 12);
   useEffect(() => {
     console.log('keldi');
     axios(`${API_LINK}/operator/verify-session`, {
@@ -48,6 +57,7 @@ function App() {
             <Route path="/re-connects" element={<ReConnects />} />
             <Route path="/rejecteds" element={<RejectedOrders />} />
             <Route path="/withdraw" element={<Payment />} />
+            <Route path="/search-order" element={<SearchOrder />} />
           </Routes>
         </div>
         <ToastContainer autoClose={2000} closeButton={false} position="top-center" style={{ zIndex: '9999999' }} />

@@ -1,7 +1,7 @@
 import { FaUser } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { BiCreditCard, BiHistory, BiLogOut, BiMenu, BiPhoneCall, BiRefresh, BiShoppingBag, BiSolidDashboard, BiTargetLock, BiX } from 'react-icons/bi'
+import { BiCreditCard, BiHistory, BiLogOut, BiMenu, BiPhoneCall, BiRefresh, BiSearch, BiShoppingBag, BiSolidDashboard, BiTargetLock, BiX } from 'react-icons/bi'
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -58,11 +58,6 @@ function Navbar() {
                     <p className="text-[16px] p-[5px] bg-white rounded shadow-sm">Hisob: {Number(balance)?.toLocaleString()} so'm</p>
                 </div>
                 {/*  */}
-                {/* <Link to='/' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
-                    <BiSolidDashboard className="mr-[10px]" />
-                    Dashboard
-                </Link> */}
-                {/*  */}
                 <Link to='/my-orders' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/my-orders' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
                     <BiShoppingBag className="mr-[10px]" />
                     Buyurtmalar
@@ -86,6 +81,10 @@ function Navbar() {
                     </div>
                 </Link>
                 {/*  */}
+                <Link to='/search-order' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/search-order' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
+                    <BiSearch className="mr-[10px]" />
+                    Qidiruv
+                </Link>
                 <Link to='/withdraw' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/withdraw' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
                     <BiCreditCard className="mr-[10px]" />
                     Pul chiqarish

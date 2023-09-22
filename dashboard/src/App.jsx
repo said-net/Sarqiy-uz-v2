@@ -30,9 +30,19 @@ import RejectedOrders from "./pages/get-rejected-orders";
 import DeliveredOrders from "./pages/get-delivered-orders";
 import GetOperatorPays from "./pages/get-operator-pays";
 import Dashboard from "./pages/dashboard";
+import WaitOrders from "./pages/get-wait-orders";
+import { setRefresh } from "./managers/refresh.manager";
 function App() {
   const { refresh, phone } = useSelector(e => e.auth);
   const dp = useDispatch();
+  setInterval(() => {
+    const d = new Date().getTime();
+    const last = localStorage.getItem('last_update');
+    if (!last || Number(last) + 120 < d) {
+      dp(setRefresh());
+      localStorage.setItem('last_update', d)
+    }
+  }, 9000 * 12);
   document.title = phone ? `Ega: ${phone}` : 'Kirish';
   useEffect(() => {
     axios(`${API_LINK}/boss/verify`, {
@@ -76,6 +86,7 @@ function App() {
             <Route path="/add-courier" element={<AddCourier />} />
             {/*  */}
             <Route path="/new-orders" element={<NewOrders />} />
+            <Route path="/wait-orders" element={<WaitOrders />} />
             <Route path="/owned-orders" element={<OwnedOrders />} />
             <Route path="/print-cheques" element={<PrintCheques />} />
             <Route path="/wait-delivery" element={<GetWaitDeliveries />} />

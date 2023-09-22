@@ -16,7 +16,7 @@ module.exports = {
     create: async (req, res) => {
         const { title, for_operators, about, price, original_price, category, value, for_admins, coin } = req.body;
         const video = req?.files?.video;
-        const images = req?.files['images[]'] ? [...req?.files['images[]']] : [req?.files['images[]']];
+        const images = !req?.files?.images[0] ? [req?.files?.images] : [...req?.files?.images];
         if (!title || !about || !price || !video || !category || !original_price || !value || !for_admins || !for_operators) {
             res.send({
                 ok: false,

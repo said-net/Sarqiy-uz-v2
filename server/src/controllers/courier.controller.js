@@ -72,7 +72,7 @@ module.exports = {
                 count: e?.count,
                 price: e?.price,
                 delivery_price: e?.delivery_price,
-                courier_comment: e?.courier_comment || "Yangi pochta",
+                courier_comment: e?.courier_comment,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
             });
         });
@@ -150,7 +150,7 @@ module.exports = {
                 count: e?.count,
                 price: e?.price,
                 delivery_price: e?.delivery_price,
-                courier_comment: e?.courier_comment || "Otkaz pochta",
+                courier_comment: e?.courier_comment,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                 up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm")
             });
@@ -178,7 +178,7 @@ module.exports = {
                 count: e?.count,
                 price: e?.price,
                 delivery_price: e?.delivery_price,
-                courier_comment: e?.courier_comment || "Qayta aloqa",
+                courier_comment: e?.courier_comment,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                 up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm"),
                 recontact: moment.unix(e?.recontact).format("DD.MM.YYYY")
@@ -207,7 +207,7 @@ module.exports = {
                 count: e?.count,
                 price: e?.price,
                 delivery_price: e?.delivery_price,
-                courier_comment: e?.courier_comment || "Qayta aloqa",
+                courier_comment: e?.courier_comment,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                 up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm"),
                 recontact: moment.unix(e?.recontact).format("DD.MM.YYYY")

@@ -99,10 +99,10 @@ function Navbar() {
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.users}</span>
                 </Link>
                 {/*  */}
-                <Link onClick={() => setOpen(false)} to='/admin-pays' className={classLink + `${path === '/admin-pays' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                {/* <Link onClick={() => setOpen(false)} to='/admin-pays' className={classLink + `${path === '/admin-pays' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiMoney className="mr-[10px]" />
                     Adminlar to'lovi
-                </Link>
+                </Link> */}
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/new-orders' className={classLink + `${path === '/new-orders' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiShoppingBag className="mr-[10px]" />

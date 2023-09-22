@@ -68,66 +68,68 @@ function AddProduct() {
             <div className="flex items-center justify-center p-[10px_20px] rounded-b bg-white mb-[20px]">
                 <h1 className="text-[20px]">MAXSULOT QO'SHISH</h1>
             </div>
-            <div className="flex items-center justify-start w-[90%] flex-wrap bg-white p-[10px]">
-                {/*  */}
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Input disabled={disable} color="red" variant="standard" label="Mahsulot nomi" required icon={<BiBox />} value={state.title} onChange={e => setState({ ...state, title: e.target.value })} />
+            {!categories[0] && <p>Avval kategoriya hosil qilish zarur</p>}
+            {categories[0] &&
+                <div className="flex items-center justify-start w-[90%] flex-wrap bg-white p-[10px]">
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Input disabled={disable} color="red" variant="standard" label="Mahsulot nomi" required icon={<BiBox />} value={state.title} onChange={e => setState({ ...state, title: e.target.value })} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Input disabled={disable} color="red" variant="standard" type="number" label="Mahsulot asl narxi - so'm" required icon={<BiMoney />} value={state.original_price} onChange={e => setState({ ...state, original_price: e.target.value })} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Input disabled={disable} color="red" variant="standard" type="number" label="Mahsulot sotuv narxi - so'm" required icon={<BiMoney />} value={state.price} onChange={e => setState({ ...state, price: e.target.value })} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Input disabled={disable} color="red" variant="standard" type="number" label="Adminlar uchun - so'm" required icon={<BiUserCheck />} value={state.for_admins} onChange={e => setState({ ...state, for_admins: e.target.value })} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Input disabled={disable} color="red" variant="standard" type="number" label="Coin" required icon={<BiCoin />} value={state.coin} onChange={e => setState({ ...state, coin: e.target.value })} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Input disabled={disable} color="red" variant="standard" type="number" label="Qancha mahsulot mavjud" required icon={<BiBox />} value={state.value} onChange={e => setState({ ...state, value: e.target.value })} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Input disabled={disable} color="red" variant="standard" type="number" label="Operatorlar uchun - so'm" required icon={<BiPhone />} value={state.for_operators} onChange={e => setState({ ...state, for_operators: e.target.value })} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Input disabled={disable} color="red" variant="standard" type="file" accept="video/*" label="Video" required icon={<BiVideo />} onChange={e => setState({ ...state, video: e.target.files[0] })} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Input disabled={disable} color="red" variant="standard" type="file" accept="image/*" label="Rasmlar" multiple required icon={<BiImage />} onChange={e => setState({ ...state, images: e.target.files })} />
+                    </div>
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Select disabled={disable} label="Kategoriyani tanlang!" variant="standard" onChange={e => setState({ ...state, category: e })} value={state.category}>
+                            {categories?.map((c, i) => {
+                                return (
+                                    <Option key={i} value={c?.id} className="flex items-center">
+                                        {c?.title}
+                                    </Option>
+                                )
+                            })}
+                        </Select>
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full my-[10px]">
+                        <Textarea disabled={disable} color="red" variant="standard" label="Batafsil ma'lumot" onChange={e => setState({ ...state, about: e.target.value })} value={state.about} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full my-[10px]">
+                        <Button disabled={disable} onClick={Submit} color="red" className="rounded" fullWidth>
+                            Saqlash
+                        </Button>
+                    </div>
                 </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Input disabled={disable} color="red" variant="standard" type="number" label="Mahsulot asl narxi - so'm" required icon={<BiMoney />} value={state.original_price} onChange={e => setState({ ...state, original_price: e.target.value })} />
-                </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Input disabled={disable} color="red" variant="standard" type="number" label="Mahsulot sotuv narxi - so'm" required icon={<BiMoney />} value={state.price} onChange={e => setState({ ...state, price: e.target.value })} />
-                </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Input disabled={disable} color="red" variant="standard" type="number" label="Adminlar uchun - so'm" required icon={<BiUserCheck />} value={state.for_admins} onChange={e => setState({ ...state, for_admins: e.target.value })} />
-                </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Input disabled={disable} color="red" variant="standard" type="number" label="Coin" required icon={<BiCoin />} value={state.coin} onChange={e => setState({ ...state, coin: e.target.value })} />
-                </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Input disabled={disable} color="red" variant="standard" type="number" label="Qancha mahsulot mavjud" required icon={<BiBox />} value={state.value} onChange={e => setState({ ...state, value: e.target.value })} />
-                </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Input disabled={disable} color="red" variant="standard" type="number" label="Operatorlar uchun - so'm" required icon={<BiPhone />} value={state.for_operators} onChange={e => setState({ ...state, for_operators: e.target.value })} />
-                </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Input disabled={disable} color="red" variant="standard" type="file" accept="video/*" label="Video" required icon={<BiVideo />} onChange={e => setState({ ...state, video: e.target.files[0] })} />
-                </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Input disabled={disable} color="red" variant="standard" type="file" accept="image/*" label="Rasmlar" multiple required icon={<BiImage />} onChange={e => setState({ ...state, images: e.target.files })} />
-                </div>
-                <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
-                    <Select disabled={disable} label="Kategoriyani tanlang!" variant="standard" onChange={e => setState({ ...state, category: e })} value={state.category}>
-                        {categories?.map(({ id, title }, i) => {
-                            return (
-                                <Option key={i} value={id} className="flex items-center">
-                                    {title}
-                                </Option>
-                            )
-                        })}
-                    </Select>
-                </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full my-[10px]">
-                    <Textarea disabled={disable} color="red" variant="standard" label="Batafsil ma'lumot" onChange={e => setState({ ...state, about: e.target.value })} value={state.about} />
-                </div>
-                {/*  */}
-                <div className="flex items-center justify-center w-full my-[10px]">
-                    <Button disabled={disable} onClick={Submit} color="red" className="rounded" fullWidth>
-                        Saqlash
-                    </Button>
-                </div>
-            </div>
-
+            }
         </div>
     );
 }

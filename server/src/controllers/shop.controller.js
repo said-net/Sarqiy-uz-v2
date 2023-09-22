@@ -22,52 +22,60 @@ module.exports = {
                 msg: "Qatorlarni to'ldiring!"
             });
         } else {
-            try {
-                const $product = await productModel.findById(id);
-                const $orders = await shopModel.find();
-                if (!$product || $product.hidden) {
-                    res.send({
-                        ok: false,
-                        msg: "Ushbu mahsulot mavjud emas!"
-                    });
-                } else {
-                    const $user = await userModel.findOne({ phone });
-                    if ($user && $user?.ban) {
-                        res.send({
-                            ok: false,
-                            msg: "Siz tizimdan ban olgansiz!"
-                        });
-                    } else {
-                        const $c = (await competitionModel.find()).reverse();
-                        new shopModel({
-                            product: id,
-                            from: $user ? $user?._id : '',
-                            name,
-                            created: moment.now() / 1000,
-                            id: $orders?.length + 1,
-                            phone,
-                            for_admin: $product?.for_admins,
-                            for_operator: $product?.for_operators,
-                            competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
-                            week: moment().week(),
-                            flow: !flow ? 136 : flow,
-                            month: new Date().getMonth(),
-                            day: new Date().getDate(),
-                            year: new Date().getFullYear()
-                        }).save().then(async () => {
-                            res.send({
-                                ok: true,
-                                msg: "Qabul qilindi! Tez orada operatorlar aloqaga chiqishadi!"
-                            })
-                        });
-                    }
-                }
-            } catch (err) {
-                console.log(err);
+            const $check_order = (await shopModel.find({ phone })).reverse()[0]
+            if ($check_order && ($check_order?.created + 360) > (moment?.now() / 1000)) {
                 res.send({
                     ok: false,
-                    msg: "Nimadir xato!"
-                })
+                    msg: "Songi 5 daqiqa ichida siz buyurtma bergansiz!"
+                });
+            } else {
+                try {
+                    const $product = await productModel.findById(id);
+                    const $orders = await shopModel.find();
+                    if (!$product || $product.hidden) {
+                        res.send({
+                            ok: false,
+                            msg: "Ushbu mahsulot mavjud emas!"
+                        });
+                    } else {
+                        const $user = await userModel.findOne({ phone });
+                        if ($user && $user?.ban) {
+                            res.send({
+                                ok: false,
+                                msg: "Siz tizimdan ban olgansiz!"
+                            });
+                        } else {
+                            const $c = (await competitionModel.find()).reverse();
+                            new shopModel({
+                                product: id,
+                                from: $user ? $user?._id : '',
+                                name,
+                                created: moment.now() / 1000,
+                                id: $orders?.length + 1,
+                                phone,
+                                for_admin: $product?.for_admins,
+                                for_operator: $product?.for_operators,
+                                competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
+                                week: moment().week(),
+                                flow: !flow ? 136 : flow,
+                                month: new Date().getMonth(),
+                                day: new Date().getDate(),
+                                year: new Date().getFullYear()
+                            }).save().then(async () => {
+                                res.send({
+                                    ok: true,
+                                    msg: "Qabul qilindi! Tez orada operatorlar aloqaga chiqishadi!"
+                                })
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.log(err);
+                    res.send({
+                        ok: false,
+                        msg: "Nimadir xato!"
+                    })
+                }
             }
         }
     },

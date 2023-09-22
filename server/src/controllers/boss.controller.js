@@ -69,7 +69,7 @@ module.exports = {
         const users = await userModel.find().countDocuments();
         const sended = await shopModel.find({ status: 'sended', courier_status: 'sended', verified: false }).countDocuments();
         const reject = await shopModel.find({ courier_status: 'reject', verified: false }).countDocuments();
-        // const archive = await shopModel.find({ status: 'archive' }).countDocuments();
+        const archive = await shopModel.find({ status: 'archive' }).countDocuments();
         const delivered = await shopModel.find({ courier_status: 'delivered', verified: false }).countDocuments();
         const wait = await shopModel.find({ status: 'wait' }).countDocuments();
         const neworders = await shopModel.find({ status: 'pending', operator: null }).countDocuments();
@@ -91,7 +91,7 @@ module.exports = {
                 wait_delivery,
                 sended,
                 reject,
-                // archive,
+                archive,
                 delivered,
                 wait,
                 neworders,
@@ -532,6 +532,58 @@ module.exports = {
             ok: true,
             data: $modlist,
             couriers: $mcouriers
+        })
+    },
+    getRecontactOrders: async (req, res) => {
+        const $orders = await shopModel.find({ status: 'wait' }).populate('product operator', 'title images price name phone region')
+        const $operators = await operatorModel.find({ hidden: false });
+        const $modopers = [];
+        $operators.forEach(o => {
+            $modopers.push({
+                id: o._id,
+                name: o.name,
+                phone: o.phone,
+            });
+        });
+        const $modlist = [];
+        for (let o of $orders) {
+            if (o.flow) {
+                const $admin = await userModel.findOne({ id: o?.flow });
+                $modlist.push({
+                    id: o?.id,
+                    _id: o?._id,
+                    title: o?.product?.title,
+                    image: SERVER_LINK + o?.product?.images[0],
+                    // admin: $admin.name,
+                    // admin_id: $admin.id,
+                    price: o?.product?.price,
+                    about: o?.about,
+                    name: o?.name,
+                    phone: o?.phone,
+                    operator: o?.operator?.name,
+                    operator_phone: o?.operator?.phone
+                });
+            } else {
+                $modlist.push({
+                    id: o?.id,
+                    _id: o?._id,
+                    title: o?.product?.title,
+                    image: SERVER_LINK + o?.product?.images[0],
+                    // admin: '',
+                    // admin_id: '',
+                    about: o?.about,
+                    price: o?.product?.price,
+                    name: o?.name,
+                    phone: o?.phone,
+                    operator: o?.operator?.name,
+                    operator_phone: o?.operator?.phone
+                });
+            }
+        }
+        res.send({
+            ok: true,
+            data: $modlist,
+            operators: $modopers
         })
     },
     getRejectedOrders: async (req, res) => {

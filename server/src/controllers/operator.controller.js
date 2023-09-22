@@ -476,33 +476,6 @@ module.exports = {
             bot.telegram?.sendMessage(5991285234, err);
         }
     },
-    searchBase: async (req, res) => {
-        try {
-            const { search } = req.params;
-            const $orders = await shopModel.find().populate('product');
-            const orders = [];
-            const $settings = await settingModel.find();
-            $orders.filter(o => o?.id === Number(search) || o?.phone?.includes(search)).forEach(e => {
-                orders.push({
-                    _id: e?._id,
-                    ...e?._doc,
-                    created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
-                    image: SERVER_LINK + e?.product?.images[0],
-                    comming_pay: $settings[0]?.for_operators
-                });
-            });
-            res.send({
-                ok: true,
-                data: orders.reverse()
-            })
-        } catch (err) {
-            res.send({
-                ok: false,
-                msg: "Nimadir xato",
-                data: err
-            })
-        }
-    },
     getTargetologOrders: async (req, res) => {
         const { id } = req.params;
         if (isNaN(id) || id < 1) {
@@ -553,5 +526,36 @@ module.exports = {
                 }
             }
         }
+    },
+    searchOrder: async (req, res) => {
+        const { search } = req?.params;
+        const $orders = await shopModel.find({})?.populate('operator courier product')
+        const list = [];
+        $orders?.forEach((e) => {
+            if (e?.id === +search || e?.phone?.includes(search)) {
+                list.push({
+                    _id: e?._id,
+                    id: e?.id,
+                    name: e?.name,
+                    phone: e?.phone,
+                    location: !e?.region ? '-' : region?.find(r => r?.id === e?.region).name + e?.city,
+                    product: e?.product?.title,
+                    product_id: e?.product?.id,
+                    about: e?.about,
+                    count: e?.count,
+                    price: e?.price,
+                    operator: e?.operator?._id ? `${e?.operator?.name} | ${e?.operator?.phone}` : 'Operator biriktirilmagan!',
+                    courier: e?.courier?._id ? `${e?.courier?.name} | ${e?.courier?.phone} | ${region?.find(r => r?.id === e?.courier?.region).name}` : 'Kuryer biriktirilmagan!',
+                    courier_comment: e?.courier_comment || '-',
+                    created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
+                    recontact: e?.reconnect ? moment.unix(e?.reconnect).format('DD-MM-YYYY') : 'KK-OO-YYYY',
+                    status: e?.status === 'reject' ? 'Bekor qilingan' : e?.status === 'archive' ? 'Arxivlangan' : e?.status === 'pending' ? 'Yangi buyurtma' : e?.status === 'success' ? 'Upakovkada' : e?.status === 'sended' ? 'Yetkazilmoqda' : e?.status === 'delivered' ? 'Yetkazilgan' : e?.status === 'wait' ? 'Qayta aloqa' : ''
+                });
+            }
+        });
+        res.send({
+            ok: true,
+            data: list
+        })
     }
 }
