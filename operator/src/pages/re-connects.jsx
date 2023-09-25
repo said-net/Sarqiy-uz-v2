@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, Input, Option, Select, Spinner } from "@material-tailwind/react";
+import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, Input, Option, Select, Spinner, Textarea } from "@material-tailwind/react";
 import { BiBox, BiLocationPlus, BiMoney, BiPencil, BiQuestionMark, BiSolidTruck } from 'react-icons/bi';
 import Regions from '../components/regions.json';
 import { useDispatch, useSelector } from "react-redux";

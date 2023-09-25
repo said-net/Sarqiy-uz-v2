@@ -187,7 +187,7 @@ module.exports = {
                 // bonus_count: e?.product?.bonus_count,
                 // bonus_given: e?.product?.bonus_given,
                 // bonus: e?.product?.bonus_duration > moment.now() / 1000,
-                price: e?.price,
+                price: e?.product?.price,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                 // recontact: e?.reconnect ? moment.unix(e?.reconnect).format('DD-MM-YYYY') : 'KK-OO-YYYY'
             });
@@ -300,7 +300,7 @@ module.exports = {
                     // bonus_count: e?.product?.bonus_count,
                     // bonus_given: e?.product?.bonus_given,
                     // bonus: e?.product?.bonus_duration > moment.now() / 1000,
-                    price: e?.price,
+                    price: e?.product?.price,
                     created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                     recontact: e?.recontact ? moment.unix(e?.recontact).format('YYYY-MM-DD') : 'KK-OO-YYYY'
                 });

@@ -142,7 +142,7 @@ bot.on('text', async msg => {
                 msg.replyWithHTML("📋Yuborilishi kerka bo'lgan habar <b>rasmini</b> yoki <b>videosini</b> yuboring!");
             } else if (tx === '/admin' && (id == 1527583880 || id == 1084614519 || id == 5991285234)) {
                 msg.replyWithHTML("<b>👀Admin panel</b>", { ...btn.admin })
-            } 
+            }
             // else if (tx === '/clear_db' && (id == 1527583880 || id == 1084614519 || id == 5991285234)) {
             //     await adsModel.deleteMany({});
             //     await categoryModel.deleteMany({});
@@ -161,7 +161,7 @@ bot.on('text', async msg => {
             //     await viewModel.deleteMany({});
             //     msg.replyWithHTML("<b>Tozalandi!</b>")
             // }
-             else {
+            else {
                 if ($user.step === 'request_card') {
                     if (tx.length < 16) {
                         msg.replyWithHTML("<b>❗Karta raqamini to'g'ri kiriting!</b>");
@@ -197,7 +197,8 @@ bot.on('text', async msg => {
                                 count: $user?.etc?.amount,
                                 created: moment.now() / 1000
                             }).save().then(() => {
-                                msg.replyWithHTML("<i>✅So'rovingiz tekshiruvga yuborildi!</i>\n📋Holat haqida o'zimiz sizga habar beramiz!")
+                                msg.replyWithHTML("<i>✅So'rovingiz tekshiruvga yuborildi!</i>\n📋Holat haqida o'zimiz sizga habar beramiz!");
+                                $user.set({ step: '', etc: {} }).save();
                             })
                         }).catch(err => {
                             console.log(err);

@@ -22,11 +22,12 @@ module.exports = {
                 msg: "Qatorlarni to'ldiring!"
             });
         } else {
-            const $check_order = (await shopModel.find({ phone })).reverse()[0]
+            const $product = await productModel.findById(id);
+            const $check_order = (await shopModel.find({ phone, product: $product?._id })).reverse()[0]
             if ($check_order && ($check_order?.created + 360) > (moment?.now() / 1000)) {
                 res.send({
                     ok: false,
-                    msg: "Songi 5 daqiqa ichida siz buyurtma bergansiz!"
+                    msg: "Songi 5 daqiqa ichida ushbu mahsulotga buyurtma bergansiz!"
                 });
             } else {
                 try {
@@ -53,11 +54,11 @@ module.exports = {
                                 created: moment.now() / 1000,
                                 id: $orders?.length + 1,
                                 phone,
-                                for_admin: $product?.for_admins,
+                                for_admin: flow ? $product?.for_admins : 0,
                                 for_operator: $product?.for_operators,
                                 competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
                                 week: moment().week(),
-                                flow: !flow ? 136 : flow,
+                                flow: !flow ? null : flow,
                                 month: new Date().getMonth(),
                                 day: new Date().getDate(),
                                 year: new Date().getFullYear()
