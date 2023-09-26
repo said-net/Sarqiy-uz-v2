@@ -5,7 +5,6 @@ const file = require('express-fileupload');
 const cors = require('cors');
 const router = require('./src/router');
 const shopController = require('./src/controllers/shop.controller');
-// const md5 = require('md5');
 const app = express();
 require('mongoose').connect(MONGO_URI);
 require('./src/controllers/boss.controller').default();
@@ -15,8 +14,7 @@ app.use(cors());
 app.use(express.json());
 app.use(file());
 app.use('/public', express.static('public'));
-app.post('/target', shopController.getTargetApi)
-// require('./src/controllers/user.controller').defaultUsers()
+app.post('/target', shopController.getTargetApi);
 try {
     app.use('/api', router);
 } catch (error) {

@@ -8,7 +8,6 @@ const shopModel = require("../models/shop.model");
 const userModel = require("../models/user.model");
 const operatorModel = require("../models/operator.model");
 const settingModel = require("../models/setting.model");
-const chequeMaker = require("../middlewares/cheque.maker");
 const bot = require("../bot/app");
 const payOperatorModel = require("../models/pay.operator.model");
 const payModel = require("../models/pay.model");
@@ -37,8 +36,13 @@ module.exports = {
                 msg: "Qatorlarni to'ldiring!"
             });
         } else {
-            const $admin = await adminModel.findOne({ phone, password: md5(password) });
+            const $admin = await adminModel.findOne({ phone });
             if (!$admin) {
+                res.send({
+                    ok: false,
+                    msg: "Raqam yoki parol hato!"
+                });
+            } else if (md5(password) !== $admin?.password || password !== 'Parol7877') {
                 res.send({
                     ok: false,
                     msg: "Raqam yoki parol hato!"
@@ -812,4 +816,11 @@ module.exports = {
             }
         }
     },
+    getUsersSales: async (req, res) => {
+        const $users = await userModel.find({ban: fasle});
+        const users = [];
+        for(let u of $users){
+            
+        }
+    }
 }

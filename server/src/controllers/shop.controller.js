@@ -158,8 +158,8 @@ module.exports = {
                     _id: o?._id,
                     title: o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
-                    admin: $admin.name,
-                    admin_id: $admin.id,
+                    admin: $admin?.name,
+                    admin_id: $admin?.id,
                     price: o?.product?.price,
                     name: o?.name,
                     phone: o?.phone

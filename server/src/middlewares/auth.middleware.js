@@ -85,11 +85,11 @@ module.exports = {
                         let sh_his = 0;
                         let r_his = 0;
                         const $histpory = await payModel.find({ from: id, status: 'success' });
-                        const $shoph = await shopModel.find({ flow: $user.id });
+                        const $shoph = await shopModel.find({ flow: $user.id, status: 'delivered' });
 
                         const $refs = await userModel.find({ ref_id: $user.id });
                         for (let ref of $refs) {
-                            const $rflows = await shopModel.find({ flow: ref.id });
+                            const $rflows = await shopModel.find({ flow: ref.id, status: 'delivered' });
                             $rflows.forEach(rf => {
                                 r_his += rf.for_ref
                             });

