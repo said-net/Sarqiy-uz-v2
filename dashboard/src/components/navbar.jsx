@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoney, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming, BiUserPlus } from 'react-icons/bi';
+import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoney, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming, BiUserPlus, BiFlag } from 'react-icons/bi';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_LINK } from "../config";
@@ -7,7 +7,7 @@ import { IconButton } from "@material-tailwind/react";
 import { useSelector } from "react-redux";
 function Navbar() {
     const { pathname: path } = useLocation();
-    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0, couriers: 0, oper_pays: 0 });
+    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0, couriers: 0, oper_pays: 0, race: 0 });
     const { refresh } = useSelector(e => e.refresh);
     const [open, setOpen] = useState(false);
     useEffect(() => {
@@ -41,6 +41,12 @@ function Navbar() {
                 <Link onClick={() => setOpen(false)} to='/' className={classLink + `${path === '/' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiSolidDashboard className="mr-[10px]" />
                     Dashboard
+                </Link>
+                {/*  */}
+                <Link onClick={() => setOpen(false)} to='/race' className={classLink + `${path === '/race' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                    <BiFlag className="mr-[10px]" />
+                    Poyga {new Date().getFullYear()}
+                    <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.race}</span>
                 </Link>
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/products' className={classLink + `${path === '/products' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>

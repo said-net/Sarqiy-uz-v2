@@ -91,7 +91,7 @@ function AdminMarket() {
                 <div className="grid grid-cols-2 gap-[10px] my-[10px]">
                     {state?.map((p, i) => {
                         return (
-                            <div key={i} className="flex items-center justify-start flex-col w-[172px] h-[400px] p-[3px] bg-white shadow-md rounded relative">
+                            <div key={i} className="flex items-center justify-start flex-col w-[172px] h-[440px] p-[3px] bg-white shadow-md rounded relative">
                                 {p?.bonus && <span className="absolute top-[5px] left-[5px] bg-red-500 px-[5px] rounded text-[12px] text-white">{p?.bonus_about}</span>}
                                 <div className="flex items-center justify-center w-full overflow-hidden h-[190px]">
                                     <img src={p?.image} alt="r" />
@@ -110,6 +110,8 @@ function AdminMarket() {
                                     <div className="w-full h-[1px] bg-blue-gray-100"></div>
                                     <p className="text-[12px]">To'lov: <span className="text-[15px]">{Number(p?.for_admins).toLocaleString()} s'om</span></p>
                                     {/*  */}
+                                    <p className="text-[12px]">Coin: <span className="text-[15px]">{Number(p?.coin).toLocaleString()} ta</span></p>
+                                    {/*  */}
                                     <span className="w-full h-[30px] border-[2px] rounded border-green-500 flex items-center justify-center uppercase tracking-[2px] mb-[10px]" onClick={() => setOpenFlow({ id: p?.pid, title: p?.title })}>
                                         Oqim
                                     </span>
@@ -117,7 +119,7 @@ function AdminMarket() {
                                     <span className="w-full h-[30px] rounded bg-green-500 flex items-center justify-center uppercase tracking-[1px] mb-[10px] text-white shadow-md" onClick={() => getAds(p?.id)}>
                                         Reklama posti
                                     </span>
-                                    <span className="w-full flex items-center justify-center h-[30px] uppercase tracking-[1px] mb-[10px] text-red-500 text-[12px] shadow-md" onClick={() => setTargetApi(p?.pid)}>
+                                    <span className="w-full flex items-center justify-center h-[30px] uppercase tracking-[1px] mb-[10px] text-red-500 text-[12px] " onClick={() => setTargetApi(p?.pid)}>
                                         TARGET API
                                     </span>
                                 </div>

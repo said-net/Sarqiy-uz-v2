@@ -12,14 +12,16 @@ const AuthManager = createSlice({
         created: '',
         balance: 0,
         telegram: 0,
-        location: ''
+        location: '',
+        hold_balance: 0,
+        coins: 0,
     },
     reducers: {
         setRefreshAuth: state => {
             state.refresh = !state.refresh;
         },
         setInformations: (state, { payload }) => {
-            const { name, phone, id, role, created, balance, telegram, location, uId } = payload;
+            const { name, phone, id, role, created, balance, telegram, location, uId, hold_balance, coins } = payload;
             state.name = name;
             state.phone = phone;
             state.role = role;
@@ -28,7 +30,9 @@ const AuthManager = createSlice({
             state.balance = balance;
             state.telegram = telegram;
             state.location = location;
-            state.uId = uId
+            state.uId = uId;
+            state.hold_balance = hold_balance;
+            state.coins = coins;
         }
     }
 });

@@ -542,7 +542,6 @@ module.exports = {
     // 
     getAllToAdmins: async (req, res) => {
         const { id } = req.params;
-        const $settings = await settingModel.find()
         try {
             if (id === 'all') {
                 const $products = await productModel.find({ hidden: false }).populate('category');

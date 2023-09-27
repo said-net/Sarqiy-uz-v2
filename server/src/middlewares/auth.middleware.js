@@ -84,8 +84,9 @@ module.exports = {
                         let p_his = 0;
                         let sh_his = 0;
                         let r_his = 0;
+                        let coins = 0;
                         const $histpory = await payModel.find({ from: id, status: 'success' });
-                        const $shoph = await shopModel.find({ flow: $user.id, status: 'delivered' });
+                        const $shoph = await shopModel.find({ flow: $user.id, status: 'delivered' }).populate('product')
 
                         const $refs = await userModel.find({ ref_id: $user.id });
                         for (let ref of $refs) {
@@ -99,9 +100,16 @@ module.exports = {
                         });
                         $shoph.forEach(s => {
                             sh_his += s.for_admin;
+                            coins += s?.product?.coin
                         });
-                        //
-                        req.user = { uId, id, name, phone, created: moment.unix(created).format('DD.MM.YYYY HH:MM'), balance: (sh_his + r_his) - p_his, location, telegram };
+                        //hold
+                        const $holds = await shopModel.find({ flow: $user.id, status: 'sended' });
+                        let hold_balance = 0;
+                        $holds.forEach(h => {
+                            hold_balance += h?.for_admin
+                        });
+
+                        req.user = { uId, id, name, phone, created: moment.unix(created).format('DD.MM.YYYY HH:MM'), balance: (sh_his + r_his) - p_his, coins, hold_balance, location, telegram };
                         next();
                     }
                 }

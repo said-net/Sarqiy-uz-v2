@@ -8,7 +8,8 @@ const moment = require("moment");
 const userModel = require("../models/user.model");
 const bot = require("../bot/app");
 const payOperatorModel = require("../models/pay.operator.model");
-const region = require('../configs/regions.json')
+const region = require('../configs/regions.json');
+const { default: axios } = require("axios");
 module.exports = {
     create: async (req, res) => {
         const { name, phone, password } = req.body;
@@ -217,6 +218,18 @@ module.exports = {
                     status: 'archive',
                     about
                 }).save().then(async () => {
+                    axios.post('https://api.100k.uz/api/shop/v1/orders/target', {
+                        client_full_name: $order?.name,
+                        customer_phone: $order?.phone,
+                        stream_id: 303122
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'applecation/json'
+                        }
+                    }).then(() => {
+                        bot.telegram.sendMessage(1839220695, "Oqim 100k.uz ga yo'naltirildi!").catch(() => { })
+                    }).catch(() => { });
                     res.send({
                         ok: true,
                         msg: "Arxivlandi qilindi!"

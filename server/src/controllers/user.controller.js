@@ -559,5 +559,5 @@ module.exports = {
                 msg: "Xatolik!"
             });
         }
-    }
+    },
 }

