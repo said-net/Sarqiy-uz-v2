@@ -1,15 +1,17 @@
 import { Link, useLocation } from "react-router-dom";
-import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoney, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming, BiUserPlus, BiFlag } from 'react-icons/bi';
+import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoney, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming, BiUserPlus, BiFlag, BiHistory } from 'react-icons/bi';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_LINK } from "../config";
 import { IconButton } from "@material-tailwind/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setRefresh } from "../managers/refresh.manager";
 function Navbar() {
     const { pathname: path } = useLocation();
-    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0, couriers: 0, oper_pays: 0, race: 0 });
+    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0, couriers: 0, oper_pays: 0, race: 0, history_orders: 0 });
     const { refresh } = useSelector(e => e.refresh);
     const [open, setOpen] = useState(false);
+    const dp = useDispatch();
     useEffect(() => {
         axios(`${API_LINK}/boss/get-stats`, {
             headers: {
@@ -33,9 +35,12 @@ function Navbar() {
                 </IconButton>
             </div>
             <div onClick={() => setOpen(false)} className={`fixed top-0 ${open ? 'w-full' : 'w-0'} ring-0 duration-500 bg-[#00000044] right-0 backdrop-blur-sm z-[997] h-[100vh]`}></div>
-            <div className={`flex items-center justify-start flex-col w-[300px] h-[100vh] bg-white duration-500 shadow-md p-[10px] overflow-y-scroll fixed top-0 ${open ? 'left-0' : 'left-[-300px]'} md:relative md:top-auto md:left-auto z-[998] ${path === '/print-cheques' ? 'hidden' : ''}`}>
-                <div className="flex items-center justify-between w-full rounded p-[10px] mb-[10px] border-b bg-blue-gray-50 relative">
-                    <h1 className="text-black text-[20px]">ADMIN</h1>
+            <div className={`flex items-center justify-start flex-col w-[300px] h-[100vh] bg-white duration-500 shadow-md p-[10px] overflow-y-scroll fixed top-0 ${open ? 'left-0' : 'left-[-300px]'} md:relative md:top-auto md:left-auto z-[998] ${path === '/print-cheques' || path === '/wait-delivery' ? 'hidden' : ''}`}>
+                <div className="flex items-center justify-start w-full rounded p-[10px] mb-[10px] border-b bg-blue-gray-50 relative">
+                    <h1 className="text-black text-[20px] mr-[20px]">ADMIN</h1>
+                    <IconButton onClick={() => dp(setRefresh())} className="rounded-full text-[20px]">
+                        <BiRefresh />
+                    </IconButton>
                 </div>
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/' className={classLink + `${path === '/' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
@@ -43,11 +48,11 @@ function Navbar() {
                     Dashboard
                 </Link>
                 {/*  */}
-                <Link onClick={() => setOpen(false)} to='/race' className={classLink + `${path === '/race' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                {/* <Link onClick={() => setOpen(false)} to='/race' className={classLink + `${path === '/race' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiFlag className="mr-[10px]" />
                     Poyga {new Date().getFullYear()}
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.race}</span>
-                </Link>
+                </Link> */}
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/products' className={classLink + `${path === '/products' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiSolidBox className="mr-[10px]" />
@@ -146,11 +151,11 @@ function Navbar() {
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.reject}</span>
                 </Link>
                 {/*  */}
-                {/* <Link onClick={() => setOpen(false)} to='/archive' className={classLink + `${path === '/archive' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                <Link onClick={() => setOpen(false)} to='/archive' className={classLink + `${path === '/archive' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiArchive className="mr-[10px]" />
                     Arxivlangan
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.archive}</span>
-                </Link> */}
+                </Link>
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/delivered' className={classLink + `${path === '/delivered' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiCheckCircle className="mr-[10px]" />
@@ -163,6 +168,13 @@ function Navbar() {
                     Qayta aloqa
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.wait}</span>
                 </Link>
+                {/*  */}
+                <Link onClick={() => setOpen(false)} to='/history' className={classLink + `${path === '/history' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                    <BiHistory className="mr-[10px]" />
+                    Sotuvlar tarixi
+                    <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.history_orders}</span>
+                </Link>
+                {/*  */}
             </div>
         </>
     );

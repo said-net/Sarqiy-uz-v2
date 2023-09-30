@@ -17,6 +17,8 @@ module.exports = require('express').Router()
     .get('/get-all-cheques/:page', authMiddleware.boss, bossController.getCheques)
     .get('/get-wait-delivery', authMiddleware.boss, bossController.getWaitDelivery)
     .get('/get-sended-orders', authMiddleware.boss, bossController.getSendedOrders)
+    .get('/get-archived-orders/:page', authMiddleware.boss, bossController.getArchivedOrders)
+    .get('/get-history-orders/:page', authMiddleware.boss, bossController.getHistoryOrders)
     // 
     .post('/create-courier', authMiddleware.boss, bossController.createCourier)
     .get('/get-all-couriers', authMiddleware.boss, bossController.getAllCouriers)

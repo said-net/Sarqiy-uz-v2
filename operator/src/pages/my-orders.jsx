@@ -3,18 +3,19 @@ import { useEffect, useState } from "react";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
 import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, Input, Option, Select, Spinner, Textarea } from "@material-tailwind/react";
-import { BiBox, BiLocationPlus, BiMoney, BiPencil, BiQuestionMark, BiSolidTruck } from 'react-icons/bi';
+import { BiBox, BiHistory, BiLocationPlus, BiMoney, BiPencil, BiQuestionMark, BiSolidTruck } from 'react-icons/bi';
 import Regions from '../components/regions.json';
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "../managers/refresh.manager";
 function MyOrders() {
     const [orders, setOrders] = useState([]);
     const [isLoad, setIsLoad] = useState(false);
-    // const [refresh, setRefresh] = useState(false);
     const dp = useDispatch();
     const { refresh } = useSelector(e => e.refresh)
     const [edit, setEdit] = useState({ _id: '', title: '', region: '', city: '', about: '', status: '', recontact: '', delivery: '', price: '', count: 1, current_price: '', bonus_count: 0, bonus_given: 0, bonus_gived: 0, bonus: false });
     const [checked, setChecked] = useState(false);
+    const [history, setHistory] = useState([]);
+    const [openHistory, setOpenHistory] = useState('');
     function Close() {
         setEdit({ _id: '', title: '', region: '', city: '', about: '', status: '', recontact: '', delivery: '', price: '', count: 1, current_price: '', bonus_count: 0, bonus_given: 0, bonus_gived: 0, bonus: false })
     }
@@ -36,6 +37,24 @@ function MyOrders() {
             toast.error("Aloqani tekshirib qayta urinib ko'ring!")
         })
     }, [refresh]);
+    useEffect(() => {
+        if (openHistory !== '') {
+            axios(`${API_LINK}/operator/get-history-user/${openHistory}`, {
+                headers: {
+                    'x-auth-token': `Bearer ${localStorage.getItem('access')}`
+                }
+            }).then((res) => {
+                const { data, ok, msg } = res.data;
+                if (!ok) {
+                    toast.error(msg);
+                } else {
+                    setHistory(data);
+                }
+            }).catch(() => {
+                toast.error("Aloqani tekshirib qayta urinib ko'ring!")
+            })
+        }
+    }, [openHistory]);
     function Submit() {
         axios.post(`${API_LINK}/operator/set-status/${edit?._id}`, edit, {
             headers: {
@@ -83,11 +102,18 @@ function MyOrders() {
                             <p className="text-[15px]"><b>Izoh:</b> <span className="p-[0_5px] bg-red-500 text-white rounded">{o?.about}</span></p>
                             {/*  */}
                             {/* <p className="text-[15px]"><b>Qayta aloqa:</b> {o?.recontact}</p> */}
-                            <Button color="red" fullWidth className="rounded" onClick={() => setEdit({ ...edit, _id: o?._id, title: o?.product, price: o?.price, current_price: o?.price, bonus: o?.bonus, bonus_count: o?.bonus_count, bonus_given: o?.bonus_given })}>Taxrirlash</Button>
+                            <div className="flex items-center justify-between w-full mt-[10px]">
+                                <Button color="red" className="rounded w-[200px]" onClick={() => setEdit({ ...edit, _id: o?._id, title: o?.product, price: o?.price, current_price: o?.price, bonus: o?.bonus, bonus_count: o?.bonus_count, bonus_given: o?.bonus_given })}>Taxrirlash</Button>
+                                <Button color="blue-gray" className="flex items-center justify-center text-[15px] p-[0] w-[70px] h-[35px] roundsed" onClick={() => setOpenHistory(o?.phone)}>
+                                    <BiHistory />
+                                    {o?.history}
+                                </Button>
+                            </div>
                         </div>
                     )
                 })
             }
+            {/* EDIT */}
             <Dialog size="xxl" open={edit?._id !== ''} className="flex items-center justify-center flex-col bg-[#0b091c86] backdrop-blur-sm">
                 <div className="flex items-center justify-start flex-col w-[90%] sm:w-[500px] bg-white p-[10px] max-h-[600px] rounded ">
                     <DialogHeader className="w-full">
@@ -96,10 +122,11 @@ function MyOrders() {
                     <DialogBody className="w-full h-[450px] overflow-y-scroll border-y ">
                         <div className="flex items-center justify-center w-full mb-[10px]">
                             <Select label="Buyurtma holatini tanlang!" variant="standard" onChange={(e) => setEdit({ ...edit, status: e })} value={edit?.status}>
-                                <Option value="archive">Rad etildi</Option>
+                                <Option value="archive">Arxiv</Option>
                                 <Option value="success">Dostavkaga</Option>
                                 <Option value="wait">Qayta aloqa</Option>
                                 <Option value="spam">Spam</Option>
+                                <Option value="copy">Kopiya</Option>
                             </Select>
                         </div>
                         {edit?.status === "archive" &&
@@ -159,6 +186,38 @@ function MyOrders() {
                         <Button className="rounded" disabled={!checked} color="green" onClick={Submit}>Saqlash</Button>
                     </DialogFooter>
                 </div>
+            </Dialog>
+            {/* HISTORY */}
+            <Dialog size="xxl" open={openHistory !== ''} className="flex items-center justify-center flex-col bg-[#0b091c86] backdrop-blur-sm">
+                <div className="flex items-center justify-start flex-col w-[90%] sm:w-[500px] bg-white p-[10px] max-h-[600px] rounded ">
+                    <DialogHeader className="w-full">
+                        Tarix | {openHistory}
+                    </DialogHeader>
+                    <DialogBody className="w-full border-y h-[400px] flex items-center justify-start flex-col overflow-y-scroll">
+                        {!history[0] && <p>Tarix mavjud emas!</p>}
+                        {history[0] &&
+                            history.map((h, i) => {
+                                return (
+                                    <div key={i} className="flex items-center justify-start flex-col w-full border border-black rounded mb-[10px] p-[5px]">
+                                        <div className="flex items-center justify-between w-full border-b">
+                                            <p className="text-[13px] font-bold text-black">ID: {h?.id}</p>
+                                            <div className="flex items-center justify-center flex-col">
+                                                <p className="text-[13px] font-bold text-black">{h?.name}</p>
+                                                <p className="text-[13px] font-bold text-black">{h?.phone}</p>
+                                            </div>
+                                            <p className="text-[13px] font-bold text-black">{h?.status_title}</p>
+                                        </div>
+                                        <p className="text-[13px] w-full font-bold text-black">{h?.created}</p>
+                                    </div>
+                                )
+                            })
+                        }
+                    </DialogBody>
+                    <DialogFooter className="w-full">
+                        <Button className="rounded" color="orange" onClick={() => { setOpenHistory(''); setHistory([]) }}>Ortga</Button>
+                    </DialogFooter>
+                </div>
+
             </Dialog>
         </div>
     );

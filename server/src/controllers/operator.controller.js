@@ -178,7 +178,8 @@ module.exports = {
     getMyOrders: async (req, res) => {
         const $orders = await shopModel.find({ operator: req.operator.id, status: 'pending' }).populate('product');
         const myOrders = [];
-        $orders.forEach(e => {
+        for (let e of $orders) {
+            const history = await shopModel.find({ phone: e?.phone })?.countDocuments()
             myOrders.push({
                 _id: e?._id,
                 id: e?.id,
@@ -189,6 +190,7 @@ module.exports = {
                 product_id: e?.product?.id,
                 about: e?.about || "Yangi lid",
                 count: e?.count,
+                history,
                 // bonus_about: e?.product?.bonus_about,
                 // bonus_count: e?.product?.bonus_count,
                 // bonus_given: e?.product?.bonus_given,
@@ -197,7 +199,7 @@ module.exports = {
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                 // recontact: e?.reconnect ? moment.unix(e?.reconnect).format('DD-MM-YYYY') : 'KK-OO-YYYY'
             });
-        });
+        }
         res.send({
             ok: true,
             data: myOrders
@@ -218,18 +220,6 @@ module.exports = {
                     status: 'archive',
                     about
                 }).save().then(async () => {
-                    axios.post('https://api.100k.uz/api/shop/v1/orders/target', {
-                        client_full_name: $order?.name,
-                        customer_phone: $order?.phone,
-                        stream_id: 303122
-                    }, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'applecation/json'
-                        }
-                    }).then(() => {
-                        bot.telegram.sendMessage(1839220695, "Oqim 100k.uz ga yo'naltirildi!").catch(() => { })
-                    }).catch(() => { });
                     res.send({
                         ok: true,
                         msg: "Arxivlandi qilindi!"
@@ -297,6 +287,41 @@ module.exports = {
                     }).save()
                 }
             } catch { }
+        } else if (status === 'copy') {
+            $order.set({
+                status: 'copy',
+                about
+            }).save().then(async () => {
+                res.send({
+                    ok: true,
+                    msg: "Kopiya qilindi!"
+                });
+            });
+            // try {
+            //     const $user = await userModel.findOne({ phone: $order?.phone });
+            //     if ($user) {
+            //         $user.set({ ban: true }).save()
+            //     } else {
+            //         const $users = await userModel.find().countDocuments()
+            //         new userModel({
+            //             id: $users + 1,
+            //             name: "SPAM" + $users + 1,
+            //             phone: $order?.phone,
+            //             ban: true
+            //         }).save()
+            //     }
+            // } catch { }
+        } else if (status === 'sended') {
+            $order.set({
+                status: 'sended',
+                about,
+                courier_status: 'sended',
+            }).save().then(async () => {
+                res.send({
+                    ok: true,
+                    msg: "Kuryerga qayta yuborildi!"
+                });
+            });
         }
     },
     getWaitOrders: async (req, res) => {
@@ -575,5 +600,31 @@ module.exports = {
             ok: true,
             data: list
         })
+    },
+    getHistoryUser: async (req, res) => {
+        const { phone } = req?.params;
+        if (!phone) {
+            res.send({
+                ok: false,
+                msg: "Tanlanmadi!"
+            });
+        } else {
+            const $orders = await shopModel.find({ phone });
+            const mod = [];
+            $orders?.forEach(o => {
+                mod.push({
+                    id: o?.id,
+                    phone: o?.phone,
+                    name: o?.name,
+                    status: o?.status,
+                    created: moment.unix(o?.created).format("DD-MM-YYYY HH:mm"),
+                    status_title: o?.status === 'reject' ? "Bekor qilingan" : o?.status === 'archive' ? "Arxivlangan" : o?.status === 'pending' ? "Yangi" : o?.status === 'success' ? "Upakovkada" : o?.status === 'sended' ? "Yetkazilmoqda" : o?.status === 'delivered' ? "Yetkazilgan" : o?.status === 'wait' ? "Qayta aloqa" : o?.status === 'copy' ? "Kopiya" : ""
+                })
+            });
+            res.send({
+                ok: true,
+                data: mod
+            })
+        }
     }
 }

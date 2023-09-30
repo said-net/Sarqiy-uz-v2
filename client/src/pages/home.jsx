@@ -151,9 +151,9 @@ function Home() {
                             <div key={i} className="flex relative mr-[20px] w-[200px]" onClick={() => { setOpenVideo(v.video); setVideoDetail({ id: v.pid, title: v.product }) }}>
                                 <div className="w-full h-[300px] absolute top-0 left-0 z-[99]"></div>
                                 <ReactPlayer playIcon={<FaPlay />} url={v?.video} controls height={300} />
-                                <div className="absolute w-full h-[50px] bottom-0 left-0 bg-black flex items-center justify-center">
+                                {/* <div className="absolute w-full h-[50px] bottom-0 left-0 bg-black flex items-center justify-center">
                                     <p className="text-white p-[5px] border">Katta ekran</p>
-                                </div>
+                                </div> */}
                             </div>
                         )
                     })}

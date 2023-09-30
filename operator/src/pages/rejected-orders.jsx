@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, Spinner, Textarea } from "@material-tailwind/react";
+import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, Option, Select, Spinner, Textarea } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "../managers/refresh.manager";
 function RejectedOrders() {
@@ -10,10 +10,10 @@ function RejectedOrders() {
     const [isLoad, setIsLoad] = useState(false);
     const dp = useDispatch();
     const { refresh } = useSelector(e => e.refresh)
-    const [edit, setEdit] = useState({ _id: '', status: 'archive', about: '' });
+    const [edit, setEdit] = useState({ _id: '', status: '', about: '' });
     const [checked, setChecked] = useState(false);
     function Close() {
-        setEdit({ _id: '', status: 'archive', about: '' })
+        setEdit({ _id: '', status: '', about: '' })
     }
     useEffect(() => {
         setIsLoad(false);
@@ -44,7 +44,7 @@ function RejectedOrders() {
                 toast.error(msg);
             } else {
                 toast.success(msg);
-                setEdit({ _id: '', status: 'archive', about: '' });
+                setEdit({ _id: '', status: '', about: '' });
                 dp(setRefresh());
             }
         })
@@ -95,6 +95,12 @@ function RejectedOrders() {
                         Taxrirlash
                     </DialogHeader>
                     <DialogBody className="w-full overflow-y-scroll border-y ">
+                        <div className="flex items-center justify-center w-full mb-[10px]">
+                            <Select label="Buyurtma holatini tanlang!" variant="standard" onChange={(e) => setEdit({ ...edit, status: e })} value={edit?.status}>
+                                <Option value="archive">Arxiv</Option>
+                                <Option value="sended">Dostavkaga</Option>
+                            </Select>
+                        </div>
                         <div className="flex items-center justify-center w-full">
                             <Textarea variant="standard" label="Izoh" required onChange={e => setEdit({ ...edit, about: e.target.value })} value={edit?.about} />
                         </div>
@@ -104,7 +110,7 @@ function RejectedOrders() {
                     </DialogBody>
                     <DialogFooter className="flex items-center justify-between w-full">
                         <Button className="rounded" onClick={Close} color="red">Ortga</Button>
-                        <Button className="rounded" disabled={!checked} color="green" onClick={Submit}>Saqlash</Button>
+                        <Button className="rounded" disabled={!checked || !edit?.about} color="green" onClick={Submit}>Saqlash</Button>
                     </DialogFooter>
                 </div>
             </Dialog>

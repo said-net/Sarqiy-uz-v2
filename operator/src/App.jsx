@@ -12,20 +12,14 @@ import MyOrders from "./pages/my-orders";
 import ReConnects from "./pages/re-connects";
 import RejectedOrders from "./pages/rejected-orders";
 import Payment from "./pages/payment";
-import { setRefresh } from "./managers/refresh.manager";
 import SearchOrder from "./pages/search";
+import { IconButton } from "@material-tailwind/react";
+import { BiRefresh } from "react-icons/bi";
+import { setRefresh } from "./managers/refresh.manager";
 function App() {
   const { id, refresh, name } = useSelector(e => e.auth);
   const dp = useDispatch();
   document.title = name ? `Operator: ${name}` : 'Kirish';
-  setInterval(() => {
-    const d = new Date().getTime();
-    const last = localStorage.getItem('last_update');
-    if (!last || Number(last) + 120 < d) {
-      dp(setRefresh());
-      localStorage.setItem('last_update', d)
-    }
-  }, 9000 * 12);
   useEffect(() => {
     console.log('keldi');
     axios(`${API_LINK}/operator/verify-session`, {
@@ -51,7 +45,11 @@ function App() {
       <div className="flex items-center justify-between w-full h-[100vh]">
         <Navbar />
         <div className="flex items-center justify-start flex-col w-[100%] h-[100vh] overflow-y-scroll p-[70px_10px] ">
-          <div className="w-full h-[60px] shadow-sm z-[995] bg-white fixed top-0 left-0"></div>
+          <div className="w-full h-[60px] shadow-sm z-[995] bg-white fixed top-0 left-0 flex items-center justify-end p-[0_10px]">
+            <IconButton className="text-[30px] rounded-full" color="blue-gray" onClick={(() => dp(setRefresh()))}>
+              <BiRefresh />
+            </IconButton>
+          </div>
           <Routes>
             <Route path="/*" element={<MyOrders />} />
             <Route path="/re-connects" element={<ReConnects />} />

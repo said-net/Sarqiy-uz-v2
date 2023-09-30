@@ -21,6 +21,11 @@ module.exports = {
                 ok: false,
                 msg: "Qatorlarni to'ldiring!"
             });
+        } else if (phone?.length !== 13) {
+            res.send({
+                ok: false,
+                msg: "Raqamni to'g'ri kiriting!"
+            });
         } else {
             const $product = await productModel.findById(id);
             const $check_order = (await shopModel.find({ phone, product: $product?._id })).reverse()[0]
@@ -223,6 +228,45 @@ module.exports = {
             }
         }
     },
+    transferHistoryOrder: async (req, res) => {
+        const { id, operator, courier } = req?.params;
+        if (!id || !operator) {
+            res.send({
+                ok: false,
+                msg: "operator tanlansin"
+            });
+        } else {
+            try {
+                const $order = await shopModel.findById(id);
+                const $operator = await operatorModel.findById(operator);
+                if (!$order || !$operator) {
+                    res.send({
+                        ok: false,
+                        msg: "Operator yoki kuryer yoki order topilmadi!"
+                    })
+                } else {
+                    $order.set({ operator: operator ? operator : null, courier: courier && courier !== 'undefined' ? courier : null }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: `Saqlandi!`
+                        });
+                    }).catch(err => {
+                        console.log(err);
+                        res.send({
+                            ok: false,
+                            msg: "Xatolik!"
+                        })
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
+    },
     transferSelecteds: async (req, res) => {
         const { list, operator } = req?.body;
         if (!list || !list[0] || !operator) {
@@ -242,6 +286,34 @@ module.exports = {
                 res.send({
                     ok: true,
                     msg: `${$operator.name}ga biriktirildi!`
+                })
+            } catch (err) {
+                console.log(err);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
+    },
+    transferHistorySelecteds: async (req, res) => {
+        const { list, courier, operator } = req?.body;
+        if (!list || !list[0]) {
+            res.send({
+                ok: false,
+                msg: "Tanlanmagan!"
+            });
+        } else {
+            try {
+                for (let l of list) {
+                    const $order = await shopModel.findById(l);
+                    if (l !== undefined) {
+                        $order.set({ operator: operator && operator !== 'undefined' ? operator : $order.operator === null ? null : $order?.operator, courier: courier && courier !== 'undefined' ? courier : $order.courier === null ? null : $order?.courier, up_time: moment.now() / 1000 }).save();
+                    }
+                }
+                res.send({
+                    ok: true,
+                    msg: `biriktirildi`
                 })
             } catch (err) {
                 console.log(err);

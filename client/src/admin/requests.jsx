@@ -100,6 +100,8 @@ function AdminRequests() {
                                     <p onClick={() => setSelect({ open: true, ...e })} className="text-[12px]  w-[24%] text-center">{e?.name}</p>
                                     {e?.status === 'pending' && <p onClick={() => setSelect({ open: true, ...e })} className="text-[12px] text-orange-500  w-[24%] text-center">Yangi</p>}
                                     {/*  */}
+                                    {e?.status === 'copy' && <p onClick={() => setSelect({ open: true, ...e })} className="text-[12px] text-red-500  w-[24%] text-center">Kopiya</p>}
+                                    {/*  */}
                                     {e?.status === 'reject' && <p onClick={() => setSelect({ open: true, ...e })} className="text-[12px] text-red-500  w-[24%] text-center">Rad etilgan</p>}
                                     {/*  */}
                                     {e?.status === 'wait' && <p className="text-[12px] text-orange-500  w-[24%] text-center relative">
