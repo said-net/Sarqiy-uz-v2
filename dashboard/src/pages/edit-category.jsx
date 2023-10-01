@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { BiListCheck } from "react-icons/bi";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function EditCategory() {
     const { id } = useParams();
@@ -23,6 +23,7 @@ function EditCategory() {
         });
     }, [refresh]);
     const [disable, setDisable] = useState(false)
+    const nv = useNavigate()
     function Submit(type, image) {
         if (type === 'image') {
             setDisable(true)
@@ -54,7 +55,9 @@ function EditCategory() {
                 setDisable(false)
                 if (ok) {
                     toast.success(msg);
-                    // setRefresh(!refresh)
+                    setTimeout(() => {
+                        nv('/categories')
+                    }, 1000);
                 } else {
                     toast.error(msg)
                 }

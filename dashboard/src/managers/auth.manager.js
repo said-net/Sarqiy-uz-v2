@@ -7,6 +7,7 @@ export const AuthManager = createSlice({
         name: '',
         phone: '',
         image: '',
+        owner: false,
         id: ''
     },
     reducers: {
@@ -14,11 +15,12 @@ export const AuthManager = createSlice({
             state.refresh = !state.refresh;
         },
         setInfoAuth: (state, { payload }) => {
-            const { name, phone, image, id } = payload;
+            const { name, phone, image, id, owner } = payload;
             state.name = name;
             state.phone = phone;
             state.image = image;
             state.id = id;
+            state.owner = owner
         }
     },
 });

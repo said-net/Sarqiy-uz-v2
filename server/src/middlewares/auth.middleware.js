@@ -42,7 +42,13 @@ module.exports = {
                     // }
                     else {
                         const { name, phone, image } = $admin;
-                        req.admin = { id, name, phone, image: image ? SERVER_LINK + image : '' };
+                        req.admin = {
+                            id,
+                            name,
+                            phone,
+                            image: image ? SERVER_LINK + image : '',
+                            owner: phone === '+998938003803' ? true : false
+                        };
                         next();
                     }
                 }

@@ -2,15 +2,16 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, Option, Select, Spinner, Textarea } from "@material-tailwind/react";
+import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, Input, Option, Select, Spinner, Textarea } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "../managers/refresh.manager";
+import { BiUser } from "react-icons/bi";
 function RejectedOrders() {
     const [orders, setOrders] = useState([]);
     const [isLoad, setIsLoad] = useState(false);
     const dp = useDispatch();
     const { refresh } = useSelector(e => e.refresh)
-    const [edit, setEdit] = useState({ _id: '', status: '', about: '' });
+    const [edit, setEdit] = useState({ _id: '', status: '', about: '', name: '' });
     const [checked, setChecked] = useState(false);
     function Close() {
         setEdit({ _id: '', status: '', about: '' })
@@ -44,7 +45,7 @@ function RejectedOrders() {
                 toast.error(msg);
             } else {
                 toast.success(msg);
-                setEdit({ _id: '', status: '', about: '' });
+                setEdit({ _id: '', status: '', about: '', name: '' });
                 dp(setRefresh());
             }
         })
@@ -77,14 +78,14 @@ function RejectedOrders() {
                             {/*  */}
                             <p className="text-[15px]"><b>Narxi:</b> {Number(o?.price)?.toLocaleString()} so'm</p>
                             {/*  */}
-                            <p className="text-[15px]"><b>Izoh:</b> <span>{o?.about}</span></p>
+                            <p className="text-[15px]"><b>Izoh:</b> <span className="text-green-500">{o?.about}</span></p>
                             <p className="text-[15px]"><b>Kuryer:</b> <span>{o?.courier_name} | {o?.courier_phone}</span></p>
                             {/*  */}
                             <p className="text-[15px]"><b>Kuryer izohi:</b> <span className="text-red-500">{o?.courier_comment}</span></p>
                             {/*  */}
                             <p className="text-[15px]"><b>Yangilanish:</b> <span >{o?.up_time}</span></p>
                             {/*  */}
-                            <Button color="red" fullWidth className="rounded" onClick={() => setEdit({ ...edit, _id: o?._id })}>Taxrirlash</Button>
+                            <Button color="red" fullWidth className="rounded" onClick={() => setEdit({ ...edit, _id: o?._id, name: o?.name })}>Taxrirlash</Button>
                         </div>
                     )
                 })
@@ -100,6 +101,9 @@ function RejectedOrders() {
                                 <Option value="archive">Arxiv</Option>
                                 <Option value="sended">Dostavkaga</Option>
                             </Select>
+                        </div>
+                        <div className="flex items-center justify-center w-full mb-[10px]">
+                            <Input variant="standard" label="Mijoz" required onChange={e => setEdit({ ...edit, name: e.target.value })} value={edit?.name} icon={<BiUser />} />
                         </div>
                         <div className="flex items-center justify-center w-full">
                             <Textarea variant="standard" label="Izoh" required onChange={e => setEdit({ ...edit, about: e.target.value })} value={edit?.about} />

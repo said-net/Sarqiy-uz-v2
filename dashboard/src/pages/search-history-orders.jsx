@@ -8,7 +8,7 @@ import { BiSearch, BiTransfer } from "react-icons/bi";
 import { setRefresh } from "../managers/refresh.manager";
 import Regions from '../components/regions.json'
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-function HistoryOrders() {
+function SearchHistoryOrders() {
     const [operators, setOperators] = useState([]);
     const [operator, setOperator] = useState('');
     const [couriers, setCouriers] = useState([]);
@@ -25,28 +25,30 @@ function HistoryOrders() {
     const [open, setOpen] = useState(false);
     const [page, setPage] = useState(1);
     const [type, setType] = useState('id');
-
+    const [runSearch, setRunSearch] = useState(false);
     useEffect(() => {
-        setIsLoad(false);
-        axios(`${API_LINK}/boss/get-history-orders/${page}`, {
-            headers: {
-                'x-auth-token': `Bearer ${localStorage.getItem('access')}`
-            }
-        }).then((res) => {
-            setIsLoad(true)
-            const { data, ok, msg, operators, couriers } = res.data;
-            if (!ok) {
-                toast.error(msg);
-            } else {
-                setOrders(data)
-                setOperators(operators)
-                setCouriers(couriers)
-            }
-        }).catch(() => {
-            setIsLoad(true)
-            toast.error("Aloqani tekshirib qayta urunib ko'ring!")
-        })
-    }, [refresh] && [page]);
+        if (search !== '') {
+            setIsLoad(false);
+            axios(`${API_LINK}/boss/search-history-orders/${type}/${search}`, {
+                headers: {
+                    'x-auth-token': `Bearer ${localStorage.getItem('access')}`
+                }
+            }).then((res) => {
+                setIsLoad(true)
+                const { data, ok, msg, operators, couriers } = res.data;
+                if (!ok) {
+                    toast.error(msg);
+                } else {
+                    setOrders(data)
+                    setOperators(operators)
+                    setCouriers(couriers)
+                }
+            }).catch(() => {
+                setIsLoad(true)
+                toast.error("Aloqani tekshirib qayta urunib ko'ring!")
+            })
+        }
+    }, [refresh] && [runSearch]);
 
     useEffect(() => {
         setSelecteds([]);
@@ -126,18 +128,23 @@ function HistoryOrders() {
     return (
         <div className="flex items-start justify-start flex-col w-full overflow-x-scroll">
             <div className="flex items-center justify-center w-full h-[50px] mb-[20px]">
-                <h1 className="flex items-center justify-center w-[170px] h-[50px] bg-white shadow-sm rounded-b-[10px]">SOTUVLAR TARIXI</h1>
+                <h1 className="flex items-center justify-center w-[170px] h-[50px] bg-white shadow-sm rounded-b-[10px]">QIDIRUV</h1>
             </div>
             <div className="flex items-center justify-normal flex-col">
-                <div className="flex items-center justify-start w-full h-[140px]  shadow-sm bg-white  border-b p-[10px] flex-col">
+                <div className="flex items-center justify-start w-full h-[190px]  shadow-sm bg-white  border-b p-[10px] flex-col">
                     <div className="flex items-center justify-center w-full mb-[10px]">
                         <Input label="Qidiruv: ID, Nomi, Narxi, Raqam" variant="standard" color="red" icon={<BiSearch />} value={search} onChange={e => setSearch(e.target.value)} />
                     </div>
-                    <div className="flex items-center justify-center w-full">
+                    <div className="flex items-center justify-center w-full mb-[10px]">
                         <Select label="Filterlash" variant="standard" onChange={e => setType(e)} value={type}>
                             <Option value="id">ID orqali</Option>
                             <Option value="phone">Raqam orqali</Option>
                         </Select>
+                    </div>
+                    <div className="flex items-center justify-center w-full">
+                        <Button onClick={() => setRunSearch(!runSearch)} className="w-full rounded" color="red" disabled={!search}>
+                            Qidirish
+                        </Button>
                     </div>
                 </div>
                 <div className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
@@ -166,12 +173,12 @@ function HistoryOrders() {
                         </div>
                     </div>
                 </div>
-                {!isLoad && <Spinner />}
-                {isLoad && !orders[0] &&
+                {/* {!isLoad && search && <Spinner />} */}
+                {isLoad && search && !orders[0] &&
                     <p>Buyurtmalar mavjud emas!</p>
                 }
-                {isLoad && orders[0] &&
-                    orders?.filter(o => !search ? o : type === 'id' ? o?.id === +search : o?.phone?.includes(search)).map((o, i) => {
+                {isLoad && search && orders[0] &&
+                    orders?.map((o, i) => {
                         return (
                             <div key={i} className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
                                 <div className="flex items-center justify-between">
@@ -229,17 +236,6 @@ function HistoryOrders() {
                         )
                     })
                 }
-                <div className="flex items-center w-full justify-start mt-[10px] p-[10px]">
-                    <IconButton onClick={() => setPage(page - 1)} className="rounded-full" disabled={page < 2}>
-                        <FaArrowLeft />
-                    </IconButton>
-                    <IconButton className="rounded-full mx-[10px]">
-                        {page}
-                    </IconButton>
-                    <IconButton onClick={() => setPage(page + 1)} className="rounded-full" disabled={orders?.length !== 50}>
-                        <FaArrowRight />
-                    </IconButton>
-                </div>
             </div>
             <Dialog size="xs" open={openTransfer?._id !== ''}>
                 <DialogHeader>
@@ -270,7 +266,7 @@ function HistoryOrders() {
                     <Button disabled={disable} color="green" className="rounded font-sans font-light" onClick={TransferOrder}>Biriktirish</Button>
                 </DialogFooter>
             </Dialog>
-            {/*  */}
+
             <Dialog size="md" open={open}>
                 <DialogHeader>
                     <p>Kuryer va Operator tanlang!</p>
@@ -308,4 +304,4 @@ function HistoryOrders() {
     );
 }
 
-export default HistoryOrders;
+export default SearchHistoryOrders;

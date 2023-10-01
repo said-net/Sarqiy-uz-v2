@@ -207,7 +207,7 @@ module.exports = {
     },
     setStatus: async (req, res) => {
         const { id } = req.params;
-        const { bonus_gived: bonus, about, city, region, status, count, price, recontact, delivery } = req.body;
+        const { bonus_gived: bonus, about, city, region, status, count, price, recontact, delivery, name } = req.body;
         const $order = await shopModel.findById(id);
         if (status === 'archive') {
             if (!about) {
@@ -227,7 +227,7 @@ module.exports = {
                 });
             }
         } else if (status === 'wait') {
-            if (!recontact || !about) {
+            if (!recontact || !about || !name) {
                 res.send({
                     ok: false,
                     msg: "Qatorlarni to'ldiring!"
@@ -236,7 +236,8 @@ module.exports = {
                 $order.set({
                     status: 'wait',
                     recontact: moment.utc(recontact).unix(),
-                    about
+                    about,
+                    name
                 }).save().then(async () => {
                     res.send({
                         ok: true,
@@ -247,7 +248,7 @@ module.exports = {
         } else if (status === 'success') {
             $order.set({
                 status: 'success',
-                about, city, region, bonus, count, price, delivery_price: delivery
+                about, city, region, bonus, count, price, delivery_price: delivery, name
             }).save().then(async () => {
                 res.send({
                     ok: true,
@@ -316,6 +317,7 @@ module.exports = {
                 status: 'sended',
                 about,
                 courier_status: 'sended',
+                name
             }).save().then(async () => {
                 res.send({
                     ok: true,
@@ -609,12 +611,14 @@ module.exports = {
                 msg: "Tanlanmadi!"
             });
         } else {
-            const $orders = await shopModel.find({ phone });
+            const $orders = await shopModel.find({ phone }).populate('product', 'title')
             const mod = [];
             $orders?.forEach(o => {
                 mod.push({
                     id: o?.id,
                     phone: o?.phone,
+                    title: o?.product?.title,
+                    count: o?.count,
                     name: o?.name,
                     status: o?.status,
                     created: moment.unix(o?.created).format("DD-MM-YYYY HH:mm"),

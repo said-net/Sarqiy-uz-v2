@@ -62,7 +62,7 @@ function Couriers() {
                                             </IconButton>
                                         </MenuHandler>
                                         <MenuList>
-                                            <MenuItem onClick={() => nv('/edit-category/' + c?.id)} className="flex items-center justify-start">
+                                            <MenuItem onClick={() => nv(`/edit-courier/${c?.id}/${c?.name}/${c?.phone}/${c?.region}`)} className="flex items-center justify-start">
                                                 <BiPencil className="mr-[10px]" />
                                                 Taxrirlash
                                             </MenuItem>

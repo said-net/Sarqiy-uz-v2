@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoney, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming, BiUserPlus, BiFlag, BiHistory } from 'react-icons/bi';
+import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoney, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming, BiUserPlus, BiFlag, BiHistory, BiSearch } from 'react-icons/bi';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_LINK } from "../config";
@@ -48,11 +48,11 @@ function Navbar() {
                     Dashboard
                 </Link>
                 {/*  */}
-                {/* <Link onClick={() => setOpen(false)} to='/race' className={classLink + `${path === '/race' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                <Link onClick={() => setOpen(false)} to='/race' className={classLink + `${path === '/race' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiFlag className="mr-[10px]" />
                     Poyga {new Date().getFullYear()}
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.race}</span>
-                </Link> */}
+                </Link>
                 {/*  */}
                 <Link onClick={() => setOpen(false)} to='/products' className={classLink + `${path === '/products' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
                     <BiSolidBox className="mr-[10px]" />
@@ -173,6 +173,10 @@ function Navbar() {
                     <BiHistory className="mr-[10px]" />
                     Sotuvlar tarixi
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.history_orders}</span>
+                </Link>
+                <Link onClick={() => setOpen(false)} to='/search-history' className={classLink + `${path === '/search-history' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                    <BiSearch className="mr-[10px]" />
+                    Qidiruv(Tarix)
                 </Link>
                 {/*  */}
             </div>

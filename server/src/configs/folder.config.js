@@ -119,6 +119,15 @@ module.exports = () => {
                     });
                 }
             });
+            fs.readdir('./public/races', (err) => {
+                if (err) {
+                    fs.mkdir(path.join('./', 'public', 'races'), (err) => {
+                        if (err) {
+                            console.log("Races error");
+                        }
+                    });
+                }
+            });
         }
     });
 

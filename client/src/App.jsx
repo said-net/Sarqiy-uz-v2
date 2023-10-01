@@ -28,6 +28,7 @@ import Competition from "./admin/competition";
 import AdminProductStats from "./admin/getproductstats";
 // import Loading from "./components/loading";
 import AdminRequests from "./admin/requests";
+import CoinMarket from "./admin/coin-market";
 
 function App() {
   const { refresh, id } = useSelector(e => e.auth);
@@ -80,6 +81,7 @@ function App() {
                 <Route path="/dashboard/comps" element={<Competition />} />
                 <Route path="/dashboard/product-stats" element={<AdminProductStats />} />
                 <Route path="/dashboard/requests" element={<AdminRequests />} />
+                <Route path="/dashboard/coin-market" element={<CoinMarket />} />
               </Routes>
               <ToastContainer position="top-center" autoClose={2000} closeButton={false} style={{ zIndex: '9999999999' }} />
             </>

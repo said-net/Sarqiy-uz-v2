@@ -21,6 +21,7 @@ module.exports = require('express').Router()
     .get('/get-history-orders/:page', authMiddleware.boss, bossController.getHistoryOrders)
     // 
     .post('/create-courier', authMiddleware.boss, bossController.createCourier)
+    .put('/edit-courier', authMiddleware.boss, bossController.editCourier)
     .get('/get-all-couriers', authMiddleware.boss, bossController.getAllCouriers)
     .post('/set-courier', authMiddleware.boss, bossController.setCourier)
     // 
@@ -31,6 +32,8 @@ module.exports = require('express').Router()
     // 
     .get('/get-operator-pays', authMiddleware.boss, bossController.getOperatorPays)
     .post('/set-operator-pay-status', authMiddleware.boss, bossController.setStatusOperatorPay)
+    .get('/search-history-orders/:type/:search', authMiddleware.boss, bossController.searchHistoryOrders)
+
     
 
     // .get('/get-new-orders', authMiddleware.boss, bossController.getNewOrders)

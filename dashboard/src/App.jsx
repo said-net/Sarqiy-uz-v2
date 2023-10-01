@@ -34,6 +34,9 @@ import WaitOrders from "./pages/get-wait-orders";
 import { setRefresh } from "./managers/refresh.manager";
 import ArchivedOrders from "./pages/get-archived-orders";
 import HistoryOrders from "./pages/get-history-orders";
+import SearchHistoryOrders from "./pages/search-history-orders";
+import EditCourier from "./pages/edit-courier";
+import Races from "./pages/races";
 function App() {
   const { refresh, phone } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -78,6 +81,7 @@ function App() {
             {/*  */}
             <Route path="/couriers" element={<Couriers />} />
             <Route path="/add-courier" element={<AddCourier />} />
+            <Route path="/edit-courier/:id/:name/:phone/:region" element={<EditCourier />} />
             {/*  */}
             <Route path="/new-orders" element={<NewOrders />} />
             <Route path="/wait-orders" element={<WaitOrders />} />
@@ -89,10 +93,12 @@ function App() {
             <Route path="/reject" element={<RejectedOrders />} />
             <Route path="/delivered" element={<DeliveredOrders />} />
             <Route path="/history" element={<HistoryOrders />} />
+            <Route path="/search-history" element={<SearchHistoryOrders />} />
             {/*  */}
             <Route path="/pay-operators" element={<GetOperatorPays />} />
             {/*  */}
             <Route path="/users" element={<Users />} />
+            <Route path="/race" element={<Races />} />
           </Routes>
         </div>
         <ToastContainer position="top-center" autoClose={1000} closeButton={false} style={{ zIndex: '9999999999' }} />

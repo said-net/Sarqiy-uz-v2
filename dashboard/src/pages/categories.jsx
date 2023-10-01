@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { API_LINK } from "../config";
 import { Chip, IconButton, Menu, MenuHandler, MenuItem, MenuList, Spinner } from "@material-tailwind/react";
 import { BiDotsVertical, BiPencil } from "react-icons/bi";
@@ -8,10 +7,8 @@ import { useNavigate } from "react-router-dom";
 
 function Categories() {
     const [categories, setCategories] = useState([]);
-    const [disable, setDisable] = useState(false);
     const [isLoad, setIsLoad] = useState(false);
     const nv = useNavigate();
-    const dp = useDispatch();
     useEffect(() => {
         setIsLoad(false);
         axios(`${API_LINK}/category/getall`).then((res) => {

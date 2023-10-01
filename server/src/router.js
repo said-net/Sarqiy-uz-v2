@@ -8,5 +8,6 @@ module.exports = require('express').Router()
     .use('/shop', require('./routers/shop.router'))
     .use('/main', require('./routers/main.router'))
     .use('/competition', require('./routers/competition.router'))
+    .use('/race', require('./routers/race.router'))
     // 
     .use('/user', require('./routers/user.router'))

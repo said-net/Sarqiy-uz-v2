@@ -138,7 +138,7 @@ module.exports = {
         }
     },
     getRejectedOrders: async (req, res) => {
-        const $orders = await shopModel.find({ status: 'sended', courier_status: 'reject', courier: req?.courier?.id, verified: false }).populate('product operator');
+        const $orders = await shopModel.find({ courier_status: 'reject', courier: req?.courier?.id, verified: false }).populate('product operator');
         const list = [];
         $orders?.forEach(e => {
             list.push({
