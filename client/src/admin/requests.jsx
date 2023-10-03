@@ -70,6 +70,7 @@ function AdminRequests() {
                 <Select onChange={e => setType(e)} value={type} label="Saralash">
                     <Option value={'all'}>Barchasi</Option>
                     <Option value={'pending'}>Yangi</Option>
+                    <Option value={'copy'}>Kopiya</Option>
                     <Option value={'reject'}>Rad etilgan</Option>
                     <Option value={'archive'}>Arxivlangan</Option>
                     <Option value={'wait'}>Qayta qo'ng'iroq</Option>

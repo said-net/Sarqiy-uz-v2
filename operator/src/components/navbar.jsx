@@ -1,17 +1,17 @@
 import { FaUser } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { BiCreditCard, BiHistory, BiLogOut, BiMenu, BiPhoneCall, BiRefresh, BiSearch, BiShoppingBag, BiSolidDashboard, BiTargetLock, BiX } from 'react-icons/bi'
+import { BiCreditCard, BiHistory, BiLogOut, BiMenu, BiPhoneCall, BiRefresh, BiSearch, BiShoppingBag, BiX } from 'react-icons/bi'
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { API_LINK } from "../config";
 import { IconButton } from "@material-tailwind/react";
-import { setInfoAuth, setRefreshAuth } from "../managers/auth.manager";
+import { setInfoAuth } from "../managers/auth.manager";
 function Navbar() {
-    const { auth: { name, phone, balance }, refresh: { refresh } } = useSelector(e => e);
+    const { auth: { name, phone, balance, sp }, refresh: { refresh } } = useSelector(e => e);
     const path = useLocation().pathname;
-    const [stats, setStats] = useState({ new_orders: 0, re_contacts: 0, rejecteds: 0 });
+    const [stats, setStats] = useState({ new_orders: 0, re_contacts: 0, rejecteds: 0, waiting: 0 });
     const [open, setOpen] = useState(false);
     const dp = useDispatch();
     function LogOut() {
@@ -58,6 +58,14 @@ function Navbar() {
                     <p className="text-[16px] p-[5px] bg-white rounded shadow-sm">Hisob: {Number(balance)?.toLocaleString()} so'm</p>
                 </div>
                 {/*  */}
+                {sp && <Link to='/waiting-orders' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/waiting-orders' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
+                    <BiShoppingBag className="mr-[10px]" />
+                    Taqsimlash
+                    <div className="flex items-center justify-center w-[10px] h-[20px] absolute right-[20px] border-l-[2px] pl-[10px] text-[14px]">
+                        {stats?.waiting?.length}
+                    </div>
+                </Link>}
+                {/*  */}
                 <Link to='/my-orders' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/my-orders' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
                     <BiShoppingBag className="mr-[10px]" />
                     Buyurtmalar
@@ -73,6 +81,7 @@ function Navbar() {
                         {stats?.re_contacts}
                     </div>
                 </Link>
+                {/*  */}
                 <Link to='/rejecteds' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/rejecteds' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
                     <BiRefresh className="mr-[10px]" />
                     Qaytganlar
@@ -90,10 +99,10 @@ function Navbar() {
                     Pul chiqarish
                 </Link>
                 {/*  */}
-                {/* <Link to='/withdraw-history' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/withdraw-history' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
+                <Link to='/withdraw-history' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/withdraw-history' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
                     <BiHistory className="mr-[10px]" />
-                    Balans tarixi
-                </Link> */}
+                    To'lovlar tarixi
+                </Link>
                 {/*  */}
                 <div className="h-[1px] w-full bg-blue-gray-100 m-[5px_0]"></div>
                 <p onClick={LogOut} className="w-full text-red-500 text-[20px] cursor-pointer flex items-center justify-start">

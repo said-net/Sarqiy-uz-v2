@@ -29,11 +29,3 @@ app.listen(APP_PORT, () => {
         console.log(error);
     }
 });
-
-async function AddMoney() {
-    let shops = await shopModel.find({ for_admin: 0, status: 'sended' }).populate('product')
-    for (let shop of shops) {
-        shop.set({for_admin: shop?.product?.for_admins}).save();
-    }
-}
-AddMoney()

@@ -16,8 +16,10 @@ import SearchOrder from "./pages/search";
 import { IconButton } from "@material-tailwind/react";
 import { BiRefresh } from "react-icons/bi";
 import { setRefresh } from "./managers/refresh.manager";
+import WithdrawHistory from "./pages/withdraw-history";
+import WaitingOrders from "./pages/waiting-orders";
 function App() {
-  const { id, refresh, name } = useSelector(e => e.auth);
+  const { id, refresh, name, sp } = useSelector(e => e.auth);
   const dp = useDispatch();
   document.title = name ? `Operator: ${name}` : 'Kirish';
   useEffect(() => {
@@ -56,6 +58,8 @@ function App() {
             <Route path="/rejecteds" element={<RejectedOrders />} />
             <Route path="/withdraw" element={<Payment />} />
             <Route path="/search-order" element={<SearchOrder />} />
+            <Route path="/withdraw-history" element={<WithdrawHistory />} />
+            {sp && <Route path="/waiting-orders" element={<WaitingOrders />} />}
           </Routes>
         </div>
         <ToastContainer autoClose={2000} closeButton={false} position="top-center" style={{ zIndex: '9999999' }} />

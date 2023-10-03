@@ -20,7 +20,6 @@ import EditOperator from "./pages/edit-operator";
 import NewOrders from "./pages/new-orders";
 import OwnedOrders from "./pages/owned-orders";
 import Users from "./pages/users";
-
 import GetWaitDeliveries from "./pages/get-wait-deliveries";
 import AddCourier from "./pages/add-courier";
 import Couriers from "./pages/couriers";
@@ -31,14 +30,16 @@ import DeliveredOrders from "./pages/get-delivered-orders";
 import GetOperatorPays from "./pages/get-operator-pays";
 import Dashboard from "./pages/dashboard";
 import WaitOrders from "./pages/get-wait-orders";
-import { setRefresh } from "./managers/refresh.manager";
 import ArchivedOrders from "./pages/get-archived-orders";
 import HistoryOrders from "./pages/get-history-orders";
 import SearchHistoryOrders from "./pages/search-history-orders";
 import EditCourier from "./pages/edit-courier";
 import Races from "./pages/races";
+import Owners from "./pages/owners";
+import GetStatUsers from "./pages/get-stat-users";
+import GetStatOpers from "./pages/get-stat-opers";
 function App() {
-  const { refresh, phone } = useSelector(e => e.auth);
+  const { refresh, phone, owner } = useSelector(e => e.auth);
   const dp = useDispatch();
   document.title = phone ? `Ega: ${phone}` : 'Kirish';
   useEffect(() => {
@@ -98,7 +99,10 @@ function App() {
             <Route path="/pay-operators" element={<GetOperatorPays />} />
             {/*  */}
             <Route path="/users" element={<Users />} />
+            <Route path="/stat-users" element={<GetStatUsers />} />
+            <Route path="/stat-opers" element={<GetStatOpers />} />
             <Route path="/race" element={<Races />} />
+            {owner && <Route path="/owners" element={<Owners />} />}
           </Routes>
         </div>
         <ToastContainer position="top-center" autoClose={1000} closeButton={false} style={{ zIndex: '9999999999' }} />

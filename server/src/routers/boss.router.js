@@ -33,29 +33,16 @@ module.exports = require('express').Router()
     .get('/get-operator-pays', authMiddleware.boss, bossController.getOperatorPays)
     .post('/set-operator-pay-status', authMiddleware.boss, bossController.setStatusOperatorPay)
     .get('/search-history-orders/:type/:search', authMiddleware.boss, bossController.searchHistoryOrders)
+    // 
+    // 
+    // 
+    .post('/create-owner', authMiddleware.boss, bossController.createOwner)
+    .get('/get-all-owners', authMiddleware.boss, bossController.getAllOwners)
+    .put('/edit-owner/:id', authMiddleware.boss, bossController.editOwner)
+    .delete('/delete-owner/:id', authMiddleware.boss, bossController.deleteOwner)
+    // 
+    // 
+    // 
+    .get('/get-stats-users', authMiddleware.boss, bossController.getStatsUsers)
+    .get('/get-stats-opers', authMiddleware.boss, bossController.getStatsOpers)
 
-    
-
-    // .get('/get-new-orders', authMiddleware.boss, bossController.getNewOrders)
-    // .get('/get-info-order/:id', authMiddleware.boss, bossController.getOrder)
-    // .get('/get-cheque-order/:id', authMiddleware.boss, bossController.getChequeOrder)
-    // .post('/set-status-order/:id', authMiddleware.boss, bossController.setStatusOrder)
-    // .get('/get-sended-orders', authMiddleware.boss, bossController.getSendedOrders)
-    // .get('/get-searched-sended-orders/:search', authMiddleware.boss, bossController.getSearchedSendedOrders)
-    // .get('/get-history-orders', authMiddleware.boss, bossController.getHistoryOrders)
-    // .post('/set-status-by-date', authMiddleware.boss, bossController.setStatusByDate)
-    // .get('/get-wait-orders', authMiddleware.boss, bossController.getWaitOrders)
-    // .post('/set-status-to-new', authMiddleware.boss, bossController.setStatusToNew)
-    // // 
-    
-    // .get('/get-operator-stats/:id/:date', authMiddleware.boss, bossController.getOperatorStats)
-    // .get('/search-base/:search', authMiddleware.boss, bossController.searchBase)
-    // .get('/view-info-order/:id', authMiddleware.boss, bossController.getInfoOrder)
-    // .put('/edit-info-order/:id', authMiddleware.boss, bossController.setInfoOrder)
-    // .get('/get-users', authMiddleware.boss, bossController.getAllUsers)
-    // .get('/set-targetolog/:id', authMiddleware.boss, bossController.setTargetlolog)
-    // .get('/remove-targetolog/:id', authMiddleware.boss, bossController.removeTargetolog)
-    // .post('/add-money-to-operator/:id', authMiddleware.boss, bossController.addMoneyToOperator)
-    // .get('/get-admin-stats/:date', authMiddleware.boss, bossController.getStatAdmins)
-    // .get('/get-all-cheques', authMiddleware.boss, bossController.getAllCheques)
-    // .post('/set-status-by-id', authMiddleware.boss, bossController.setStatusById)

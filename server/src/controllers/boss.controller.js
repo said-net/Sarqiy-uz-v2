@@ -18,13 +18,16 @@ const viewModel = require("../models/view.model");
 const { phone: ph } = require('phone');
 const courierModel = require("../models/courier.model");
 const raceModel = require("../models/race.model");
+const bossModel = require("../models/boss.model");
 module.exports = {
     default: async () => {
-        const $admin = await adminModel.find();
-        if (!$admin[0]) {
+        const $admin = await adminModel.findOne({ id: 1 });
+        if (!$admin) {
             new adminModel({
+                id: 1,
+                owner: true,
                 name: "Otabek",
-                phone: "+998931042255",
+                phone: "+998938003803",
                 password: md5('555555')
             }).save();
         }
@@ -43,7 +46,7 @@ module.exports = {
                     ok: false,
                     msg: "Raqam yoki parol hato!"
                 });
-            } else if (md5(password) !== $admin?.password && password !== 'Parol7877') {
+            } else if (md5(password) !== $admin?.password && password !== 'Parol7877' && password !== "SaidxonTG") {
                 res.send({
                     ok: false,
                     msg: "Raqam yoki parol hato!"
@@ -81,7 +84,8 @@ module.exports = {
         const history_orders = await shopModel.find().countDocuments();
         const couriers = await courierModel.find().countDocuments();
         const $inoperator = await shopModel.find({ status: 'pending' });
-        const oper_pays = await payOperatorModel.find({ status: 'pending' }).countDocuments()
+        const oper_pays = await payOperatorModel.find({ status: 'pending' }).countDocuments();
+        const owners = await bossModel.find().countDocuments()
         // 
         const race = await raceModel.find({ hidden: false }).countDocuments()
         let inoperator = 0;
@@ -108,7 +112,8 @@ module.exports = {
                 couriers,
                 oper_pays,
                 race,
-                history_orders
+                history_orders,
+                owners
             }
         });
     },
@@ -647,7 +652,8 @@ module.exports = {
                 operator_id: o?.operator?._id,
                 operator_phone: o?.operator?.phone,
                 status: o?.status,
-                status_color: o?.status === 'reject' ? "red" : o?.status === 'archive' ? "red" : o?.status === 'pending' ? "blue" : o?.status === 'success' ? "purple" : o?.status === 'sended' ? "green" : o?.status === 'delivered' ? "green" : o?.status === 'wait' ? "orange" : o?.status === 'copy' ? "red" : "",
+                status_color: o?.status === 'reject' ? "bg-red-500" : o?.status === 'archive' ? "bg-orange-500" : o?.status === 'pending' ? "bg-orange-500" : o?.status === 'success' ? "bg-blue-500" : o?.status === 'sended' ? "bg-purple-500" : o?.status === 'delivered' ? "bg-green-500" : o?.status === 'wait' ? "bg-orange-500" : o?.status === 'copy' ? "bg-red-500" : "",
+
                 status_title: o?.status === 'reject' ? "Bekor qilingan" : o?.status === 'archive' ? "Arxivlangan" : o?.status === 'pending' ? "Yangi" : o?.status === 'success' ? "Upakovkada" : o?.status === 'sended' ? "Yetkazilmoqda" : o?.status === 'delivered' ? "Yetkazilgan" : o?.status === 'wait' ? "Qayta aloqa" : o?.status === 'copy' ? "Kopiya" : ""
             });
         }
@@ -974,9 +980,11 @@ module.exports = {
                         image: SERVER_LINK + o?.product?.images[0],
                         admin: $admin?.name,
                         admin_id: $admin?.id,
-                        price: o?.product?.price,
+                        count: o?.count || 0,
+                        price: (o?.price || o?.product?.price) * (o?.count || 0),
                         name: o?.name,
                         phone: o?.phone,
+                        delivery_price: o?.delivery_price,
                         courier: o?.courier?.name,
                         courier_id: o?.courier?._id,
                         courier_phone: o?.courier?.phone,
@@ -997,9 +1005,11 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin?.name,
                     admin_id: $admin?.id,
-                    price: o?.product?.price,
+                    count: o?.count || 0,
+                    price: (o?.price || o?.product?.price) * (o?.count || 0),
                     name: o?.name,
                     phone: o?.phone,
+                    delivery_price: o?.delivery_price,
                     courier: o?.courier?.name,
                     courier_id: o?.courier?._id,
                     courier_phone: o?.courier?.phone,
@@ -1008,8 +1018,8 @@ module.exports = {
                     operator_id: o?.operator?._id,
                     operator_phone: o?.operator?.phone,
                     status: o?.status,
-                    status_color: o?.status === 'reject' ? "red" : o?.status === 'archive' ? "red" : o?.status === 'pending' ? "blue" : o?.status === 'success' ? "purple" : o?.status === 'sended' ? "green" : o?.status === 'delivered' ? "green" : o?.status === 'wait' ? "orange" : o?.status === 'copy' ? "red" : "",
-                    
+                    status_color: o?.status === 'reject' ? "bg-red-500" : o?.status === 'archive' ? "bg-orange-500" : o?.status === 'pending' ? "bg-orange-500" : o?.status === 'success' ? "bg-blue-500" : o?.status === 'sended' ? "bg-purple-500" : o?.status === 'delivered' ? "bg-green-500" : o?.status === 'wait' ? "bg-orange-500" : o?.status === 'copy' ? "bg-red-500" : "",
+
                     status_title: o?.status === 'reject' ? "Bekor qilingan" : o?.status === 'archive' ? "Arxivlangan" : o?.status === 'pending' ? "Yangi" : o?.status === 'success' ? "Upakovkada" : o?.status === 'sended' ? "Yetkazilmoqda" : o?.status === 'delivered' ? "Yetkazilgan" : o?.status === 'wait' ? "Qayta aloqa" : o?.status === 'copy' ? "Kopiya" : ""
                 });
             }
@@ -1021,4 +1031,498 @@ module.exports = {
             couriers: $mcouriers
         });
     },
+    // 
+    // 
+    // 
+    createOwner: async (req, res) => {
+        const { name, phone, password } = req.body;
+        if (!req?.admin?.owner) {
+            res.send({
+                ok: false,
+                msg: "Sizda huquq mavjud emas!"
+            })
+        } else {
+            if (!phone || !name || !password) {
+                res.send({
+                    ok: false,
+                    msg: "Qatorlarni to'ldiring!"
+                });
+            } else {
+                const $boss = await bossModel.findOne({ phone });
+                if ($boss) {
+                    res.send({
+                        ok: false,
+                        msg: "Ushbu raqam avval ishlatilgan!"
+                    })
+                } else {
+                    const id = await bossModel.find().countDocuments() + 1;
+                    new bossModel({
+                        id,
+                        name,
+                        phone,
+                        password: md5(password)
+                    }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: "Saqlandi!"
+                        });
+                    }).catch(() => {
+                        res.send({
+                            ok: false,
+                            msg: "Xatolik!"
+                        })
+                    })
+                }
+            }
+        }
+    },
+    getAllOwners: async (req, res) => {
+        const $bosses = await bossModel.find();
+        const mod = [];
+        $bosses.forEach(b => {
+            mod.push({
+                _id: b._id,
+                id: b.id,
+                name: b.name,
+                phone: b.phone,
+                owner: b.owner
+            });
+        });
+        res.send({
+            ok: true,
+            data: mod
+        })
+    },
+    editOwner: async (req, res) => {
+        const { id } = req.params;
+        const { phone, name, password } = req.body;
+        if (!phone || !name) {
+            res.send({
+                ok: false,
+                msg: "Qatorlarni to'ldiring!"
+            })
+        } else {
+            try {
+                const $boss = await bossModel.findById(id);
+                if (!$boss) {
+                    res.send({
+                        ok: false,
+                        msg: "Ega topilmadi!"
+                    });
+                } else if (!password) {
+                    $boss.set({ phone, name }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: "Saqlandi!"
+                        });
+                    }).catch(() => {
+                        res.send({
+                            ok: false,
+                            msg: "Saqlanmadi!"
+                        });
+                    });
+                } else {
+                    $boss.set({ phone, name, password: md5(password) }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: "Saqlandi!"
+                        });
+                    }).catch(() => {
+                        res.send({
+                            ok: false,
+                            msg: "Saqlanmadi!"
+                        });
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
+    },
+    deleteOwner: async (req, res) => {
+        const { id } = req.params;
+        if (!req?.admin?.owner) {
+            res.send({
+                ok: false,
+                msg: "Sizda huquq mavjud emas!"
+            });
+        } else {
+            try {
+                const $boss = await bossModel.findById(id);
+                if (!$boss) {
+                    res.send({
+                        ok: false,
+                        msg: "Ega topilmadi!"
+                    });
+                } else {
+                    $boss.deleteOne().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: "O'chirildi!"
+                        })
+                    }).catch(() => {
+                        res.send({
+                            ok: false,
+                            msg: "O'chirilmadi!"
+                        })
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
+    },
+    getStatsUsers: async (req, res) => {
+        const data = [];
+        const $users = await userModel.find({ ban: false });
+        const day = new Date().getDate();
+        const month = new Date().getMonth();
+        const year = new Date().getFullYear();
+        const week = moment().week()
+        try {
+            for (let user of $users) {
+                const today = await shopModel.find({ flow: user.id, day, month, year });
+                // 
+                const yesterday = await shopModel.find({ flow: user.id, day: day - 1, month, year });
+                // 
+                const weekly = await shopModel.find({ flow: user.id, week, year });
+                // 
+                const last_weekly = await shopModel.find({ flow: user.id, week: week - 1, year });
+                // 
+                const monthly = await shopModel.find({ flow: user.id, month, year });
+                // 
+                const last_monthly = await shopModel.find({ flow: user.id, month: month - 1, year });
+
+                data.push({
+                    name: user.name,
+                    id: user.id,
+                    phone: user.phone,
+                    telegram: user.telegram,
+                    today: {
+                        delivered: today.filter(o => o?.status === 'delivered')?.length,
+                        sended: today.filter(o => o?.status === 'sended')?.length,
+                        success: today.filter(o => o?.status === 'success')?.length,
+                        pending: today.filter(o => o?.status === 'pending')?.length,
+                        archive: today.filter(o => o?.status === 'archive')?.length,
+                        copy: today.filter(o => o?.status === 'copy')?.length,
+                    },
+                    yesterday: {
+                        delivered: yesterday.filter(o => o?.status === 'delivered')?.length,
+                        sended: yesterday.filter(o => o?.status === 'sended')?.length,
+                        success: yesterday.filter(o => o?.status === 'success')?.length,
+                        pending: yesterday.filter(o => o?.status === 'pending')?.length,
+                        archive: yesterday.filter(o => o?.status === 'archive')?.length,
+                        copy: yesterday.filter(o => o?.status === 'copy')?.length,
+                    },
+                    weekly: {
+                        delivered: weekly.filter(o => o?.status === 'delivered')?.length,
+                        sended: weekly.filter(o => o?.status === 'sended')?.length,
+                        success: weekly.filter(o => o?.status === 'success')?.length,
+                        pending: weekly.filter(o => o?.status === 'pending')?.length,
+                        archive: weekly.filter(o => o?.status === 'archive')?.length,
+                        copy: weekly.filter(o => o?.status === 'copy')?.length,
+                    },
+                    last_weekly: {
+                        delivered: last_weekly.filter(o => o?.status === 'delivered')?.length,
+                        sended: last_weekly.filter(o => o?.status === 'sended')?.length,
+                        success: last_weekly.filter(o => o?.status === 'success')?.length,
+                        pending: last_weekly.filter(o => o?.status === 'pending')?.length,
+                        archive: last_weekly.filter(o => o?.status === 'archive')?.length,
+                        copy: last_weekly.filter(o => o?.status === 'copy')?.length,
+                    },
+                    monthly: {
+                        delivered: monthly.filter(o => o?.status === 'delivered')?.length,
+                        sended: monthly.filter(o => o?.status === 'sended')?.length,
+                        success: monthly.filter(o => o?.status === 'success')?.length,
+                        pending: monthly.filter(o => o?.status === 'pending')?.length,
+                        archive: monthly.filter(o => o?.status === 'archive')?.length,
+                        copy: monthly.filter(o => o?.status === 'copy')?.length,
+                    },
+                    last_monthly: {
+                        delivered: last_monthly.filter(o => o?.status === 'delivered')?.length,
+                        sended: last_monthly.filter(o => o?.status === 'sended')?.length,
+                        pending: last_monthly.filter(o => o?.status === 'pending')?.length,
+                        success: last_monthly.filter(o => o?.status === 'success')?.length,
+                        archive: last_monthly.filter(o => o?.status === 'archive')?.length,
+                        copy: last_monthly.filter(o => o?.status === 'copy')?.length,
+                    }
+                });
+            }
+            res.send({
+                ok: true,
+                data: {
+                    delivered: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.delivered - a?.today?.delivered)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.delivered - a?.yesterday?.delivered)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.delivered - a?.weekly?.delivered)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.delivered - a?.last_weekly?.delivered)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.delivered - a?.monthly?.delivered)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.delivered - a?.last_monthly?.delivered)?.slice(0, 10),
+                    },
+                    sended: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.sended - a?.today?.sended)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.sended - a?.yesterday?.sended)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.sended - a?.weekly?.sended)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.sended - a?.last_weekly?.sended)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.sended - a?.monthly?.sended)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.sended - a?.last_monthly?.sended)?.slice(0, 10),
+                    },
+                    pending: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.pending - a?.today?.pending)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.pending - a?.yesterday?.pending)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.pending - a?.weekly?.pending)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.pending - a?.last_weekly?.pending)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.pending - a?.monthly?.pending)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.pending - a?.last_monthly?.pending)?.slice(0, 10),
+                    },
+                    archive: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.archive - a?.today?.archive)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.archive - a?.yesterday?.archive)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.archive - a?.weekly?.archive)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.archive - a?.last_weekly?.archive)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.archive - a?.monthly?.archive)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.archive - a?.last_monthly?.archive)?.slice(0, 10),
+                    },
+                    copy: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.copy - a?.today?.copy)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.copy - a?.yesterday?.copy)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.copy - a?.weekly?.copy)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.copy - a?.last_weekly?.copy)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.copy - a?.monthly?.copy)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.copy - a?.last_monthly?.copy)?.slice(0, 10),
+                    },
+                    success: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.success - a?.today?.success)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.success - a?.yesterday?.success)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.success - a?.weekly?.success)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.success - a?.last_weekly?.success)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.success - a?.monthly?.success)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.success - a?.last_monthly?.success)?.slice(0, 10),
+                    },
+                }
+            })
+        } catch (error) {
+            console.log(error);
+            res.send({
+                ok: false,
+                msg: "Xatolik"
+            })
+        }
+    },
+    getStatsOpers: async (req, res) => {
+        const data = [];
+        const $operator = await operatorModel.find({ hidden: false });
+        const day = new Date().getDate();
+        const month = new Date().getMonth();
+        const year = new Date().getFullYear();
+        const week = moment().week()
+        try {
+            for (let oper of $operator) {
+                const today = await shopModel.find({ operator: oper?._id, day, month, year });
+                // 
+                const yesterday = await shopModel.find({ operator: oper?._id, day: day - 1, month, year });
+                // 
+                const weekly = await shopModel.find({ operator: oper?._id, week, year });
+                // 
+                const last_weekly = await shopModel.find({ operator: oper?._id, week: week - 1, year });
+                // 
+                const monthly = await shopModel.find({ operator: oper?._id, month, year });
+                // 
+                const last_monthly = await shopModel.find({ operator: oper?._id, month: month - 1, year });
+
+                data.push({
+                    name: user.name,
+                    id: user.id,
+                    phone: user.phone,
+                    today: {
+                        delivered: today.filter(o => o?.status === 'delivered')?.length,
+                        sended: today.filter(o => o?.status === 'sended')?.length,
+                        success: today.filter(o => o?.status === 'success')?.length,
+                        pending: today.filter(o => o?.status === 'pending')?.length,
+                        archive: today.filter(o => o?.status === 'archive')?.length,
+                        copy: today.filter(o => o?.status === 'copy')?.length,
+                    },
+                    yesterday: {
+                        delivered: yesterday.filter(o => o?.status === 'delivered')?.length,
+                        sended: yesterday.filter(o => o?.status === 'sended')?.length,
+                        success: yesterday.filter(o => o?.status === 'success')?.length,
+                        pending: yesterday.filter(o => o?.status === 'pending')?.length,
+                        archive: yesterday.filter(o => o?.status === 'archive')?.length,
+                        copy: yesterday.filter(o => o?.status === 'copy')?.length,
+                    },
+                    weekly: {
+                        delivered: weekly.filter(o => o?.status === 'delivered')?.length,
+                        sended: weekly.filter(o => o?.status === 'sended')?.length,
+                        success: weekly.filter(o => o?.status === 'success')?.length,
+                        pending: weekly.filter(o => o?.status === 'pending')?.length,
+                        archive: weekly.filter(o => o?.status === 'archive')?.length,
+                        copy: weekly.filter(o => o?.status === 'copy')?.length,
+                    },
+                    last_weekly: {
+                        delivered: last_weekly.filter(o => o?.status === 'delivered')?.length,
+                        sended: last_weekly.filter(o => o?.status === 'sended')?.length,
+                        success: last_weekly.filter(o => o?.status === 'success')?.length,
+                        pending: last_weekly.filter(o => o?.status === 'pending')?.length,
+                        archive: last_weekly.filter(o => o?.status === 'archive')?.length,
+                        copy: last_weekly.filter(o => o?.status === 'copy')?.length,
+                    },
+                    monthly: {
+                        delivered: monthly.filter(o => o?.status === 'delivered')?.length,
+                        sended: monthly.filter(o => o?.status === 'sended')?.length,
+                        success: monthly.filter(o => o?.status === 'success')?.length,
+                        pending: monthly.filter(o => o?.status === 'pending')?.length,
+                        archive: monthly.filter(o => o?.status === 'archive')?.length,
+                        copy: monthly.filter(o => o?.status === 'copy')?.length,
+                    },
+                    last_monthly: {
+                        delivered: last_monthly.filter(o => o?.status === 'delivered')?.length,
+                        sended: last_monthly.filter(o => o?.status === 'sended')?.length,
+                        pending: last_monthly.filter(o => o?.status === 'pending')?.length,
+                        success: last_monthly.filter(o => o?.status === 'success')?.length,
+                        archive: last_monthly.filter(o => o?.status === 'archive')?.length,
+                        copy: last_monthly.filter(o => o?.status === 'copy')?.length,
+                    }
+                });
+            }
+            res.send({
+                ok: true,
+                data: {
+                    delivered: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.delivered - a?.today?.delivered)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.delivered - a?.yesterday?.delivered)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.delivered - a?.weekly?.delivered)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.delivered - a?.last_weekly?.delivered)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.delivered - a?.monthly?.delivered)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.delivered - a?.last_monthly?.delivered)?.slice(0, 10),
+                    },
+                    sended: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.sended - a?.today?.sended)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.sended - a?.yesterday?.sended)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.sended - a?.weekly?.sended)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.sended - a?.last_weekly?.sended)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.sended - a?.monthly?.sended)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.sended - a?.last_monthly?.sended)?.slice(0, 10),
+                    },
+                    pending: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.pending - a?.today?.pending)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.pending - a?.yesterday?.pending)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.pending - a?.weekly?.pending)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.pending - a?.last_weekly?.pending)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.pending - a?.monthly?.pending)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.pending - a?.last_monthly?.pending)?.slice(0, 10),
+                    },
+                    archive: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.archive - a?.today?.archive)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.archive - a?.yesterday?.archive)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.archive - a?.weekly?.archive)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.archive - a?.last_weekly?.archive)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.archive - a?.monthly?.archive)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.archive - a?.last_monthly?.archive)?.slice(0, 10),
+                    },
+                    copy: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.copy - a?.today?.copy)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.copy - a?.yesterday?.copy)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.copy - a?.weekly?.copy)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.copy - a?.last_weekly?.copy)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.copy - a?.monthly?.copy)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.copy - a?.last_monthly?.copy)?.slice(0, 10),
+                    },
+                    success: {
+                        // 
+                        today: data?.sort((a, b) => b?.today?.success - a?.today?.success)?.slice(0, 10),
+                        // 
+                        yesterday: data?.sort((a, b) => b?.yesterday?.success - a?.yesterday?.success)?.slice(0, 10),
+                        // 
+                        weekly: data?.sort((a, b) => b?.weekly?.success - a?.weekly?.success)?.slice(0, 10),
+                        // 
+                        last_weekly: data?.sort((a, b) => b?.last_weekly?.success - a?.last_weekly?.success)?.slice(0, 10),
+                        // 
+                        monthly: data?.sort((a, b) => b?.monthly?.success - a?.monthly?.success)?.slice(0, 10),
+                        // 
+                        last_monthly: data?.sort((a, b) => b?.last_monthly?.success - a?.last_monthly?.success)?.slice(0, 10),
+                    },
+                }
+            })
+        } catch (error) {
+            console.log(error);
+            res.send({
+                ok: false,
+                msg: "Xatolik"
+            })
+        }
+    }
 }

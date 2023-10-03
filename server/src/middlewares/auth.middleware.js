@@ -41,13 +41,13 @@ module.exports = {
                     //     });
                     // }
                     else {
-                        const { name, phone, image } = $admin;
+                        const { name, phone, image, owner } = $admin;
                         req.admin = {
                             id,
                             name,
                             phone,
                             image: image ? SERVER_LINK + image : '',
-                            owner: phone === '+998938003803' ? true : false
+                            owner
                         };
                         next();
                     }
@@ -162,7 +162,7 @@ module.exports = {
                             sh_his += s.for_operator
                         });
                         const { name, phone, telegram, card } = $operator;
-                        req.operator = { id, name, phone, balance: sh_his - p_his, telegram, card };
+                        req.operator = { id, name, phone, balance: sh_his - p_his, telegram, sp: $operator.super, card };
                         next();
                     }
                 }

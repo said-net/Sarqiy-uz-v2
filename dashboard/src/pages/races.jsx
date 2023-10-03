@@ -258,10 +258,10 @@ function Races() {
                     <p className="text-[20px]">O'chirish</p>
                 </DialogHeader>
                 <DialogBody className="border-y">
-                    <p>Poygani rostdanham o'chirasizmi?</p>
+                    <p>Poygani rostdan ham o'chirasizmi?</p>
                 </DialogBody>
                 <DialogFooter className="flex items-center justify-between">
-                    <Button disabled={disabled} className="rounded" color="orange" onClick={() => setEdit({ id: '', title: '', image: '', old_price: '', price: '' })}>Ortga</Button>
+                    <Button disabled={disabled} className="rounded" color="orange" onClick={() => setDeleteId('')}>Ortga</Button>
                     <Button disabled={disabled} color="red" className="rounded" onClick={Delete}>O'chirish</Button>
                 </DialogFooter>
             </Dialog>

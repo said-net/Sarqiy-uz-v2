@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { Spinner, Input, Chip, IconButton, Dialog, DialogHeader, DialogBody, Select, Option, DialogFooter, Button, Checkbox } from "@material-tailwind/react";
-import { BiSearch, BiTransfer } from "react-icons/bi";
+import { Input, Chip, IconButton, Dialog, DialogHeader, DialogBody, Select, Option, DialogFooter, Button, Checkbox } from "@material-tailwind/react";
+import { BiBox, BiInfinite, BiMoney, BiPhone, BiSearch, BiTransfer, BiUser } from "react-icons/bi";
 import { setRefresh } from "../managers/refresh.manager";
 import Regions from '../components/regions.json'
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 function SearchHistoryOrders() {
     const [operators, setOperators] = useState([]);
     const [operator, setOperator] = useState('');
@@ -23,9 +22,9 @@ function SearchHistoryOrders() {
     const [selecteds, setSelecteds] = useState([]);
     const [checked, setChecked] = useState(false);
     const [open, setOpen] = useState(false);
-    const [page, setPage] = useState(1);
     const [type, setType] = useState('id');
     const [runSearch, setRunSearch] = useState(false);
+    const [edit, setEdit] = useState({ orderId: '', id: '', title: '', name: '', phone: '', status: '', price: '', delivery_price: '', count: '' });
     useEffect(() => {
         if (search !== '') {
             setIsLoad(false);
@@ -133,7 +132,7 @@ function SearchHistoryOrders() {
             <div className="flex items-center justify-normal flex-col">
                 <div className="flex items-center justify-start w-full h-[190px]  shadow-sm bg-white  border-b p-[10px] flex-col">
                     <div className="flex items-center justify-center w-full mb-[10px]">
-                        <Input label="Qidiruv: ID, Nomi, Narxi, Raqam" variant="standard" color="red" icon={<BiSearch />} value={search} onChange={e => setSearch(e.target.value)} />
+                        <Input onKeyPress={k => k.key === 'Enter' && setRunSearch(!runSearch)} label="Qidiruv: ID, Nomi, Narxi, Raqam" variant="standard" color="red" icon={<BiSearch />} value={search} onChange={e => setSearch(e.target.value)} />
                     </div>
                     <div className="flex items-center justify-center w-full mb-[10px]">
                         <Select label="Filterlash" variant="standard" onChange={e => setType(e)} value={type}>
@@ -185,47 +184,49 @@ function SearchHistoryOrders() {
                                     <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
                                         <Checkbox onChange={e => SelectOrder(o?._id, e.target.checked)} checked={selecteds?.includes(o?._id)} />
                                     </div>
-                                    <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
-                                        <Chip color="red" value={o?.id} className="rounded" />
+                                    <div className="flex items-center justify-center" onClick={() => setEdit({ orderId: o?.id, id: o?._id, title: o?.title, name: o?.name, status: o?.status, phone: o?.phone, price: o?.price, count: o?.count, delivery_price: o?.delivery_price })}>
+                                        <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
+                                            <Chip color="red" value={o?.id} className="rounded" />
+                                        </div>
+                                        <div className="w-[140px] text-center border-x h-[50px] flex items-center justify-center text-[13px] overflow-hidden ">
+                                            <img src={o?.image} alt={i} className="h-[50px] rounded-[10px]" />
+                                        </div>
+                                        <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {o?.title} | {o?.count} ta
+                                        </p>
+                                        <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {Number(o?.price)?.toLocaleString()}
+                                        </p>
+                                        <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {o?.name}
+                                        </p>
+                                        <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {o?.phone}
+                                        </p>
+                                        <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]" >
+                                            <span className={"p-[5px_10px] text-white rounded w-[120px] " + o?.status_color}>
+                                                {o?.status_title}
+                                            </span>
+                                        </p>
+                                        <div className="w-[100px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {o?.admin_id && <Chip color="red" value={o?.admin_id} className="rounded" />}
+                                        </div>
+                                        <p className="w-[100px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {o?.admin}
+                                        </p>
+                                        <p className="w-[120px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {o?.operator}
+                                        </p>
+                                        <p className="w-[120px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {o?.operator_phone}
+                                        </p>
+                                        <p className="w-[120px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {o?.courier}
+                                        </p>
+                                        <p className="w-[120px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
+                                            {o?.courier_phone}
+                                        </p>
                                     </div>
-                                    <div className="w-[140px] text-center border-x h-[50px] flex items-center justify-center text-[13px] overflow-hidden ">
-                                        <img src={o?.image} alt={i} className="h-[50px] rounded-[10px]" />
-                                    </div>
-                                    <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {o?.title}
-                                    </p>
-                                    <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {Number(o?.price)?.toLocaleString()}
-                                    </p>
-                                    <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {o?.name}
-                                    </p>
-                                    <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {o?.phone}
-                                    </p>
-                                    <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]" >
-                                        <span className="p-[5px_10px] text-white rounded w-[100px]" style={{ background: o?.status_color }}>
-                                            {o?.status_title}
-                                        </span>
-                                    </p>
-                                    <div className="w-[100px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {o?.admin_id && <Chip color="red" value={o?.admin_id} className="rounded" />}
-                                    </div>
-                                    <p className="w-[100px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {o?.admin}
-                                    </p>
-                                    <p className="w-[120px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {o?.operator}
-                                    </p>
-                                    <p className="w-[120px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {o?.operator_phone}
-                                    </p>
-                                    <p className="w-[120px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {o?.courier}
-                                    </p>
-                                    <p className="w-[120px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">
-                                        {o?.courier_phone}
-                                    </p>
                                     <p className="w-[60px] text-center border-l h-[70px] flex items-center justify-center text-[13px]">
                                         <IconButton onClick={() => setOpenTransfer({ _id: o?._id, id: o?.id, title: o?.title, operator: o?.operator_id, courier: o?.courier_id })} color="blue-gray" className="rounded-full w-[35px] h-[35px] text-[20px]">
                                             <BiTransfer />
@@ -237,6 +238,7 @@ function SearchHistoryOrders() {
                     })
                 }
             </div>
+            {/* TRANSFER */}
             <Dialog size="xs" open={openTransfer?._id !== ''}>
                 <DialogHeader>
                     <p className="text-[16px]">#{openTransfer?.id} - {openTransfer?.title}</p>
@@ -266,7 +268,7 @@ function SearchHistoryOrders() {
                     <Button disabled={disable} color="green" className="rounded font-sans font-light" onClick={TransferOrder}>Biriktirish</Button>
                 </DialogFooter>
             </Dialog>
-
+            {/* TRANSFER ARRAY */}
             <Dialog size="md" open={open}>
                 <DialogHeader>
                     <p>Kuryer va Operator tanlang!</p>
@@ -299,6 +301,50 @@ function SearchHistoryOrders() {
                     <Button onClick={() => setOpen(false)} className="rounded" color="red">Ortga</Button>
                     <Button disabled={!checked || disable} onClick={TransferSelecteds} className="rounded" color="green">Yuborish</Button>
                 </DialogFooter>
+            </Dialog>
+            {/* EDIT */}
+            <Dialog size="md" open={edit?.id !== ''}>
+                <DialogHeader>
+                    <p className="text-[16px]">{edit?.title} - #{edit?.orderId}</p>
+                </DialogHeader>
+                <DialogBody className="border-y">
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input label="Mijoz" variant="standard" onChange={e => setEdit({ ...edit, name: e.target.value })} value={edit?.name} icon={<BiUser />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input label="Mijoz raqami" type="tel" variant="standard" onChange={e => setEdit({ ...edit, phone: e.target.value })} value={edit?.phone} icon={<BiPhone />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input label="Mahsulot" variant="standard" onChange={e => setEdit({ ...edit, title: e.target.value })} value={edit?.title} icon={<BiBox />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input label="Mahsulot soni" type="number" variant="standard" onChange={e => setEdit({ ...edit, count: e.target.value })} value={edit?.count} icon={<BiInfinite />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input label="Narxi" type="number" variant="standard" onChange={e => setEdit({ ...edit, price: e.target.value })} value={edit?.price} icon={<BiMoney />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input label="Dostavka narxi" type="number" variant="standard" onChange={e => setEdit({ ...edit, delivery_price: e.target.value })} value={edit?.delivery_price} icon={<BiMoney />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Select label="Status" variant="standard" onChange={e => setEdit({ ...edit, status: e })} value={edit?.status}>
+                            <Option value="copy">Kopiya</Option>
+                            <Option value="reject">Bekor qilingan</Option>
+                            <Option value="archive">Arxivlangan</Option>
+                            <Option value="pending">Yangi</Option>
+                            <Option value="success">Upakovkada</Option>
+                            <Option value="sended">Yetkazilmoqda/Yo'lda</Option>
+                            <Option value="delivered">Yetkazilgan</Option>
+                        </Select>
+                    </div>
+                </DialogBody>
             </Dialog>
         </div>
     );

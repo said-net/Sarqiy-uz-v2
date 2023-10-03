@@ -9,20 +9,22 @@ export const AuthManager = createSlice({
         balance: 0,
         phone: '',
         card: '',
-        id: ''
+        id: '',
+        sp: false,
     },
     reducers: {
         setRefreshAuth: state => {
             state.refresh = !state.refresh;
         },
         setInfoAuth: (state, { payload }) => {
-            const { name, phone, id, balance, telegram, card } = payload;
+            const { name, phone, id, balance, telegram, card, sp } = payload;
             state.name = name;
             state.phone = phone;
             state.telegram = telegram
             state.id = id;
             state.balance = balance;
-            state.card = card
+            state.card = card;
+            state.sp = sp
         }
     },
 });

@@ -90,7 +90,29 @@ function Products() {
         });
     }
     return (
-        <div className="flex items-start justify-start flex-col w-full overflow-x-scroll mt-[60px]">
+        <div className="flex items-start justify-start flex-col w-full overflow-x-scroll mt-[60px] p-[5px] ">
+            <div className="flex items-center justify-between h-[140px] shadow-sm bg-white  border-b p-[0_5px] flex-col">
+                <div className="flex items-center justify-start w-full h-[70px]  bg-white  border-b p-[0_10px] ">
+                    <p className="mr-[20px]">MAXSULOTLAR: {products?.length} ta</p>
+                    <div className="flex items-center justify-center w-[250px]">
+                        <Input label="Qidiruv: ID, Nomi" color="red" icon={<BiSearch />} value={search} onChange={e => setSearch(e.target.value)} />
+                    </div>
+                </div>
+                <div className="flex items-center justify-between">
+                    <p className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">ID</p>
+                    <p className="w-[140px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">RASMI</p>
+                    <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">NOMI</p>
+                    <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">NARXI</p>
+                    <p className="w-[50px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">COIN</p>
+                    <p className="w-[140px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">ADMIN PULI</p>
+                    <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">KATEGORIYA</p>
+                    <p className="w-[80px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">KO'RISHLAR</p>
+                    <p className="w-[80px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">SOTUVLAR</p>
+                    <p className="w-[80px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">STATUS</p>
+                    <p className="w-[60px] text-center border-l h-[70px] flex items-center justify-center text-[13px]">MENU</p>
+                </div>
+
+            </div>
             {!isLoad &&
                 <div className="flex items-center justify-center w-full h-[80vh]">
                     <Spinner />
@@ -101,28 +123,7 @@ function Products() {
                     <h1>Mahsulotlar mavjud emas!</h1>
                 </div>
             }
-            <div className="flex items-center justify-normal flex-col p-[5px] ">
-                <div className="flex items-center justify-start w-full h-[70px] shadow-sm bg-white  border-b p-[0_10px] ">
-                    <p className="mr-[20px]">MAXSULOTLAR: {products?.length} ta</p>
-                    <div className="flex items-center justify-center w-[250px]">
-                        <Input label="Qidiruv: ID, Nomi" color="red" icon={<BiSearch />} value={search} onChange={e => setSearch(e.target.value)} />
-                    </div>
-                </div>
-                <div className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
-                    <div className="flex items-center justify-between">
-                        <p className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">ID</p>
-                        <p className="w-[140px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">RASMI</p>
-                        <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">NOMI</p>
-                        <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">NARXI</p>
-                        <p className="w-[50px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">COIN</p>
-                        <p className="w-[140px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">ADMIN PULI</p>
-                        <p className="w-[150px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">KATEGORIYA</p>
-                        <p className="w-[80px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">KO'RISHLAR</p>
-                        <p className="w-[80px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">SOTUVLAR</p>
-                        <p className="w-[80px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">STATUS</p>
-                        <p className="w-[60px] text-center border-l h-[70px] flex items-center justify-center text-[13px]">MENU</p>
-                    </div>
-                </div>
+            <div className="flex items-center justify-normal flex-col">
                 {products?.filter(p => !search ? p : p?.title?.toLowerCase()?.includes(search?.toLowerCase()) || p?.id === +search)?.map((p, i) => {
                     return (
                         <div key={i} className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">

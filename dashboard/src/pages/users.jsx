@@ -80,16 +80,6 @@ function Users() {
     }
     return (
         <div className="flex items-start justify-start flex-col w-full overflow-x-scroll mt-[60px]">
-            {!isLoad &&
-                <div className="flex items-center justify-center w-full h-[80vh]">
-                    <Spinner />
-                </div>
-            }
-            {isLoad && !users[0] &&
-                <div className="flex items-center justify-center w-full h-[80vh]">
-                    <h1>Foydalanuvchilar mavjud emas!</h1>
-                </div>
-            }
             <div className="flex items-center justify-normal flex-col p-[5px] ">
                 <div className="flex items-center justify-start w-full h-[70px] shadow-sm bg-white  border-b p-[0_10px] ">
                     <p className="mr-[20px]">FOYDALANUVCHI & ADMINLAR: {users?.length} ta</p>
@@ -110,6 +100,16 @@ function Users() {
                         <p className="w-[60px] text-center border-l h-[70px] flex items-center justify-center text-[13px]">MENU</p>
                     </div>
                 </div>
+                {!isLoad &&
+                    <div className="flex items-center justify-center w-full h-[80vh]">
+                        <Spinner />
+                    </div>
+                }
+                {isLoad && !users[0] &&
+                    <div className="flex items-center justify-center w-full h-[80vh]">
+                        <h1>Foydalanuvchilar mavjud emas!</h1>
+                    </div>
+                }
                 {isLoad && users[0] &&
                     users?.filter(u => !search ? u : u?.id === +search || u?.name?.toLowerCase()?.includes(search?.toLowerCase()) || u?.phone?.toLowerCase()?.includes(search?.toLowerCase()) || u?.location?.toLowerCase()?.includes(search?.toLowerCase()))?.map((u, i) => {
                         return (
