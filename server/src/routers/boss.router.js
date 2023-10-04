@@ -33,6 +33,7 @@ module.exports = require('express').Router()
     .get('/get-operator-pays', authMiddleware.boss, bossController.getOperatorPays)
     .post('/set-operator-pay-status', authMiddleware.boss, bossController.setStatusOperatorPay)
     .get('/search-history-orders/:type/:search', authMiddleware.boss, bossController.searchHistoryOrders)
+    .put('/edit-order/:id', authMiddleware.boss, bossController.editOrder)
     // 
     // 
     // 

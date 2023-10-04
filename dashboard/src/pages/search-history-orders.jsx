@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { Input, Chip, IconButton, Dialog, DialogHeader, DialogBody, Select, Option, DialogFooter, Button, Checkbox } from "@material-tailwind/react";
+import { Input, Chip, IconButton, Dialog, DialogHeader, DialogBody, Select, Option, DialogFooter, Button, Checkbox, Textarea } from "@material-tailwind/react";
 import { BiBox, BiInfinite, BiMoney, BiPhone, BiSearch, BiTransfer, BiUser } from "react-icons/bi";
 import { setRefresh } from "../managers/refresh.manager";
 import Regions from '../components/regions.json'
@@ -24,7 +24,35 @@ function SearchHistoryOrders() {
     const [open, setOpen] = useState(false);
     const [type, setType] = useState('id');
     const [runSearch, setRunSearch] = useState(false);
-    const [edit, setEdit] = useState({ orderId: '', id: '', title: '', name: '', phone: '', status: '', price: '', delivery_price: '', count: '' });
+    // 
+    const [edit, setEdit] = useState({ orderId: '', id: '', title: '', name: '', phone: '', status: '', price: '', delivery_price: '', count: '', about: '' });
+    const [wait, setWait] = useState(false);
+    function closeEdit() {
+        setEdit({ orderId: '', id: '', title: '', name: '', phone: '', status: '', price: '', delivery_price: '', count: '', about: '' })
+    }
+    function SubmitEdit() {
+        setWait(true);
+        axios.put(`${API_LINK}/boss/edit-order/${edit?.id}`, edit, {
+            headers: {
+                'x-auth-token': `Bearer ${localStorage.getItem('access')}`
+            }
+        }).then(res => {
+            const { ok, msg } = res.data;
+            setWait(false);
+            if (!ok) {
+                toast.error(msg);
+            } else {
+                toast.success(msg);
+                closeEdit();
+                dp(setRefresh())
+                setRunSearch(!runSearch)
+            }
+        }).catch(() => {
+            toast.error("Aloqani tekshirib qayta urunib ko'ring!");
+            setWait(false);
+        })
+    }
+    // 
     useEffect(() => {
         if (search !== '') {
             setIsLoad(false);
@@ -184,7 +212,7 @@ function SearchHistoryOrders() {
                                     <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
                                         <Checkbox onChange={e => SelectOrder(o?._id, e.target.checked)} checked={selecteds?.includes(o?._id)} />
                                     </div>
-                                    <div className="flex items-center justify-center" onClick={() => setEdit({ orderId: o?.id, id: o?._id, title: o?.title, name: o?.name, status: o?.status, phone: o?.phone, price: o?.price, count: o?.count, delivery_price: o?.delivery_price })}>
+                                    <div className="flex items-center justify-center" onClick={() => setEdit({ orderId: o?.id, id: o?._id, title: o?.title, name: o?.name, status: o?.status, phone: o?.phone, price: o?.price, count: o?.count, delivery_price: o?.delivery_price, about: o?.about })}>
                                         <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
                                             <Chip color="red" value={o?.id} className="rounded" />
                                         </div>
@@ -307,34 +335,10 @@ function SearchHistoryOrders() {
                 <DialogHeader>
                     <p className="text-[16px]">{edit?.title} - #{edit?.orderId}</p>
                 </DialogHeader>
-                <DialogBody className="border-y">
+                <DialogBody className="border-y overflow-y-scroll h-[500px]">
                     {/*  */}
                     <div className="flex items-center justify-center w-full mb-[10px]">
-                        <Input label="Mijoz" variant="standard" onChange={e => setEdit({ ...edit, name: e.target.value })} value={edit?.name} icon={<BiUser />} />
-                    </div>
-                    {/*  */}
-                    <div className="flex items-center justify-center w-full mb-[10px]">
-                        <Input label="Mijoz raqami" type="tel" variant="standard" onChange={e => setEdit({ ...edit, phone: e.target.value })} value={edit?.phone} icon={<BiPhone />} />
-                    </div>
-                    {/*  */}
-                    <div className="flex items-center justify-center w-full mb-[10px]">
-                        <Input label="Mahsulot" variant="standard" onChange={e => setEdit({ ...edit, title: e.target.value })} value={edit?.title} icon={<BiBox />} />
-                    </div>
-                    {/*  */}
-                    <div className="flex items-center justify-center w-full mb-[10px]">
-                        <Input label="Mahsulot soni" type="number" variant="standard" onChange={e => setEdit({ ...edit, count: e.target.value })} value={edit?.count} icon={<BiInfinite />} />
-                    </div>
-                    {/*  */}
-                    <div className="flex items-center justify-center w-full mb-[10px]">
-                        <Input label="Narxi" type="number" variant="standard" onChange={e => setEdit({ ...edit, price: e.target.value })} value={edit?.price} icon={<BiMoney />} />
-                    </div>
-                    {/*  */}
-                    <div className="flex items-center justify-center w-full mb-[10px]">
-                        <Input label="Dostavka narxi" type="number" variant="standard" onChange={e => setEdit({ ...edit, delivery_price: e.target.value })} value={edit?.delivery_price} icon={<BiMoney />} />
-                    </div>
-                    {/*  */}
-                    <div className="flex items-center justify-center w-full mb-[10px]">
-                        <Select label="Status" variant="standard" onChange={e => setEdit({ ...edit, status: e })} value={edit?.status}>
+                        <Select disabled={wait} label="Status" variant="standard" onChange={e => setEdit({ ...edit, status: e })} value={edit?.status}>
                             <Option value="copy">Kopiya</Option>
                             <Option value="reject">Bekor qilingan</Option>
                             <Option value="archive">Arxivlangan</Option>
@@ -344,7 +348,40 @@ function SearchHistoryOrders() {
                             <Option value="delivered">Yetkazilgan</Option>
                         </Select>
                     </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Textarea disabled={wait} label="Izoh" variant="standard" onChange={e => setEdit({ ...edit, about: e.target.value })} value={edit?.about} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input disabled={wait} label="Mijoz" variant="standard" onChange={e => setEdit({ ...edit, name: e.target.value })} value={edit?.name} icon={<BiUser />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input disabled={wait} label="Mijoz raqami" type="tel" variant="standard" onChange={e => setEdit({ ...edit, phone: e.target.value })} value={edit?.phone} icon={<BiPhone />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input disabled={wait} label="Mahsulot" variant="standard" onChange={e => setEdit({ ...edit, title: e.target.value })} value={edit?.title} icon={<BiBox />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input disabled={wait} label="Mahsulot soni" type="number" variant="standard" onChange={e => setEdit({ ...edit, count: e.target.value })} value={edit?.count} icon={<BiInfinite />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input disabled={wait} label="Narxi" type="number" variant="standard" onChange={e => setEdit({ ...edit, price: e.target.value })} value={edit?.price} icon={<BiMoney />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input disabled={wait} label="Dostavka narxi" type="number" variant="standard" onChange={e => setEdit({ ...edit, delivery_price: e.target.value })} value={edit?.delivery_price} icon={<BiMoney />} />
+                    </div>
+                    {/*  */}
                 </DialogBody>
+                <DialogFooter className="flex items-center justify-between">
+                    <Button disabled={wait} onClick={closeEdit} className="rounded" color="red">Ortga</Button>
+                    <Button disabled={wait} onClick={SubmitEdit} className="rounded" color="green">Saqlash</Button>
+                </DialogFooter>
             </Dialog>
         </div>
     );

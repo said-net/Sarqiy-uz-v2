@@ -11,6 +11,7 @@ const schema = new Schema({
     month: Number,
     year: Number,
     day: Number,
+    title: String,
     competition: {
         type: Types.ObjectId,
         ref: 'Competition'

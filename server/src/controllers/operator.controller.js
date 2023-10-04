@@ -70,10 +70,10 @@ module.exports = {
                     })
                 })
             } else {
-                if (!/[A-z0-9]{6}&/.test(password)) {
+                if (password?.length < 6) {
                     res.send({
                         ok: false,
-                        msg: "Parol min: 6 ta ishoradan va [A-z0-9] dan tashkil topgan bo'ladi!"
+                        msg: "Parol min: 6 ta ishoradan tashkil topgan bo'ladi!"
                     })
                 } else {
                     $operator.set({ name: name, phone: pv(phone, { country: 'uz' }).phoneNumber, password: md5(password) }).save().then(() => {
@@ -163,7 +163,7 @@ module.exports = {
         const new_orders = await shopModel.find({ status: 'pending', operator: req?.operator?.id }).countDocuments();
         const re_contacts = await shopModel.find({ status: 'wait', operator: req?.operator?.id }).countDocuments();
         const rejecteds = await shopModel.find({ status: 'sended', operator: req?.operator?.id, courier_status: 'reject' }).countDocuments();
-        const waiting = await shopModel.find({ status: 'pending', oerator: null })
+        const waiting = await shopModel.find({ status: 'pending', operator: null })
         res.send({
             ok: true,
             data: {
@@ -202,6 +202,39 @@ module.exports = {
         res.send({
             ok: true,
             data: myOrders
+        });
+    },
+    getHistoryOrders: async (req, res) => {
+        const $orders = await shopModel.find({ operator: req.operator.id }).populate('product');
+        const myOrders = [];
+        for (let e of $orders) {
+            myOrders.push({
+                _id: e?._id,
+                id: e?.id,
+                name: e?.name,
+                phone: e?.phone,
+                location: `${region?.find(r => r.id === e?.region)?.name || '-'}, ${e?.city || '-'}`,
+                product: e?.title,
+                product_id: e?.product?.id,
+                about: e?.about || '',
+                courier_comment: e?.courier_comment || '',
+                count: e?.count || 0,
+                price: e?.price || 0,
+                region: `${e?.region || ''}`,
+                city: `${e?.city || ''}`,
+                status: e?.status,
+                delivery_price: `${e?.delivery_price || 0}`,
+                status_title: e?.status === 'reject' ? "Bekor qilingan" : e?.status === 'archive' ? "Arxivlangan" : e?.status === 'pending' ? "Yangi" : e?.status === 'success' ? "Upakovkada" : e?.status === 'sended' ? "Yetkazilmoqda" : e?.status === 'delivered' ? "Yetkazilgan" : e?.status === 'wait' ? "Qayta aloqa" : e?.status === 'copy' ? "Kopiya" : "",
+
+                status_color: e?.status === 'reject' ? "bg-red-500" : e?.status === 'archive' ? "bg-orange-500" : e?.status === 'pending' ? "bg-orange-500" : e?.status === 'success' ? "bg-blue-500" : e?.status === 'sended' ? "bg-purple-500" : e?.status === 'delivered' ? "bg-green-500" : e?.status === 'wait' ? "bg-orange-500" : e?.status === 'copy' ? "bg-red-500" : "",
+
+                created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
+                edit: e?.status === 'delivered' || e?.status === 'sended' ? false : true
+            });
+        }
+        res.send({
+            ok: true,
+            data: myOrders.reverse()
         });
     },
     setStatus: async (req, res) => {
@@ -256,7 +289,7 @@ module.exports = {
                 if ($order?.flow) {
                     const $flower = await userModel.findOne({ id: $order?.flow });
                     if ($flower && $flower?.telegram) {
-                        bot.telegram.sendMessage($flower?.telegram, `sharqiy.uz\n📦Buyurtma dostavkaga tayyor!\n🆔Buyurtma uchun id: #${$order?.id}`).catch(err => {
+                        bot.telegram.sendMessage($flower?.telegram, `sharqiy.uz\nBuyurtma dostavkaga tayyor!\nBuyurtma uchun id: #${$order?.id}`).catch(err => {
                             console.log(err);
                         });
                     }
@@ -369,7 +402,7 @@ module.exports = {
                 location: region?.find(r => r?.id === e?.region).name + ', ' + e?.city,
                 product: e?.product?.title,
                 product_id: e?.product?.id,
-                about: e?.about || "Yangi lid",
+                about: e?.about,
                 count: e?.count,
                 courier_comment: e?.courier_comment,
                 courier_name: e?.courier?.name,
@@ -426,22 +459,36 @@ module.exports = {
         }
     },
     editOrder: async (req, res) => {
-        try {
-            const { id } = req.params;
-            const { about, city, region, count, phone, name, price } = req.body;
-            const $order = await shopModel.findById(id);
-            $order.set({ about, city, region, bonus, count, phone, name, price }).save().then(() => {
-                res.send({
-                    ok: true,
-                    msg: "Taxrirlandi!"
-                });
-            });
-        } catch (error) {
-            console.log(error);
+        const { id } = req?.params;
+        const { title, name, status, price, delivery_price, count, about, region, city } = req?.body;
+        if (!title || !name || !status || !about) {
             res.send({
                 ok: false,
-                msg: "Xatolik!"
-            })
+                msg: "Qatorlarni to'ldiring!"
+            });
+        } else {
+            try {
+                const $order = await shopModel.findById(id);
+                if (!$order) {
+                    res.send({
+                        ok: false,
+                        msg: "Order topilmadi!"
+                    });
+                } else {
+                    $order.set({ title, name, status, price, delivery_price, count, about, region, city }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: "Saqlandi"
+                        })
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
         }
     },
     createPay: async (req, res) => {

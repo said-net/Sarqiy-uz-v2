@@ -18,6 +18,7 @@ import { BiRefresh } from "react-icons/bi";
 import { setRefresh } from "./managers/refresh.manager";
 import WithdrawHistory from "./pages/withdraw-history";
 import WaitingOrders from "./pages/waiting-orders";
+import GetHistoryOrders from "./pages/get-history-orders";
 function App() {
   const { id, refresh, name, sp } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -59,6 +60,7 @@ function App() {
             <Route path="/withdraw" element={<Payment />} />
             <Route path="/search-order" element={<SearchOrder />} />
             <Route path="/withdraw-history" element={<WithdrawHistory />} />
+            <Route path="/history-orders" element={<GetHistoryOrders />} />
             {sp && <Route path="/waiting-orders" element={<WaitingOrders />} />}
           </Routes>
         </div>

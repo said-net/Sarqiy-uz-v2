@@ -14,6 +14,7 @@ module.exports = require('express').Router()
     // 
     .get('/get-stats', authMiddleware.operator, operatorController.getStats)
     .get('/get-my-orders', authMiddleware.operator, operatorController.getMyOrders)
+    .get('/get-history-my-orders', authMiddleware.operator, operatorController.getHistoryOrders)
     .get('/get-info-order/:id', authMiddleware.operator, operatorController.getInfoOrder)
     .post('/set-status/:id', authMiddleware.operator, operatorController.setStatus)
     .get('/get-wait-orders', authMiddleware.operator, operatorController.getWaitOrders)

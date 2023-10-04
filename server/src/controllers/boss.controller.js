@@ -550,6 +550,7 @@ module.exports = {
                 price: o?.product?.price,
                 name: o?.name,
                 phone: o?.phone,
+                courier_id: o?.courier?._id,
                 courier: o?.courier?.name,
                 courier_phone: o?.courier?.phone,
                 courier_region: o?.courier?.region,
@@ -652,6 +653,7 @@ module.exports = {
                 operator_id: o?.operator?._id,
                 operator_phone: o?.operator?.phone,
                 status: o?.status,
+
                 status_color: o?.status === 'reject' ? "bg-red-500" : o?.status === 'archive' ? "bg-orange-500" : o?.status === 'pending' ? "bg-orange-500" : o?.status === 'success' ? "bg-blue-500" : o?.status === 'sended' ? "bg-purple-500" : o?.status === 'delivered' ? "bg-green-500" : o?.status === 'wait' ? "bg-orange-500" : o?.status === 'copy' ? "bg-red-500" : "",
 
                 status_title: o?.status === 'reject' ? "Bekor qilingan" : o?.status === 'archive' ? "Arxivlangan" : o?.status === 'pending' ? "Yangi" : o?.status === 'success' ? "Upakovkada" : o?.status === 'sended' ? "Yetkazilmoqda" : o?.status === 'delivered' ? "Yetkazilgan" : o?.status === 'wait' ? "Qayta aloqa" : o?.status === 'copy' ? "Kopiya" : ""
@@ -947,7 +949,6 @@ module.exports = {
         const $orders = await (type === 'id' ? shopModel.find({ id: +search }) : shopModel.find()).populate('product operator courier', 'title images price name phone region')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
-        console.log($orders);
 
         // 
         $operators.forEach(o => {
@@ -984,6 +985,7 @@ module.exports = {
                         price: (o?.price || o?.product?.price) * (o?.count || 0),
                         name: o?.name,
                         phone: o?.phone,
+                        about: o?.about,
                         delivery_price: o?.delivery_price,
                         courier: o?.courier?.name,
                         courier_id: o?.courier?._id,
@@ -1009,6 +1011,7 @@ module.exports = {
                     price: (o?.price || o?.product?.price) * (o?.count || 0),
                     name: o?.name,
                     phone: o?.phone,
+                    about: o?.about,
                     delivery_price: o?.delivery_price,
                     courier: o?.courier?.name,
                     courier_id: o?.courier?._id,
@@ -1032,6 +1035,39 @@ module.exports = {
         });
     },
     // 
+    editOrder: async (req, res) => {
+        const { id } = req?.params;
+        const { title, name, phone, status, price, delivery_price, count, about } = req?.body;
+        if (!title || !name || !phone || !status || !price || !delivery_price || !count || !about) {
+            res.send({
+                ok: false,
+                msg: "Qatorlarni to'ldiring!"
+            });
+        } else {
+            try {
+                const $order = await shopModel.findById(id);
+                if (!$order) {
+                    res.send({
+                        ok: false,
+                        msg: "Order topilmadi!"
+                    });
+                } else {
+                    $order.set({ title, phone, name, status, price, delivery_price, count, about, verified: status === 'sended' ? false : $order?.verified, courier_status: status === 'sended' ? 'sended' : status === 'delivered' ? 'delivered' : $order?.courier_status }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: "Saqlandi"
+                        })
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+                res.send({
+                    ok: false,
+                    msg: "Xatolik!"
+                })
+            }
+        }
+    },
     // 
     // 
     createOwner: async (req, res) => {

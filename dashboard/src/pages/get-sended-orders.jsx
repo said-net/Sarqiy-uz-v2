@@ -15,6 +15,7 @@ function SendedOrders() {
     const [search, setSearch] = useState('');
     const [openTransfer, setOpenTransfer] = useState({ id: '', _id: '', title: '', courier: '' });
     const [disable, setDisable] = useState(false);
+    const [filterCourier, setFIlterCourier] = useState('');
     const dp = useDispatch();
     useEffect(() => {
         setIsLoad(false);
@@ -25,6 +26,7 @@ function SendedOrders() {
         }).then((res) => {
             setIsLoad(true)
             const { data, ok, msg, couriers } = res.data;
+            console.log(data);
             if (!ok) {
                 toast.error(msg);
             } else {
@@ -62,10 +64,19 @@ function SendedOrders() {
             <div className="flex items-center justify-center w-full h-[50px] mb-[20px]">
                 <h1 className="flex items-center justify-center w-[150px] h-[50px] bg-white shadow-sm rounded-b-[10px]">YUBORILGANLAR</h1>
             </div>
-            <div className="flex items-center justify-normal flex-col p-[5px] ">
-                <div className="flex items-center justify-start w-full h-[70px] shadow-sm bg-white  border-b p-[0_10px] ">
-                    <div className="flex items-center justify-center w-full">
+            <div className="flex items-center justify-normal flex-col p-[5px] min-h-[80vh]">
+                <div className="flex items-center justify-center w-full flex-col h-[140px] shadow-sm bg-white  border-b p-[0_10px] ">
+                    <div className="flex items-center justify-center w-full mb-[10px]">
                         <Input label="Qidiruv: ID, Nomi, Narxi, Raqam" variant="standard" color="red" icon={<BiSearch />} value={search} onChange={e => setSearch(e.target.value)} />
+                    </div>
+                    <div className="flex items-center justify-center w-full">
+                        {isLoad && <Select label="Kuryer tanlang" variant="standard" value={filterCourier} onChange={e => setFIlterCourier(e)}>
+                            {couriers?.map((o, i) => {
+                                return (
+                                    <Option value={o?._id} key={i}>{o?.name} | {o?.phone}</Option>
+                                )
+                            })}
+                        </Select>}
                     </div>
                 </div>
                 <div className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
@@ -86,7 +97,7 @@ function SendedOrders() {
                     <p>Buyurtmalar mavjud emas!</p>
                 }
                 {isLoad && orders[0] &&
-                    orders?.filter(o => !search ? o : o?.id === +search || o?.title?.toLowerCase()?.includes(search?.toLowerCase()) || o?.name?.toLowerCase()?.includes(search?.toLowerCase()) || o?.admin?.toLowerCase()?.includes(search?.toLowerCase()) || o?.phone?.includes(search) || String(o?.price)?.includes(search)).map((o, i) => {
+                    orders?.filter(o => !filterCourier ? o : filterCourier === o?.courier_id)?.filter(o => !search ? o : o?.id === +search || o?.title?.toLowerCase()?.includes(search?.toLowerCase()) || o?.name?.toLowerCase()?.includes(search?.toLowerCase()) || o?.admin?.toLowerCase()?.includes(search?.toLowerCase()) || o?.phone?.includes(search) || String(o?.price)?.includes(search)).map((o, i) => {
                         return (
                             <div key={i} className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
                                 <div className="flex items-center justify-between">

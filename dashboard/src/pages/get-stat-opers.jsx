@@ -17,7 +17,7 @@ function GetStatOpers() {
         }).then((res) => {
             setIsLoad(true)
             const { data, ok } = res.data;
-            console.log(data);
+            console.log(res.data);
             if (ok) {
                 setUsers(data);
             }
@@ -90,7 +90,6 @@ function GetStatOpers() {
                     })
                 }
             </div>
-
         </div>
     );
 }

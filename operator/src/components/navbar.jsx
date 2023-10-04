@@ -94,6 +94,12 @@ function Navbar() {
                     <BiSearch className="mr-[10px]" />
                     Qidiruv
                 </Link>
+                {/*  */}
+                <Link to='/history-orders' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/history-orders' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
+                    <BiHistory className="mr-[10px]" />
+                    Buyurtmalar tarixi
+                </Link>
+                {/*  */}
                 <Link to='/withdraw' className={`flex items-center justify-start w-full text-[20px] rounded p-[5px] ${path === '/withdraw' ? 'bg-gradient-to-r from-red-400 to-orange-500 text-white' : 'text-blue-gray-400'} relative mb-[10px]`}>
                     <BiCreditCard className="mr-[10px]" />
                     Pul chiqarish
