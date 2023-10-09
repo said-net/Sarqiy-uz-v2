@@ -131,7 +131,7 @@ function Races() {
     return (
         <div className="flex items-start justify-start flex-col w-full">
             <div className="flex items-center justify-center w-full h-[50px] mb-[10px]">
-                <h1 className=" bg-white shadow-sm rounded-b-[10px] flex items-center justify-center p-[10px] h-[50px]">PYGALAR</h1>
+                <h1 className=" bg-white shadow-sm rounded-b-[10px] flex items-center justify-center p-[10px] h-[50px]">POYGALAR</h1>
             </div>
             <div className="flex items-start justify-start flex-col w-full overflow">
                 <div className="flex items-center justify-start h-[70px] border bg-white">

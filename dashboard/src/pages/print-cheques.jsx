@@ -2,16 +2,19 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { IconButton, Spinner } from "@material-tailwind/react";
+import { Button, IconButton, Option, Select, Spinner } from "@material-tailwind/react";
 import QRCode from "react-qr-code";
 import { FaAngleLeft, FaAngleRight, FaShoppingCart } from "react-icons/fa";
+import Regions from '../components/regions.json'
 function PrintCheques() {
     const [cheques, setCheques] = useState([]);
     const [isLoad, setIsLoad] = useState(false);
     const [page, setPage] = useState(1);
+    const [region, setRegion] = useState('all');
+    const [next, setNext] = useState(false);
     useEffect(() => {
         setIsLoad(false);
-        axios(`${API_LINK}/boss/get-all-cheques/${page}`, {
+        axios(`${API_LINK}/boss/get-all-cheques/${page}/${region}`, {
             headers: {
                 'x-auth-token': `Bearer ${localStorage.getItem('access')}`
             }
@@ -27,14 +30,33 @@ function PrintCheques() {
             setIsLoad(true)
             toast.error("Aloqani tekshirib qayta urunib ko'ring!")
         })
+    }, [next]);
+    // 
+    useEffect(() => {
+        setNext(!next);
     }, [page]);
+    // 
+    useEffect(() => {
+        setNext(!next);
+    }, [region]);
     return (
-        <div className="flex items-center justify-start flex-col w-full min-h-[150vh] p-[70px_0]">
+        <div className="flex items-center justify-start flex-col w-full min-h-[150vh]">
+            <div className="flex mb-[10px] w-[800px] rounded-[0_0_10px_10px] p-[10px] bg-white shadow-sm">
+                <Select label="Viloyat filteri" variant="standard" onChange={e => setRegion(e)} value={region}>
+                    {Regions?.map((r, i) => {
+                        return (
+                            <Option key={i} value={`${r?.id}`}>{r?.name}</Option>
+                        )
+                    })}
+                </Select>
+                <Button className="rounded" onClick={() => setRegion('all')} color="red">Tozalash</Button>
+            </div>
             {!isLoad && <Spinner />}
             {isLoad && !cheques[0] && <p>Cheklar mavjud emas!</p>}
             {isLoad && cheques[0] &&
-                <div className="flex items-start justify-center w-[21cm] h-[890px] p-[10px] rounded-[10px] relative bg-white">
-                    <div className="flex items-center justify-start flex-col  mx-[5px]">
+                <div className="flex items-start justify-center w-[21cm] h-[890px] p-[10px] rounded-[10px] relative bg-white pt-[70px]">
+
+                    <div className="flex items-center justify-start flex-col mx-[5px]">
                         {cheques?.map((c, i) => {
                             return (
                                 (i + 1) % 2 == 0 && <div key={i} className="flex items-start justify-start flex-col border-black border min-h-[6.5cm] w-[9cm] relative mb-[10px] rounded-[10px]">

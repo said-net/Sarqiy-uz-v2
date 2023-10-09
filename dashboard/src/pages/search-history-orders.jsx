@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
 import { Input, Chip, IconButton, Dialog, DialogHeader, DialogBody, Select, Option, DialogFooter, Button, Checkbox, Textarea } from "@material-tailwind/react";
-import { BiBox, BiInfinite, BiMoney, BiPhone, BiSearch, BiTransfer, BiUser } from "react-icons/bi";
+import { BiBox, BiInfinite, BiLocationPlus, BiMoney, BiPhone, BiSearch, BiTransfer, BiUser } from "react-icons/bi";
 import { setRefresh } from "../managers/refresh.manager";
 import Regions from '../components/regions.json'
 function SearchHistoryOrders() {
@@ -25,10 +25,10 @@ function SearchHistoryOrders() {
     const [type, setType] = useState('id');
     const [runSearch, setRunSearch] = useState(false);
     // 
-    const [edit, setEdit] = useState({ orderId: '', id: '', title: '', name: '', phone: '', status: '', price: '', delivery_price: '', count: '', about: '' });
+    const [edit, setEdit] = useState({ orderId: '', id: '', title: '', name: '', phone: '', status: '', price: '', delivery_price: '0', count: '', about: '', region: '', city: '' });
     const [wait, setWait] = useState(false);
     function closeEdit() {
-        setEdit({ orderId: '', id: '', title: '', name: '', phone: '', status: '', price: '', delivery_price: '', count: '', about: '' })
+        setEdit({ orderId: '', id: '', title: '', name: '', phone: '', status: '', price: '', delivery_price: '0', count: '', about: '', region: '', city: '' })
     }
     function SubmitEdit() {
         setWait(true);
@@ -212,7 +212,7 @@ function SearchHistoryOrders() {
                                     <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
                                         <Checkbox onChange={e => SelectOrder(o?._id, e.target.checked)} checked={selecteds?.includes(o?._id)} />
                                     </div>
-                                    <div className="flex items-center justify-center" onClick={() => setEdit({ orderId: o?.id, id: o?._id, title: o?.title, name: o?.name, status: o?.status, phone: o?.phone, price: o?.price, count: o?.count, delivery_price: o?.delivery_price, about: o?.about })}>
+                                    <div className="flex items-center justify-center" onClick={() => setEdit({ orderId: o?.id, id: o?._id, title: o?.title, name: o?.name, status: o?.status, phone: o?.phone, price: o?.price, count: o?.count, delivery_price: o?.delivery_price, about: o?.about, region: `${o?.region}`, city: o?.city })}>
                                         <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
                                             <Chip color="red" value={o?.id} className="rounded" />
                                         </div>
@@ -375,6 +375,20 @@ function SearchHistoryOrders() {
                     {/*  */}
                     <div className="flex items-center justify-center w-full mb-[10px]">
                         <Input disabled={wait} label="Dostavka narxi" type="number" variant="standard" onChange={e => setEdit({ ...edit, delivery_price: e.target.value })} value={edit?.delivery_price} icon={<BiMoney />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Select label="Viloyat filteri" variant="standard" onChange={e => setEdit({ ...edit, region: e })} value={edit?.region}>
+                            {Regions?.map((r, i) => {
+                                return (
+                                    <Option key={i} value={`${r?.id}`}>{r?.name}</Option>
+                                )
+                            })}
+                        </Select>
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full">
+                        <Input disabled={wait} label="Tuman(Saxar)" type="text" variant="standard" onChange={e => setEdit({ ...edit, city: e.target.value })} value={edit?.city} icon={<BiLocationPlus />} />
                     </div>
                     {/*  */}
                 </DialogBody>

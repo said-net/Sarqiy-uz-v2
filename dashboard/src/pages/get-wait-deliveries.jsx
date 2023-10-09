@@ -7,6 +7,7 @@ import Regions from '../components/regions.json'
 import { BiSearch } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "../managers/refresh.manager";
+import QRCode from "react-qr-code";
 
 function GetWaitDeliveries() {
     const [orders, setOrders] = useState([]);
@@ -152,8 +153,11 @@ function GetWaitDeliveries() {
                         <p className="text-[12px] w-[180px] h-[50px] flex items-center justify-center border-r border-black">
                             IZOH
                         </p>
-                        <p className="text-[12px] w-[200px] h-[50px] flex items-center justify-center ">
+                        <p className="text-[12px] w-[200px] h-[50px] flex items-center justify-center border-black border-r">
                             SUMMA
+                        </p>
+                        <p className="flex items-center justify-center w-[90px] h-[50px]">
+                            QR
                         </p>
                     </div>
                     {orders?.filter(e => !region ? e : e?.region === +region).filter(e => !search ? e : type === 'id' ? e?.id === +search : e?.phone?.includes(search))?.map((c, i) => {
@@ -167,7 +171,7 @@ function GetWaitDeliveries() {
                                 </p>
                                 <p className="text-[12px] w-[150px] h-[100px] flex items-center justify-center border-r border-black flex-col">
                                     Sharqiy.uz
-                                    {/* <span>+998938003800</span> */}
+                                    <span>+998339306464</span>
                                 </p>
                                 <div className="text-[12px] w-[150px] h-[100px] flex items-center justify-center border-r border-black flex-col">
                                     <p>{c?.name}</p>
@@ -187,6 +191,9 @@ function GetWaitDeliveries() {
                                     <p>Maxsulotga: {Number(c?.price).toLocaleString()} so'm</p>
                                     <p>Dostavkaga: {Number(c?.delivery_price).toLocaleString()} so'm</p>
                                     <p>Umumiy qiymat: {Number(c?.delivery_price + c?.price).toLocaleString()} so'm</p>
+                                </div>
+                                <div className="flex items-center justify-center border-black h-[100px] w-[90px] border-l">
+                                    <QRCode value="https://SHARQIY.UZ" size={50} />
                                 </div>
                             </div>
                         )

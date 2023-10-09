@@ -159,7 +159,7 @@ function ReConnects() {
                                     <Textarea variant="standard" label="Izoh" required onChange={e => setEdit({ ...edit, about: e.target.value })} value={edit?.about} />
                                 </div>
                                 <div className="flex items-center justify-center w-full mb-[10px]">
-                                    <Input variant="standard" label="Maxsulot" required defaultValue={edit?.title} icon={<BiBox />} />
+                                    <Input variant="standard" label="Maxsulot" required value={edit?.title} onChange={e => setEdit({ ...edit, title: e.target.value })} icon={<BiBox />} />
                                 </div>
                                 <div className="flex items-center justify-center w-full mb-[10px]">
                                     <Input variant="standard" label="Maxsulot soni(Raqamda)" required type="number" onChange={e => setEdit({ ...edit, count: e.target.value, price: e.target.value * edit?.current_price, bonus_gived: edit?.bonus ? Math.floor(+e.target.value / edit?.bonus_count * edit?.bonus_given) : 0 })} value={edit?.count} icon={<BiQuestionMark />} />

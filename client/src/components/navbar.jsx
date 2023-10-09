@@ -1,9 +1,9 @@
-import { Drawer, IconButton, ListItem, Menu, MenuHandler, MenuItem, MenuList, Spinner } from "@material-tailwind/react";
+import { Button, Drawer, IconButton, ListItem, Menu, MenuHandler, MenuItem, MenuList, Spinner } from "@material-tailwind/react";
 import { FaBars, FaSearch } from 'react-icons/fa'
 import { useLocation, useNavigate } from "react-router-dom";
 // import Logo from '../assets/logo.png';
 import { GoHome, GoHomeFill } from 'react-icons/go'
-import { BiCategory, BiSolidCategory, BiCommentDetail, BiUser, BiSolidUser } from 'react-icons/bi'
+import { BiCategory, BiSolidCategory, BiCommentDetail, BiUser, BiSolidUser, BiListUl } from 'react-icons/bi'
 import { BsFillGearFill } from 'react-icons/bs'
 import { MdClose, MdOutlineVideoLibrary, MdVideoLibrary } from 'react-icons/md'
 import { useEffect, useState } from "react";
@@ -37,42 +37,54 @@ function Navbar() {
     return (
         <>
             <div className="flex items-center justify-center w-full h-[60px] fixed top-0 left-0 z-[2]">
-                <nav className="bg-white w-full h-[60px] flex items-center justify-between p-[0_2%] rounded-[0_0_10px_10px] border-b max-w-lg">
-                    <IconButton onClick={() => setOpenMenu(true)} color="red" className="rounded-full text-[20px]">
-                        <FaBars />
-                    </IconButton>
-                    <div className="flex items-center justify-center w-[70%] relative">
+                <nav className="bg-white w-full h-[60px] flex items-center justify-between p-[0_2%] rounded-[0_0_10px_10px] border-b">
+                    <div className="flex items-center justify-center">
+                        <IconButton onClick={() => setOpenMenu(true)} color="red" className="rounded-full text-[20px] md:hidden">
+                            <FaBars />
+                        </IconButton>
+                        <img src={Logo} alt="logo" className="hidden md:flex ml-[10px] md:ml-0 md:mr-[10px] w-[120px] cursor-pointer" onClick={() => nv('/')} />
+                        <p onClick={() => nv('/categories')} className="hidden md:flex items-center justify-center p-[10px] bg-red-50 rounded cursor-pointer hover:bg-red-100 duration-200 text-red-700">
+                            <BiCategory />
+                            Katalog
+                        </p>
+                    </div>
+                    <div className="flex items-center justify-center w-[70%] md:w-[40%] relative">
                         <input value={search} type="text" className="border border-red-500 p-[0_30px_0_10px] h-[35px] rounded-full w-full" placeholder="Qidiruv..." onChange={e => setSearch(e.target.value)} onKeyPress={e => e.key === 'Enter' && nv(`/search/${search}`)} />
                         <button className="w-[30px] h-[30px]  absolute right-[5px] rounded-full text-[16px] text-black flex items-center justify-center" onClick={() => nv('/search/' + search)}>
                             <FaSearch />
                         </button>
                     </div>
-                    <Menu>
-                        <MenuHandler>
-                            <IconButton className="rounded-full text-[20px]" color="red">
-                                <BsFillGearFill />
-                            </IconButton>
-                        </MenuHandler>
-                        {id &&
-                            <MenuList>
-                                <MenuItem onClick={() => nv('/profile')}>
-                                    Profil
-                                </MenuItem>
-                                <MenuItem onClick={() => nv('/dashboard')}>
-                                    Adminlar uchun
-                                </MenuItem >
-                                <MenuItem onClick={() => nv('/settings')}>
-                                    Sozlamalar
-                                </MenuItem>
-                            </MenuList>
-                        }{!id &&
-                            <MenuList>
-                                <MenuItem onClick={() => setOpenAuth(!openAuth)}>
-                                    Kirish / Ro'yhatdan o'tish
-                                </MenuItem>
-                            </MenuList>
-                        }
-                    </Menu>
+                    <div className="flex items-center justify-center">
+                        <Button onClick={() => { !id ? setOpenAuth(true) : nv('/profile') }} className="rounded items-center justify-center mr-[10px] hidden md:flex" color="red">
+                            <BiUser className="text-[18px]" /> {!id ? "Kirish" : "Profil"}
+                        </Button>
+                        <Menu>
+                            <MenuHandler>
+                                <IconButton className="rounded-full text-[20px]" color="red">
+                                    <BsFillGearFill />
+                                </IconButton>
+                            </MenuHandler>
+                            {id &&
+                                <MenuList>
+                                    <MenuItem onClick={() => nv('/profile')}>
+                                        Profil
+                                    </MenuItem>
+                                    <MenuItem onClick={() => nv('/dashboard')}>
+                                        Adminlar uchun
+                                    </MenuItem >
+                                    <MenuItem onClick={() => nv('/settings')}>
+                                        Sozlamalar
+                                    </MenuItem>
+                                </MenuList>
+                            }{!id &&
+                                <MenuList>
+                                    <MenuItem onClick={() => setOpenAuth(!openAuth)}>
+                                        Kirish / Ro'yhatdan o'tish
+                                    </MenuItem>
+                                </MenuList>
+                            }
+                        </Menu>
+                    </div>
                     {/* <img src={Logo} alt="logo" className="w-[45px]" onClick={() => nv('/')} /> */}
                 </nav>
             </div>

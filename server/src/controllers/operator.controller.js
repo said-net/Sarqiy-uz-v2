@@ -185,7 +185,7 @@ module.exports = {
                 name: e?.name,
                 phone: e?.phone,
                 location: '-',
-                product: e?.product?.title,
+                product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,
                 about: e?.about || "Yangi lid",
                 count: e?.count,
@@ -214,7 +214,7 @@ module.exports = {
                 name: e?.name,
                 phone: e?.phone,
                 location: `${region?.find(r => r.id === e?.region)?.name || '-'}, ${e?.city || '-'}`,
-                product: e?.title,
+                product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,
                 about: e?.about || '',
                 courier_comment: e?.courier_comment || '',
@@ -239,16 +239,17 @@ module.exports = {
     },
     setStatus: async (req, res) => {
         const { id } = req.params;
-        const { bonus_gived: bonus, about, city, region, status, count, price, recontact, delivery, name } = req.body;
+        const { bonus_gived: bonus, about, city, region, status, count, price, recontact, delivery, name, title } = req.body;
         const $order = await shopModel.findById(id);
         if (status === 'archive') {
-            if (!about) {
+            if (!about || !title) {
                 res.send({
                     ok: false,
-                    msg: "Izoh kiriting!"
+                    msg: "Izoh yoki mahsulot nomini kiriting!"
                 });
             } else {
                 $order.set({
+                    title,
                     status: 'archive',
                     about
                 }).save().then(async () => {
@@ -259,13 +260,14 @@ module.exports = {
                 });
             }
         } else if (status === 'wait') {
-            if (!recontact || !about || !name) {
+            if (!recontact || !about || !name || !title) {
                 res.send({
                     ok: false,
                     msg: "Qatorlarni to'ldiring!"
                 })
             } else {
                 $order.set({
+                    title,
                     status: 'wait',
                     recontact: moment.utc(recontact).unix(),
                     about,
@@ -280,6 +282,7 @@ module.exports = {
         } else if (status === 'success') {
             $order.set({
                 status: 'success',
+                title,
                 about, city, region, bonus, count, price, delivery_price: delivery, name
             }).save().then(async () => {
                 res.send({
@@ -346,6 +349,7 @@ module.exports = {
             // } catch { }
         } else if (status === 'sended') {
             $order.set({
+                title,
                 status: 'sended',
                 about,
                 courier_status: 'sended',
@@ -370,7 +374,7 @@ module.exports = {
                     name: e?.name,
                     phone: e?.phone,
                     location: '-',
-                    product: e?.product?.title,
+                    product: e?.title || e?.product?.title,
                     product_id: e?.product?.id,
                     about: e?.about || "Yangi lid",
                     count: e?.count,
@@ -400,7 +404,7 @@ module.exports = {
                 name: e?.name,
                 phone: e?.phone,
                 location: region?.find(r => r?.id === e?.region).name + ', ' + e?.city,
-                product: e?.product?.title,
+                product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,
                 about: e?.about,
                 count: e?.count,
@@ -438,6 +442,7 @@ module.exports = {
             const $settings = await settingModel.find();
             const order = {
                 ...$order._doc,
+
                 image: SERVER_LINK + $order?.product?.images[0],
                 for_operators: $settings[0].for_operators,
                 bonus: $order?.product?.bonus && $order?.product?.bonus_duration > moment.now() / 1000,
@@ -461,6 +466,7 @@ module.exports = {
     editOrder: async (req, res) => {
         const { id } = req?.params;
         const { title, name, status, price, delivery_price, count, about, region, city } = req?.body;
+        console.log(title);
         if (!title || !name || !status || !about) {
             res.send({
                 ok: false,
@@ -631,7 +637,7 @@ module.exports = {
                     name: e?.name,
                     phone: e?.phone,
                     location: !e?.region ? '-' : region?.find(r => r?.id === e?.region).name + e?.city,
-                    product: e?.product?.title,
+                    product: e?.title || e?.product?.title,
                     product_id: e?.product?.id,
                     about: e?.about,
                     count: e?.count,
@@ -664,7 +670,7 @@ module.exports = {
                 mod.push({
                     id: o?.id,
                     phone: o?.phone,
-                    title: o?.product?.title,
+                    title: o?.title || o?.product?.title,
                     count: o?.count,
                     name: o?.name,
                     status: o?.status,

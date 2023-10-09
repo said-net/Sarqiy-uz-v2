@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaHeart, FaRegHeart } from "react-icons/fa6";
 import Auth from "../user/auth";
-import YouTube from "react-youtube";
 import YoutubePlayer from "../components/videoplayer";
 import ReactPlayer from "react-player";
 import { FaPlay } from "react-icons/fa";
@@ -88,11 +87,11 @@ function Home() {
                 </div>
             }
             {/*  */}
-            {isLoad && state?.products[0] && <div className="flex items-start justify-between w-full p-[0_2%]">
-                <div className="flex items-center justify-center w-[49%] flex-col">
-                    {state?.products?.map((p, i) => {
+            {isLoad && state?.products[0] && <div className="flex items-center justify-start w-full flex-col p-[0_2%]">
+                <div className="md:flex md:items-center md:justify-center md:flex-wrap grid grid-cols-2 gap-[10px] ">
+                    {state?.products?.slice(0, 8)?.map((p, i) => {
                         return (
-                            i === 0 && <div key={i} className="flex items-center justify-start flex-col w-[100%] mb-[20px]  rounded shadow-md overflow-hidden relative h-[350px]">
+                            <div key={i} className="flex items-center justify-start flex-col sm:w-[250px] mb-[20px] mx-[5px] rounded shadow-md overflow-hidden relative h-[350px]">
 
                                 {!likes?.includes(p?.id) && <FaRegHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}
 
@@ -115,7 +114,7 @@ function Home() {
                         )
                     })}
                 </div>
-                <div className="flex items-center justify-center w-[49%] flex-col">
+                {/* <div className="flex items-center justify-center w-[49%] flex-col">
                     {state?.products?.map((p, i) => {
                         return (
                             i === 1 && <div key={i} className="flex items-center justify-start flex-col w-[100%] mb-[20px]  rounded shadow-md overflow-hidden relative h-[350px]">
@@ -140,12 +139,12 @@ function Home() {
                             </div>
                         )
                     })}
-                </div>
+                </div> */}
             </div>
             }
             {/*  */}
             {isLoad && state?.videos[0] &&
-                <div className="flex items-center justify-start w-full overflow-x-scroll h-[300px] p-[0_10px] mb-[20px] shadow-md">
+                <div className="flex items-center justify-start w-full h-[300px] p-[0_10px] sm:hidden mb-[20px] shadow-md overflow-x-scroll">
                     {state?.videos?.map((v, i) => {
                         return (
                             <div key={i} className="flex relative mr-[20px] w-[200px]" onClick={() => { setOpenVideo(v.video); setVideoDetail({ id: v.pid, title: v.product }) }}>
@@ -161,11 +160,10 @@ function Home() {
             }
             {/*  */}
             {isLoad && state?.products[0] && <div className="flex items-start justify-between w-full p-[0_2%]">
-                <div className="flex items-center justify-center w-[49%] flex-col">
-                    {state?.products?.map((p, i) => {
+                <div className="md:flex md:items-center md:justify-center md:flex-wrap grid grid-cols-2 gap-[10px]">
+                    {state?.products?.slice(8,)?.map((p, i) => {
                         return (
-                            (i % 2) === 0 && <div key={i} className="flex items-center justify-start flex-col w-[100%] mb-[20px]  rounded shadow-md overflow-hidden relative h-[350px]">
-
+                            <div key={i} className="flex items-center justify-start flex-col sm:w-[250px] mb-[20px] mx-[5px] rounded shadow-md overflow-hidden relative h-[350px]">
                                 {!likes?.includes(p?.id) && <FaRegHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}
 
                                 {likes?.includes(p?.id) && <FaHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}
@@ -187,7 +185,7 @@ function Home() {
                         )
                     })}
                 </div>
-                <div className="flex items-center justify-center w-[49%] flex-col">
+                {/* <div className="flex items-center justify-center w-[49%] flex-col">
                     {state?.products?.map((p, i) => {
                         return (
                             (i % 2) !== 0 && <div key={i} className="flex items-center justify-start flex-col w-[100%] mb-[20px]  rounded shadow-md overflow-hidden relative h-[350px]">
@@ -212,7 +210,7 @@ function Home() {
                             </div>
                         )
                     })}
-                </div>
+                </div> */}
             </div>
             }
             <Auth open={openAuth} setOpen={setOpenAuth} />

@@ -3,7 +3,6 @@ const mainModel = require("../models/main.model");
 const fs = require("fs");
 const productModel = require("../models/product.model");
 const { SERVER_LINK } = require("../configs/env");
-const settingModel = require("../models/setting.model");
 const moment = require("moment");
 module.exports = {
     getMainMenu: async (req, res) => {
@@ -92,7 +91,6 @@ module.exports = {
                 value: p.value - p.solded,
                 old_price: p?.old_price ? p?.old_price : null,
                 bonus: p.bonus && p.bonus_duration > moment.now() / 1000,
-                // bonus_duration: p.bonus ? moment.unix(p.bonus_duration).format('DD.MM.YYYY HH:mm') : 0,
                 category: {
                     id: p.category._id,
                     title: p.category.title,

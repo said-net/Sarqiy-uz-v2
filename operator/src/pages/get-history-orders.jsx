@@ -128,7 +128,7 @@ function GetHistoryOrders() {
                             <Textarea variant="standard" label="Izoh" required onChange={e => setEdit({ ...edit, about: e.target.value })} value={edit?.about} />
                         </div>
                         <div className="flex items-center justify-center w-full mb-[10px]">
-                            <Input variant="standard" label="Maxsulot" required defaultValue={edit?.title} icon={<BiBox />} />
+                            <Input variant="standard" onChange={e => setEdit({ ...edit, title: e.target.value })} label="Maxsulot" required defaultValue={edit?.title} icon={<BiBox />} />
                         </div>
                         <div className="flex items-center justify-center w-full mb-[10px]">
                             <Input variant="standard" label="Maxsulot soni(Raqamda)" required type="number" onChange={e => setEdit({ ...edit, count: e.target.value })} value={edit?.count} icon={<BiQuestionMark />} />

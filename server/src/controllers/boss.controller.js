@@ -19,6 +19,7 @@ const { phone: ph } = require('phone');
 const courierModel = require("../models/courier.model");
 const raceModel = require("../models/race.model");
 const bossModel = require("../models/boss.model");
+const mainModel = require("../models/main.model");
 module.exports = {
     default: async () => {
         const $admin = await adminModel.findOne({ id: 1 });
@@ -88,6 +89,7 @@ module.exports = {
         const owners = await bossModel.find().countDocuments()
         // 
         const race = await raceModel.find({ hidden: false }).countDocuments()
+        const main = await mainModel.find().countDocuments();
         let inoperator = 0;
         $inoperator?.forEach(i => {
             if (i?.operator) {
@@ -113,7 +115,8 @@ module.exports = {
                 oper_pays,
                 race,
                 history_orders,
-                owners
+                owners,
+                main
             }
         });
     },
@@ -333,7 +336,8 @@ module.exports = {
         });
     },
     getCheques: async (req, res) => {
-        const $cheques = await shopModel.find({ status: 'success' }).populate('operator product')
+        const { region } = req?.params;
+        const $cheques = await (region === 'all' ? shopModel.find({ status: 'success' }) : shopModel.find({ status: 'success', region: +region })).populate('operator product')
         const cheques = [];
         const pageSize = 6;
         const pageNumber = req?.params?.page || 1;
@@ -343,7 +347,7 @@ module.exports = {
         $cheques?.slice(startIndex, endIndex)?.forEach(c => {
             cheques?.push({
                 id: c?.id,
-                product: c?.product?.title,
+                product: c?.title || c?.product?.title,
                 about: c?.about,
                 price: c?.price,
                 delivery_price: c?.delivery_price,
@@ -371,7 +375,7 @@ module.exports = {
             cheques?.push({
                 id: c?.id,
                 _id: c?._id,
-                title: c?.product?.title,
+                title: c?.title || c?.product?.title,
                 about: c?.about,
                 price: c?.price,
                 delivery_price: c?.delivery_price,
@@ -543,7 +547,7 @@ module.exports = {
             $modlist.push({
                 id: o?.id,
                 _id: o?._id,
-                title: o?.product?.title,
+                title: o?.title || o?.product?.title,
                 image: SERVER_LINK + o?.product?.images[0],
                 admin: $admin?.name,
                 admin_id: $admin?.id,
@@ -587,7 +591,7 @@ module.exports = {
             $modlist.push({
                 id: o?.id,
                 _id: o?._id,
-                title: o?.product?.title,
+                title: o?.title || o?.product?.title,
                 image: SERVER_LINK + o?.product?.images[0],
                 admin: $admin?.name,
                 admin_id: $admin?.id,
@@ -638,7 +642,7 @@ module.exports = {
             $modlist.push({
                 id: o?.id,
                 _id: o?._id,
-                title: o?.product?.title,
+                title: o?.title || o?.product?.title,
                 image: SERVER_LINK + o?.product?.images[0],
                 admin: $admin?.name,
                 admin_id: $admin?.id,
@@ -680,11 +684,11 @@ module.exports = {
         const $modlist = [];
         for (let o of $orders) {
             if (o.flow) {
-                const $admin = await userModel.findOne({ id: o?.flow });
+                // const $admin = await userModel.findOne({ id: o?.flow });
                 $modlist.push({
                     id: o?.id,
                     _id: o?._id,
-                    title: o?.product?.title,
+                    title: o?.title || o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
                     // admin: $admin.name,
                     // admin_id: $admin.id,
@@ -699,7 +703,7 @@ module.exports = {
                 $modlist.push({
                     id: o?.id,
                     _id: o?._id,
-                    title: o?.product?.title,
+                    title: o?.title || o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
                     // admin: '',
                     // admin_id: '',
@@ -745,7 +749,7 @@ module.exports = {
                 $modlist.push({
                     id: o?.id,
                     _id: o?._id,
-                    title: o?.product?.title,
+                    title: o?.title || o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin.name,
                     admin_id: $admin.id,
@@ -763,7 +767,7 @@ module.exports = {
                 $modlist.push({
                     id: o?.id,
                     _id: o?._id,
-                    title: o?.product?.title,
+                    title: o?.title || o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: '',
                     admin_id: '',
@@ -803,7 +807,7 @@ module.exports = {
                 $modlist.push({
                     id: o?.id,
                     _id: o?._id,
-                    title: o?.product?.title,
+                    title: o?.title || o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin.name,
                     admin_id: $admin.id,
@@ -822,7 +826,7 @@ module.exports = {
                 $modlist.push({
                     id: o?.id,
                     _id: o?._id,
-                    title: o?.product?.title,
+                    title: o?.title || o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: '',
                     admin_id: '',
@@ -977,7 +981,7 @@ module.exports = {
                     $modlist.push({
                         id: o?.id,
                         _id: o?._id,
-                        title: o?.product?.title,
+                        title: o?.title || o?.product?.title,
                         image: SERVER_LINK + o?.product?.images[0],
                         admin: $admin?.name,
                         admin_id: $admin?.id,
@@ -986,7 +990,9 @@ module.exports = {
                         name: o?.name,
                         phone: o?.phone,
                         about: o?.about,
-                        delivery_price: o?.delivery_price,
+                        region: o?.region,
+                        city: o?.city,
+                        delivery_price: o?.delivery_price || '0',
                         courier: o?.courier?.name,
                         courier_id: o?.courier?._id,
                         courier_phone: o?.courier?.phone,
@@ -995,6 +1001,8 @@ module.exports = {
                         operator_id: o?.operator?._id,
                         operator_phone: o?.operator?.phone,
                         status: o?.status,
+                        status_color: o?.status === 'reject' ? "bg-red-500" : o?.status === 'archive' ? "bg-orange-500" : o?.status === 'pending' ? "bg-orange-500" : o?.status === 'success' ? "bg-blue-500" : o?.status === 'sended' ? "bg-purple-500" : o?.status === 'delivered' ? "bg-green-500" : o?.status === 'wait' ? "bg-orange-500" : o?.status === 'copy' ? "bg-red-500" : "",
+
                         status_title: o?.status === 'reject' ? "Bekor qilingan" : o?.status === 'archive' ? "Arxivlangan" : o?.status === 'pending' ? "Yangi" : o?.status === 'success' ? "Upakovkada" : o?.status === 'sended' ? "Yetkazilmoqda" : o?.status === 'delivered' ? "Yetkazilgan" : o?.status === 'wait' ? "Qayta aloqa" : o?.status === 'copy' ? "Kopiya" : ""
                     });
                 }
@@ -1003,7 +1011,7 @@ module.exports = {
                 $modlist.push({
                     id: o?.id,
                     _id: o?._id,
-                    title: o?.product?.title,
+                    title: o?.title || o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin?.name,
                     admin_id: $admin?.id,
@@ -1012,7 +1020,9 @@ module.exports = {
                     name: o?.name,
                     phone: o?.phone,
                     about: o?.about,
-                    delivery_price: o?.delivery_price,
+                    region: o?.region,
+                    city: o?.city,
+                    delivery_price: o?.delivery_price || '0',
                     courier: o?.courier?.name,
                     courier_id: o?.courier?._id,
                     courier_phone: o?.courier?.phone,
@@ -1037,8 +1047,8 @@ module.exports = {
     // 
     editOrder: async (req, res) => {
         const { id } = req?.params;
-        const { title, name, phone, status, price, delivery_price, count, about } = req?.body;
-        if (!title || !name || !phone || !status || !price || !delivery_price || !count || !about) {
+        const { title, name, phone, status, price, delivery_price, count, about, region, city } = req?.body;
+        if (!title || !name || !phone || !status || !price || !count || !about) {
             res.send({
                 ok: false,
                 msg: "Qatorlarni to'ldiring!"
@@ -1052,7 +1062,7 @@ module.exports = {
                         msg: "Order topilmadi!"
                     });
                 } else {
-                    $order.set({ title, phone, name, status, price, delivery_price, count, about, verified: status === 'sended' ? false : $order?.verified, courier_status: status === 'sended' ? 'sended' : status === 'delivered' ? 'delivered' : $order?.courier_status }).save().then(() => {
+                    $order.set({ title, phone, name, region, city, status, price, delivery_price, count, about, verified: status === 'sended' ? false : $order?.verified, courier_status: status === 'sended' ? 'sended' : status === 'delivered' ? 'delivered' : $order?.courier_status }).save().then(() => {
                         res.send({
                             ok: true,
                             msg: "Saqlandi"
@@ -1411,9 +1421,9 @@ module.exports = {
                 const last_monthly = await shopModel.find({ operator: oper?._id, month: month - 1, year });
 
                 data.push({
-                    name: user.name,
-                    id: user.id,
-                    phone: user.phone,
+                    name: oper.name,
+                    id: oper.id,
+                    phone: oper.phone,
                     today: {
                         delivered: today.filter(o => o?.status === 'delivered')?.length,
                         sended: today.filter(o => o?.status === 'sended')?.length,
