@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { FaBoxes, FaEye, FaNewspaper, FaTaxi } from "react-icons/fa";
+// import { FaBoxes, FaEye, FaNewspaper, FaTaxi } from "react-icons/fa";
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, IconButton, Input } from "@material-tailwind/react";
-import { FaCircleCheck, FaX } from "react-icons/fa6";
+import { FaX } from "react-icons/fa6";
 
 function AdminProductStats() {
     const [state, setState] = useState([]);

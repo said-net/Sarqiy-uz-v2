@@ -93,8 +93,8 @@ module.exports = {
                                         for_operator: $product?.for_operators,
                                         competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
                                         week: moment().week(),
-                                        flow: $flow?.from?.id,
-                                        flow_id: flow_id,
+                                        flow: $flow?.hidden ? null : $flow?.from?.id,
+                                        flow_id: $flow?.hidden ? null : flow_id,
                                         month: new Date().getMonth(),
                                         day: new Date().getDate(),
                                         year: new Date().getFullYear()
@@ -180,6 +180,53 @@ module.exports = {
             res.send({
                 ok: false,
                 data: err
+            })
+        }
+    },
+    FlowTarget: async (req, res) => {
+        const { name, phone, flow_id } = req?.body;
+        try {
+            if (!name || !phone || !flow_id) {
+                res.send({
+                    ok: false,
+                    msg: "Nimadir xato!"
+                });
+            } else {
+                const $orders = await shopModel.find();
+                const $f = await flowModel.findOne({ id })?.populate('product from')
+                const $product = $f?.product;
+                const $user = $f?.user;
+                const $c = (await competitionModel.find()).reverse();
+                // const $shopes = await productModel.find({ flow: 136, success: 'pending' }).countDocuments()
+
+                new shopModel({
+                    product: $product?._id,
+                    from: "",
+                    name,
+                    title: $product?.title,
+                    created: moment.now() / 1000,
+                    id: $orders?.length + 1,
+                    phone,
+                    for_admin: $f?.hidden ? 0 : $f?.for_admin,
+                    for_operator: $product?.for_operators,
+                    competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
+                    flow: $f?.hidden ? null : $user?.id,
+                    flow_id: $f?.hidden ? null : $f?._id,
+                    month: new Date().getMonth(),
+                    day: new Date().getDate(),
+                    year: new Date().getFullYear()
+                }).save().then(async () => {
+                    res.send({
+                        ok: true,
+                        msg: "Buyurtma qabul qilindi!"
+                    })
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            res.send({
+                ok: false,
+                msg: "Xatolik!"
             })
         }
     },

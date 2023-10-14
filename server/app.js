@@ -17,10 +17,7 @@ app.use(express.json());
 app.use(file());
 app.use('/public', express.static('public'));
 app.post('/target', shopController.getTargetApi);
-// new cointransferModel({
-//     from: '64e2296f52f884de33e3cf98',
-//     coin: 1400
-// }).save()
+app.post('/target/v2', shopController.FlowTarget);
 app.get('/transfer/:order/:user', async (req, res) => {
     try {
         const { user, order } = req?.params;

@@ -664,19 +664,19 @@ module.exports = {
             try {
                 for (let v of $views) {
                     const p = v?.product
-                    const pending = await shopModel.find({ flow: String(req.user.uId), status: 'pending', product: p?._id }).countDocuments();
+                    const pending = await shopModel.find({ flow: String(req.user.uId), status: 'pending', product: p?._id, flow_id: null }).countDocuments();
 
-                    const success = await shopModel.find({ flow: req.user.uId, status: 'success', product: p?._id }).countDocuments();
+                    const success = await shopModel.find({ flow: req.user.uId, status: 'success', product: p?._id, flow_id: null }).countDocuments();
 
-                    const sended = await shopModel.find({ flow: req.user.uId, status: 'sended', product: p?._id }).countDocuments();
+                    const sended = await shopModel.find({ flow: req.user.uId, status: 'sended', product: p?._id, flow_id: null }).countDocuments();
 
                     const archived = await shopModel.find({ flow: req.user.uId, status: 'archive', product: p?._id }).countDocuments();
 
-                    const rejected = await shopModel.find({ flow: req.user.uId, status: 'reject', product: p?._id }).countDocuments();
+                    const rejected = await shopModel.find({ flow: req.user.uId, status: 'reject', product: p?._id, flow_id: null }).countDocuments();
 
-                    const copy = await shopModel.find({ flow: req.user.uId, status: 'copy', product: p?._id }).countDocuments();
+                    const copy = await shopModel.find({ flow: req.user.uId, status: 'copy', product: p?._id, flow_id: null }).countDocuments();
 
-                    const delivered = await shopModel.find({ flow: req.user.uId, status: 'delivered', product: p?._id })
+                    const delivered = await shopModel.find({ flow: req.user.uId, status: 'delivered', product: p?._id, flow_id: null })
 
                     let profit = 0;
 
