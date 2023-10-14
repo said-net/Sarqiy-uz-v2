@@ -128,7 +128,6 @@ module.exports = {
             ok: true,
             data: mod
         });
-        console.log(mod);
     },
     shopRace: async (req, res) => {
         const { id } = req?.params;

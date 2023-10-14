@@ -48,56 +48,105 @@ function AdminProductStats() {
         })
     }
     return (
-        <div className="flex items-center justify-start flex-col w-full p-[0_10px]">
-            <Link to={`/dashboard`} className="w-full underline">Ortga</Link>
+        <div className="flex items-start justify-start flex-col w-full overflow-scroll p-[50px_10px]">
             {/*  */}
+            <div className="flex items-center justify-center border border-gray-500">
+                <p className="w-[50px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">ID</p>
+                <p className="w-[80px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">RASMI</p>
+                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">MAHSULOT</p>
+                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">TASHRIF</p>
+                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">YANGI BUYURTMA</p>
+                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">ARXIVLANGAN</p>
+                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">RAD ETILGAN</p>
+                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">KOPIYA</p>
+                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">UPAKOVKADA</p>
+                <p className="w-[150px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">YETKAZILMOQDA YO'LDA</p>
+                <p className="w-[150px] h-[50px] flex items-center justify-center text-center text-[11px] border-r border-gray-500">YETKAZILGAN</p>
+                <p className="w-[180px] h-[50px] flex items-center justify-center text-center text-[11px]">FOYDA(SO'M)</p>
+            </div>
             {isLoad && state[0] &&
-                <div className="grid grid-cols-2 gap-[10px] my-[10px]">
-                    {state?.map((p, i) => {
-                        return (
-                            <div key={i} className="flex items-center justify-start flex-col w-[172px] h-[470px] p-[3px] bg-white shadow-md rounded relative">
-                                {p?.bonus && <span className="absolute top-[5px] left-[5px] bg-red-500 px-[5px] rounded text-[12px] text-white">{p?.bonus_about}</span>}
-                                <div className="flex items-center justify-center w-full overflow-hidden h-[190px]">
-                                    <img src={p?.image} alt="r" />
-                                </div>
-                                <div className="flex items-start justify-start flex-col w-full">
-                                    <p className="w-full p-[0_2%] my-[10px]">
-                                        {p?.title?.slice(0, 15) + '...'}
-                                    </p>
-                                    {/* stats */}
-                                    <p className="flex items-center justify-start text-[13px]"><FaEye className="mr-[5px]" />Tashriflar: {p?.views} ta</p>
-
-                                    <p className="flex items-center justify-start text-[13px]"><FaNewspaper className="mr-[5px]" />Yangi: {p?.pending} ta</p>
-
-                                    <p className="flex items-center justify-start text-[13px]"><FaBoxes className="mr-[5px]" />Tayyor: {p?.success} ta</p>
-
-                                    <p className="flex items-center justify-start text-[13px]"><FaTaxi className="mr-[5px]" />Yuborildi: {p?.sended} ta</p>
-
-                                    <p className="flex items-center justify-start text-[13px]"><FaCircleCheck className="mr-[5px]" />Yetkazildi: {p?.delivered} ta</p>
-
-                                    {/*  */}
-                                    <div className="flex items-center justify-start w-full h-[20px]">
-                                        {p?.old_price &&
-                                            <p className="text-gray-700 text-[12px] font-normal w-full px-[2%]"><s>{Number(p?.old_price).toLocaleString()} so'm</s> <span className="text-[red]">-{String((p?.old_price - p?.price) / (p?.old_price) * 100).slice(0, 5)}%</span></p>
-                                        }
-                                    </div>
-                                    <p className=" w-full p-[0_2%] font-bold text-[16px] text-black">{Number(p.price).toLocaleString()} so'm</p>
-                                    {/*  */}
-                                    <div className="w-full h-[1px] bg-blue-gray-100"></div>
-                                    <p className="text-[12px]">To'lov: <span className="text-[15px]">{Number(p?.for_admins).toLocaleString()} s'om</span></p>
-                                    {/*  */}
-                                    <span className="w-full h-[30px] border-[2px] rounded border-green-500 flex items-center justify-center uppercase tracking-[2px] mb-[10px]" onClick={() => setOpenFlow({ id: p?.pid, title: p?.title })}>
-                                        Oqim
-                                    </span>
-                                    {/*  */}
-                                    <span className="w-full h-[30px] rounded bg-green-500 flex items-center justify-center uppercase tracking-[1px] mb-[10px] text-white shadow-md" onClick={() => getAds(p?.id)}>
-                                        Reklama posti
-                                    </span>
-                                </div>
+                state?.map((p, i) => {
+                    return (
+                        <div className="flex items-center justify-center border border-gray-500 border-t-0">
+                            <p className="w-[50px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                {i + 1}
+                            </p>
+                            <div className="w-[80px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                <img src={p?.image} alt="i" className="w-[30px] rounded-[10px]" />
                             </div>
-                        )
-                    })}
-                </div>
+                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                {p?.title}
+                            </p>
+                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                {p?.views}
+                            </p>
+                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                {p?.pending}
+                            </p>
+                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                {p?.archived}
+                            </p>
+                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                {p?.rejected}
+                            </p>
+                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                {p?.copy}
+                            </p>
+                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                {p?.success}
+                            </p>
+                            <p className="w-[150px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                                {p?.sended}
+                            </p>
+                            <p className="w-[150px] h-[50px] flex items-center justify-center text-center text-[11px] border-r border-gray-500">
+                                {p?.delivered}
+                            </p>
+                            <p className="w-[180px] h-[50px] flex items-center justify-center text-center text-[11px]">
+                                {Number(p?.profit)?.toLocaleString()}
+                            </p>
+                        </div>
+                        // <div key={i} className="flex items-center justify-start flex-col w-[172px] h-[470px] p-[3px] bg-white shadow-md rounded relative">
+                        //     {p?.bonus && <span className="absolute top-[5px] left-[5px] bg-red-500 px-[5px] rounded text-[12px] text-white">{p?.bonus_about}</span>}
+                        //     <div className="flex items-center justify-center w-full overflow-hidden h-[190px]">
+                        //         <img src={p?.image} alt="r" />
+                        //     </div>
+                        //     <div className="flex items-start justify-start flex-col w-full">
+                        //         <p className="w-full p-[0_2%] my-[10px]">
+                        //             {p?.title?.slice(0, 15) + '...'}
+                        //         </p>
+                        //         {/* stats */}
+                        //         <p className="flex items-center justify-start text-[13px]"><FaEye className="mr-[5px]" />Tashriflar: {p?.views} ta</p>
+
+                        //         <p className="flex items-center justify-start text-[13px]"><FaNewspaper className="mr-[5px]" />Yangi: {p?.pending} ta</p>
+
+                        //         <p className="flex items-center justify-start text-[13px]"><FaBoxes className="mr-[5px]" />Tayyor: {p?.success} ta</p>
+
+                        //         <p className="flex items-center justify-start text-[13px]"><FaTaxi className="mr-[5px]" />Yuborildi: {p?.sended} ta</p>
+
+                        //         <p className="flex items-center justify-start text-[13px]"><FaCircleCheck className="mr-[5px]" />Yetkazildi: {p?.delivered} ta</p>
+
+                        //         {/*  */}
+                        //         <div className="flex items-center justify-start w-full h-[20px]">
+                        //             {p?.old_price &&
+                        //                 <p className="text-gray-700 text-[12px] font-normal w-full px-[2%]"><s>{Number(p?.old_price).toLocaleString()} so'm</s> <span className="text-[red]">-{String((p?.old_price - p?.price) / (p?.old_price) * 100).slice(0, 5)}%</span></p>
+                        //             }
+                        //         </div>
+                        //         <p className=" w-full p-[0_2%] font-bold text-[16px] text-black">{Number(p.price).toLocaleString()} so'm</p>
+                        //         {/*  */}
+                        //         <div className="w-full h-[1px] bg-blue-gray-100"></div>
+                        //         <p className="text-[12px]">To'lov: <span className="text-[15px]">{Number(p?.for_admins).toLocaleString()} s'om</span></p>
+                        //         {/*  */}
+                        //         <span className="w-full h-[30px] border-[2px] rounded border-green-500 flex items-center justify-center uppercase tracking-[2px] mb-[10px]" onClick={() => setOpenFlow({ id: p?.pid, title: p?.title })}>
+                        //             Oqim
+                        //         </span>
+                        //         {/*  */}
+                        //         <span className="w-full h-[30px] rounded bg-green-500 flex items-center justify-center uppercase tracking-[1px] mb-[10px] text-white shadow-md" onClick={() => getAds(p?.id)}>
+                        //             Reklama posti
+                        //         </span>
+                        //     </div>
+                        // </div>
+                    )
+                })
             }
             <Dialog open={openFlow?.id !== ''} className="p-[5px]">
                 <DialogHeader className="w-full flex items-center justify-between">

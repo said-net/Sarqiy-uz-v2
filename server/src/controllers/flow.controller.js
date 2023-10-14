@@ -177,7 +177,7 @@ module.exports = {
             res.send({
                 ok: true,
                 data: {
-                    id: f?.product?.id,
+                    id: f?.product?._id,
                     flow_id: f?._id,
                     flow: f?.from?.id,
                     title: f?.product?.title,

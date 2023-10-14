@@ -1,5 +1,5 @@
 import { IconButton, } from "@material-tailwind/react";
-import { FaMoneyBill, FaShoppingCart, FaTelegram, FaUsers, FaBoxes, FaRobot, FaCoins, FaLink } from "react-icons/fa";
+import { FaMoneyBill, FaShoppingCart, FaTelegram, FaUsers, FaBoxes, FaRobot, FaCoins, FaLink, FaGift, FaBackspace } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ImStatsDots } from 'react-icons/im'
@@ -22,7 +22,7 @@ function AdminMain() {
         <>
             {/* CLOSER */}
             <div className={`fixed top-0 left-0 h-[100vh] bg-[#364fc08d] backdrop-blur-sm ${openMenu ? 'w-full' : 'w-0'} duration-500 z-[998]`} onClick={() => setOpenMenu(false)}></div>
-            <div className={`flex items-center justify-start flex-col w-[350px] ${openMenu ? "left-0 " : "left-[-350px]"} fixed top-[0] p-[10px] bg-white z-[9999] overflow-y-scroll h-[100vh] duration-500`}>
+            <div className={`flex items-center justify-start flex-col w-[350px] ${openMenu ? "left-0 " : "left-[-350px]"} fixed top-[0] p-[10px] bg-white z-[9999] overflow-y-scroll h-[100vh] duration-500 no-scrollbar`}>
                 <div className={`duration-500 fixed top-[5px] ${openMenu ? 'left-[300px]' : 'left-[20px]'}`}>
                     <IconButton onClick={() => setOpenMenu(!openMenu)} className="rounded-full text-[30px]" color="red">
                         {openMenu ? <BiX /> : <BiMenu />}
@@ -54,21 +54,6 @@ function AdminMain() {
                         Market
                     </Link>
                     {/*  */}
-                    <Link onClick={() => window.open('https://t.me/sharqiybot')} className={`${linkClass}`}>
-                        <FaRobot className="mr-[10px]" />
-                        Telegram bot
-                    </Link>
-                    {/*  */}
-                    <Link to='/dashboard/stats' className={`${linkClass} ${p === '/dashboard/stats' && linkActive}`}>
-                        <ImStatsDots className="mr-[10px]" />
-                        Umumiy statistika
-                    </Link>
-                    {/*  */}
-                    <Link to='/dashboard/product-stats' className={`${linkClass} ${p === '/dashboard/product-stats' && linkActive}`}>
-                        <FaBoxes className="mr-[10px]" />
-                        Avto oqim statistikasi
-                    </Link>
-                    {/*  */}
                     <Link to='/dashboard/flows' className={`${linkClass} ${p === '/dashboard/flows' && linkActive}`}>
                         <FaLink className="mr-[10px]" />
                         Oqimlar
@@ -77,6 +62,16 @@ function AdminMain() {
                     <Link to='/dashboard/flows-stat' className={`${linkClass} ${p === '/dashboard/flows-stat' && linkActive}`}>
                         <BiStats className="mr-[10px]" />
                         Oqim boyicha statistika
+                    </Link>
+                    {/*  */}
+                    <Link to='/dashboard/product-stats' className={`${linkClass} ${p === '/dashboard/product-stats' && linkActive}`}>
+                        <FaBoxes className="mr-[10px]" />
+                        Avto oqim statistikasi
+                    </Link>
+                    {/*  */}
+                    <Link to='/dashboard/stats' className={`${linkClass} ${p === '/dashboard/stats' && linkActive}`}>
+                        <ImStatsDots className="mr-[10px]" />
+                        Umumiy statistika
                     </Link>
                     {/*  */}
                     <Link to='/dashboard/requests' className={`${linkClass} ${p === '/dashboard/requests' && linkActive}`}>
@@ -104,9 +99,24 @@ function AdminMain() {
                         Coin market
                     </Link>
                     {/*  */}
+                    <Link to='/dashboard/comps' className={`${linkClass} ${p === '/dashboard/comps' && linkActive}`}>
+                        <FaGift className="mr-[10px]" />
+                        Konkurs
+                    </Link>
+                    {/*  */}
+                    <Link onClick={() => window.open('https://t.me/sharqiybot')} className={`${linkClass}`}>
+                        <FaRobot className="mr-[10px]" />
+                        Telegram bot
+                    </Link>
+                    {/*  */}
                     <Link onClick={() => setOpen(true)} className={`${linkClass}`}>
                         <FaTelegram className="mr-[10px]" />
                         Telegramga bog'lash
+                    </Link>
+                    {/*  */}
+                    <Link to='/' className={`${linkClass} ${p === '/' && linkActive}`}>
+                        <FaBackspace className="mr-[10px]" />
+                        Ortga
                     </Link>
                     {/* 
                     {/* <MenuItem className="border flex items-center justify-start h-[50px] mb-[10px]" onClick={() => nv('/dashboard/comps')}>

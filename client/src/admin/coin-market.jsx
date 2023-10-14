@@ -54,8 +54,7 @@ function CoinMarket() {
     }
     return (
         <div className="flex items-center justify-start flex-col w-full p-[10px]">
-            <Link to={`/dashboard`} className="w-full underline ">Ortga</Link>
-            <div className="flex items-center justify-center w-full bg-white h-[50px] rounded relative mb-[10px]">
+            <div className="flex items-center justify-center w-full bg-white h-[50px] rounded relative mb-[10px] border">
                 <h1>COIN MARKET</h1>
                 <div className="absolute right-[10px]">
                     <Popover animate={{
@@ -81,7 +80,7 @@ function CoinMarket() {
                 </div>
             }
             {isLoad && races[0] &&
-                <div className="grid grid-cols-2 gap-[20px]">
+                <div className="grid grid-cols-2 gap-[20px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {races?.map((r, i) => {
                         return (
                             <div className="flex items-center justify-start flex-col w-[170px] h-[300px] bg-white shadow-sm rounded" key={i}>

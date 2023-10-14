@@ -65,7 +65,6 @@ function AdminRequests() {
 
         <div className="flex items-center justify-start flex-col p-[10px]">
             <div className="flex items-center justify-between w-full mb-[10px]">
-                <Link to={`/dashboard`} className="w-full underline">Ortga</Link>
                 {/* <Button className="rounded" onClick={setStatus}>Yangilarga o'tkazish</Button> */}
                 <Select onChange={e => setType(e)} value={type} label="Saralash">
                     <Option value={'all'}>Barchasi</Option>

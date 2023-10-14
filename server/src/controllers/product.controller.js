@@ -670,24 +670,41 @@ module.exports = {
 
                     const sended = await shopModel.find({ flow: req.user.uId, status: 'sended', product: p?._id }).countDocuments();
 
-                    const delivered = await shopModel.find({ flow: req.user.uId, status: 'delivered', product: p?._id }).countDocuments();
+                    const archived = await shopModel.find({ flow: req.user.uId, status: 'archive', product: p?._id }).countDocuments();
 
+                    const rejected = await shopModel.find({ flow: req.user.uId, status: 'reject', product: p?._id }).countDocuments();
+
+                    const copy = await shopModel.find({ flow: req.user.uId, status: 'copy', product: p?._id }).countDocuments();
+
+                    const delivered = await shopModel.find({ flow: req.user.uId, status: 'delivered', product: p?._id })
+
+                    let profit = 0;
+
+                    delivered?.forEach((d) => {
+                        profit += d?.for_admin
+                    })
                     mod.push({
-                        ...p?._doc,
-                        id: p?._id,
-                        pid: p?.id,
+                        // ...p?._doc,
+
+                        // id: p?._id,
+                        // pid: p?.id,
+                        title: p?.title,
                         image: SERVER_LINK + p?.images[0],
-                        original_price: 0,
-                        price: p?.price,
-                        old_price: p?.old_price ? p?.old_price : null,
-                        bonus: p?.bonus && p?.bonus_duration > moment.now() / 1000,
-                        bonus_duration: p?.bonus ? moment.unix(p?.bonus_duration).format('DD.MM.YYYY HH:mm') : 0,
+                        // original_price: 0,
+                        // price: p?.price,
+                        // old_price: p?.old_price ? p?.old_price : null,
+                        // bonus: p?.bonus && p?.bonus_duration > moment.now() / 1000,
+                        // bonus_duration: p?.bonus ? moment.unix(p?.bonus_duration).format('DD.MM.YYYY HH:mm') : 0,
                         // 
                         pending,
                         views: v.views,
                         success,
                         sended,
-                        delivered
+                        delivered: delivered?.length,
+                        archived,
+                        rejected,
+                        copy,
+                        profit
                     });
                 }
                 res.send({

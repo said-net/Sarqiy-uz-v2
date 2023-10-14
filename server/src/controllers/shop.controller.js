@@ -12,80 +12,116 @@ const flowModel = require("../models/flow.model");
 module.exports = {
     create: async (req, res) => {
         const { id, name, phone, flow, flow_id } = req.body;
-        if (!id) {
-            res.send({
-                ok: false,
-                msg: "Nimadir xato!"
-            });
-        } else if (!name || !phone) {
-            res.send({
-                ok: false,
-                msg: "Qatorlarni to'ldiring!"
-            });
-        } else if (phone?.length !== 13) {
-            res.send({
-                ok: false,
-                msg: "Raqamni to'g'ri kiriting!"
-            });
-        } else {
-            const $product = await productModel.findById(id);
-            const $check_order = (await shopModel.find({ phone, product: $product?._id })).reverse()[0]
-            if ($check_order && ($check_order?.created + 360) > (moment?.now() / 1000)) {
+        try {
+            if (!id) {
                 res.send({
                     ok: false,
-                    msg: "Songi 5 daqiqa ichida ushbu mahsulotga buyurtma bergansiz!"
+                    msg: "Nimadir xato!"
+                });
+            } else if (!name || !phone) {
+                res.send({
+                    ok: false,
+                    msg: "Qatorlarni to'ldiring!"
+                });
+            } else if (phone?.length !== 13) {
+                res.send({
+                    ok: false,
+                    msg: "Raqamni to'g'ri kiriting!"
                 });
             } else {
-                try {
-                    const $product = await productModel.findById(id);
-                    const $orders = await shopModel.find();
-                    if (!$product || $product.hidden) {
-                        res.send({
-                            ok: false,
-                            msg: "Ushbu mahsulot mavjud emas!"
-                        });
-                    } else {
-                        const $user = await userModel.findOne({ phone });
-                        if ($user && $user?.ban) {
-                            res.send({
-                                ok: false,
-                                msg: "Siz tizimdan ban olgansiz!"
-                            });
-                        } else {
-                            const $c = (await competitionModel.find()).reverse();
-                            new shopModel({
-                                product: id,
-                                from: $user ? $user?._id : '',
-                                name,
-                                title: $product?.title,
-                                created: moment.now() / 1000,
-                                id: $orders?.length + 1,
-                                phone,
-                                for_admin: flow ? $product?.for_admins : 0,
-                                for_operator: $product?.for_operators,
-                                competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
-                                week: moment().week(),
-                                flow: !flow ? null : flow,
-                                flow_id: flow_id || null,
-                                month: new Date().getMonth(),
-                                day: new Date().getDate(),
-                                year: new Date().getFullYear()
-                            }).save().then(async () => {
-                                res.send({
-                                    ok: true,
-                                    msg: "Qabul qilindi! Tez orada operatorlar aloqaga chiqishadi!"
-                                })
-                            });
-                        }
-                    }
-                } catch (err) {
-                    console.log(err);
+                const $product = await productModel.findById(id);
+                const $check_order = (await shopModel.find({ phone, product: $product?._id })).reverse()[0]
+                if ($check_order && ($check_order?.created + 360) > (moment?.now() / 1000)) {
                     res.send({
                         ok: false,
-                        msg: "Nimadir xato!"
-                    })
+                        msg: "Songi 5 daqiqa ichida ushbu mahsulotga buyurtma bergansiz!"
+                    });
+                } else {
+                    try {
+                        const $product = await productModel.findById(id);
+                        const $orders = await shopModel.find();
+                        if (!$product || $product.hidden) {
+                            res.send({
+                                ok: false,
+                                msg: "Ushbu mahsulot mavjud emas!"
+                            });
+                        } else {
+                            const $user = await userModel.findOne({ phone });
+                            if ($user && $user?.ban) {
+                                res.send({
+                                    ok: false,
+                                    msg: "Siz tizimdan ban olgansiz!"
+                                });
+                            } else {
+                                const $c = (await competitionModel.find()).reverse();
+                                if (!flow_id) {
+                                    new shopModel({
+                                        product: id,
+                                        from: $user ? $user?._id : '',
+                                        name,
+                                        title: $product?.title,
+                                        created: moment.now() / 1000,
+                                        id: $orders?.length + 1,
+                                        phone,
+                                        for_admin: flow ? $product?.for_admins : 0,
+                                        for_operator: $product?.for_operators,
+                                        competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
+                                        week: moment().week(),
+                                        flow: !flow ? null : flow,
+                                        flow_id: null,
+                                        month: new Date().getMonth(),
+                                        day: new Date().getDate(),
+                                        year: new Date().getFullYear()
+                                    }).save().then(async () => {
+                                        res.send({
+                                            ok: true,
+                                            msg: "Qabul qilindi! Tez orada operatorlar aloqaga chiqishadi!"
+                                        })
+                                    });
+                                } else {
+                                    const $flow = await flowModel.findById(flow_id).populate('product from')
+                                    const for_admin = $flow?.hidden ? 0 : $flow?.for_admin;
+                                    new shopModel({
+                                        product: id,
+                                        from: $user ? $user?._id : '',
+                                        name,
+                                        title: $product?.title,
+                                        created: moment.now() / 1000,
+                                        id: $orders?.length + 1,
+                                        phone,
+                                        for_admin,
+                                        for_operator: $product?.for_operators,
+                                        competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
+                                        week: moment().week(),
+                                        flow: $flow?.from?.id,
+                                        flow_id: flow_id,
+                                        month: new Date().getMonth(),
+                                        day: new Date().getDate(),
+                                        year: new Date().getFullYear()
+                                    }).save().then(async () => {
+                                        res.send({
+                                            ok: true,
+                                            msg: "Qabul qilindi! Tez orada operatorlar aloqaga chiqishadi!"
+                                        })
+                                    });
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.log(err);
+                        res.send({
+                            ok: false,
+                            msg: "Nimadir xato!"
+                        })
+                    }
                 }
             }
+        } catch (error) {
+            console.log(error);
+            res.send({
+                ok: false,
+                msg: "Qayta urunib ko'ring!"
+            })
         }
     },
     getTargetApi: async (req, res) => {

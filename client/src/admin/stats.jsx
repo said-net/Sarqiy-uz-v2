@@ -33,22 +33,21 @@ function AdminStats() {
 
     return (
         <div className="flex items-center justify-start flex-col w-full">
-            <Link to={`/dashboard`} className="w-full underline mb-[10px] ml-[35px]">Ortga</Link>
             {!isLoad && <Spinner />}
             {isLoad &&
-                <div className="flex items-center justify-between w-[90%] h-[50px] bg-white shadow-md mb-[10px] rounded p-[0_10px]">
-                    <p className={` ${date === 'all' ? 'underline text-black' : 'text-blue-gray-400'} text-[12px]`} onClick={() => setDate('all')}>Umumiy</p>
+                <div className="flex items-center justify-between w-[80%] h-[50px] border p-[10px] mb-[10px] rounded-[10px] ">
+                    <p className={` ${date === 'all' ? 'underline text-black' : 'text-blue-gray-400'} text-[12px] cursor-pointer`} onClick={() => setDate('all')}>Umumiy</p>
                     {/*  */}
-                    <p className={` ${date === 'month' ? 'underline text-black' : 'text-blue-gray-400'} text-[12px]`} onClick={() => setDate('month')}>Oylik</p>
+                    <p className={` ${date === 'month' ? 'underline text-black' : 'text-blue-gray-400'} text-[12px] cursor-pointer`} onClick={() => setDate('month')}>Oylik</p>
                     {/*  */}
-                    <p className={` ${date === 'yesterday' ? 'underline text-black' : 'text-blue-gray-400'} text-[12px]`} onClick={() => setDate('yesterday')}>Kecha</p>
+                    <p className={` ${date === 'yesterday' ? 'underline text-black' : 'text-blue-gray-400'} text-[12px]  cursor-pointer`} onClick={() => setDate('yesterday')}>Kecha</p>
                     {/*  */}
-                    <p className={` ${date === 'today' ? 'underline text-black' : 'text-blue-gray-400'} text-[12px]`} onClick={() => setDate('today')}>Bugun</p>
+                    <p className={` ${date === 'today' ? 'underline text-black' : 'text-blue-gray-400'} text-[12px] cursor-pointer`} onClick={() => setDate('today')}>Bugun</p>
                 </div>
             }
             {isLoad &&
-                <>
-                    <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                <div className="md:grid flex items-center justify-start flex-col w-full md:w-auto md:gap-[10px] md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-blue-50 mr-[20px]">
                             <FaShoppingCart className="text-[20px] text-blue-500" />
                         </div>
@@ -56,7 +55,7 @@ function AdminStats() {
                         <p className="text-[20px]">{state?.all}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
                     </div>
                     {/*  */}
-                    <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-cyan-50 mr-[20px]">
                             <FaNewspaper className="text-[20px] text-cyan-500" />
                         </div>
@@ -64,7 +63,7 @@ function AdminStats() {
                         <p className="text-[20px]">{state?.pending}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
                     </div>
                     {/*  */}
-                    <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-teal-50 mr-[20px]">
                             <FaBox className="text-[20px] text-teal-500" />
                         </div>
@@ -72,7 +71,7 @@ function AdminStats() {
                         <p className="text-[20px]">{state?.success}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
                     </div>
                     {/*  */}
-                    <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-purple-50 mr-[20px]">
                             <FaTaxi className="text-[20px] text-purple-500" />
                         </div>
@@ -80,7 +79,7 @@ function AdminStats() {
                         <p className="text-[20px]">{state?.sended}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
                     </div>
                     {/*  */}
-                    <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-green-50 mr-[20px]">
                             <FaCheckCircle className="text-[20px] text-green-500" />
                         </div>
@@ -88,16 +87,16 @@ function AdminStats() {
                         <p className="text-[20px]">{state?.delivered}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
                     </div>
                     {/*  */}
-                    <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-red-50 mr-[20px]">
                             <FaX className="text-[20px] text-red-500" />
                         </div>
                         <p className="text-red-500 absolute top-[5px] right-[5px] text-[12px]">Bekor qilingan</p>
                         <p className="text-[20px]">{state?.reject}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
                     </div>
-                    
+
                     {/*  */}
-                    <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-red-50 mr-[20px]">
                             <FaBoxes className="text-[20px] text-red-500" />
                         </div>
@@ -105,7 +104,7 @@ function AdminStats() {
                         <p className="text-[20px]">{state?.archive}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
                     </div>
                     {/*  */}
-                    <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-orange-50 mr-[20px]">
                             <FaPhone className="text-[20px] text-orange-500" />
                         </div>
@@ -113,7 +112,7 @@ function AdminStats() {
                         <p className="text-[20px]">{state?.wait}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
                     </div>
                     {/*  */}
-                    <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-green-50 mr-[20px]">
                             <FaMoneyBill className="text-[20px] text-green-500" />
                         </div>
@@ -123,7 +122,7 @@ function AdminStats() {
                     {/*  */}
                     {date === 'all' &&
                         <>
-                            <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                            <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] rounded-[10px] p-[5px] border relative">
                                 <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-blue-50 mr-[20px]">
                                     <FaUsers className="text-[20px] text-blue-500" />
                                 </div>
@@ -131,7 +130,7 @@ function AdminStats() {
                                 <p className="text-[20px]">{Number(state?.refferals).toLocaleString()}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
                             </div>
                             {/*  */}
-                            <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                            <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] rounded-[10px] p-[5px] border relative">
                                 <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-indigo-50 mr-[20px]">
                                     <FaUsers className="text-[20px] text-indigo-500" />
                                 </div>
@@ -139,7 +138,7 @@ function AdminStats() {
                                 <p className="text-[20px]">{Number(state?.refProfit).toLocaleString()}<sub className="ml-[10px] text-blue-gray-500">so'm</sub></p>
                             </div>
                             {/*  */}
-                            <div className="flex items-center justify-start w-[90%] h-[50px] bg-white shadow-md rounded p-[5px] relative mb-[10px]">
+                            <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] rounded-[10px] p-[5px] border relative">
                                 <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-green-50 mr-[20px]">
                                     <FaMoneyBillWave className="text-[20px] text-green-500" />
                                 </div>
@@ -148,7 +147,7 @@ function AdminStats() {
                             </div>
                         </>
                     }
-                </>
+                </div>
             }
         </div>
     );

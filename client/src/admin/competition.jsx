@@ -29,9 +29,8 @@ function Competition() {
         })
     }, []);
     return (
-        <div className="flex items-center justify-start flex-col w-full p-[10px]">
-            <Link to={`/dashboard`} className="w-full underline ">Ortga</Link>
-            <div className="flex items-center justify-start flex-col w-full min-h-[500px] p-[5px] bg-white shadow-md">
+        <div className="flex items-center justify-start flex-col w-full p-[10px] mt-[20px]">
+            <div className="flex items-center justify-start flex-col w-full min-h-[500px] p-[5px] bg-white border border-gray-400 rounded-[10px]">
                 {!isLoad && <Spinner />}
                 {isLoad && !competiton?.title && <p>Konkurs mavjud emas!</p>}
                 {isLoad && competiton?.title &&

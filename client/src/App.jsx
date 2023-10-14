@@ -79,7 +79,7 @@ function App() {
               {/* <AdminNavbar /> */}
               <AdminMain />
               <Routes>
-                {/* <Route path="/dashboard" element={} /> */}
+                <Route path="/dashboard" element={<AdminStats/>} />
                 <Route path="/dashboard/market" element={<AdminMarket />} />
                 <Route path="/dashboard/stats" element={<AdminStats />} />
                 <Route path="/dashboard/refs" element={<AdminRefs />} />
