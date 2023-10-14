@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { FaBoxes, FaCopy } from "react-icons/fa";
+import { FaCopy, FaKey, FaMoneyBill, FaNewspaper } from "react-icons/fa";
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, IconButton, Input } from "@material-tailwind/react";
-import { FaX } from "react-icons/fa6";
+import { FaT, FaX } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 
 function AdminMarket() {
     const [state, setState] = useState([]);
@@ -16,6 +16,32 @@ function AdminMarket() {
     const { uId } = useSelector(e => e.auth);
     const [openFlow, setOpenFlow] = useState({ id: '', title: '' });
     const [targetApi, setTargetApi] = useState('');
+    const [createFlow, setCreateFlow] = useState({ id: '', title: '', product: '', price: '', sale: '', for_admin: '' });
+    const [wait, setWait] = useState(false);
+    const nv = useNavigate();
+    function SubmitCreateFlow() {
+        setWait(true)
+        const { title, id, sale } = createFlow;
+        axios.post(`${API_LINK}/flow/create`, { title, product: id, sale }, {
+            headers: {
+                'x-user-token': `Bearer ${localStorage.getItem('access')}`
+            }
+        }).then((res) => {
+            const { ok, msg } = res.data;
+            setWait(false);
+            if (ok) {
+                toast.success(msg);
+                nv('/dashboard/flows');
+            } else {
+                toast.error(msg);
+            }
+
+        }).catch((err) => {
+            console.log(err);
+            setWait(false);
+            toast.error("Aloqani tekshirib qayta urunib ko'ring!");
+        })
+    }
     useEffect(() => {
         setIsLoad(false);
         axios(`${API_LINK}/category/getall`).then(res => {
@@ -37,7 +63,6 @@ function AdminMarket() {
         }).then(res => {
             const { data, ok } = res.data;
             setIsLoad(true);
-            console.log(data);
             if (ok) {
                 setState(data);
             }
@@ -61,26 +86,23 @@ function AdminMarket() {
         }).catch(err => {
             console.log(err);
             toast.error("Aloqani tekshirib qayta urunib koring!")
-        })
+        });
     }
+
     return (
-        <div className="flex items-center justify-start flex-col w-full p-[0_10px]">
-            <Link to={`/dashboard`} className="w-full underline mb-[10px]">Ortga</Link>
-            <div className="flex items-center justify-start w-full overflow-x-scroll h-[80px] bg-white rounded shadow-md p-[0_10px]">
-                <div onClick={() => setCategory('all')} className="flex items-center justify-start flex-col w-[50px] mr-[20px]">
-                    <div className="flex items-center justify-center w-[50px] h-[50px] rounded-full border overflow-hidden">
-                        <FaBoxes className="text-[30px] text-blue-gray-600" />
-                    </div>
-                    <p className="text-[12px]">Barchasi</p>
+        <div className="flex items-center justify-start flex-col w-full p-[30px_10px] mt-[20px]">
+            <div className="flex items-center justify-start w-full min-h-[50px] bg-white rounded border px-[10px] flex-wrap p-[5px]">
+                <div onClick={() => setCategory('all')} className={`flex items-center justify-start flex-col p-[5px_10px] border rounded-[10px] mr-[10px] mb-[5px] cursor-pointer ${category === 'all' ? 'bg-gray-300' : 'bg-gray-50'}`}>
+                    <p className="text-[16px]">Barchasi</p>
                 </div>
                 {isLoad && categories[0] &&
                     categories?.map((c, i) => {
                         return (
-                            <div onClick={() => setCategory(c?.id)} key={i} className="flex items-center justify-start flex-col w-[50px] mr-[20px]">
-                                <div className="flex items-center justify-center w-[50px] h-[50px] rounded-full border overflow-hidden p-[10px]">
-                                    <img src={c.image} alt={i} />
+                            <div onClick={() => setCategory(c?.id)} key={i} className={`flex items-center justify-start p-[5px_10px] border rounded-[10px] mr-[10px] mb-[5px] cursor-pointer ${category === c?.id ? 'bg-gray-300' : 'bg-gray-50'}`}>
+                                <div className="flex items-center justify-center w-[30px] h-[30px] rounded-full border overflow-hidden mr-[10px] bg-white">
+                                    <img src={c?.image} alt="ci" className="w-[130%]" />
                                 </div>
-                                <p className="text-[10px] w-full ">{c?.title?.slice(0, 7)}...</p>
+                                <p className="text-[16px] w-full ">{c?.title}</p>
                             </div>
                         )
                     })
@@ -88,13 +110,13 @@ function AdminMarket() {
             </div>
             {/*  */}
             {isLoad && state[0] &&
-                <div className="grid grid-cols-2 gap-[10px] my-[10px]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-[10px] my-[10px]">
                     {state?.map((p, i) => {
                         return (
-                            <div key={i} className="flex items-center justify-start flex-col w-[172px] h-[440px] p-[3px] bg-white shadow-md rounded relative">
+                            <div key={i} className="flex items-center justify-start flex-col w-[172px] h-[440px] p-[3px] bg-white shadow-md rounded-[10px] relative border">
                                 {p?.bonus && <span className="absolute top-[5px] left-[5px] bg-red-500 px-[5px] rounded text-[12px] text-white">{p?.bonus_about}</span>}
-                                <div className="flex items-center justify-center w-full overflow-hidden h-[190px]">
-                                    <img src={p?.image} alt="r" />
+                                <div className="flex items-center justify-center w-full overflow-hidden h-[190px] rounded-[10px]">
+                                    <img src={p?.image} alt="r" className="roudned-[10px]" />
                                 </div>
                                 <div className="flex items-start justify-start flex-col w-full">
                                     <p className="w-full p-[0_2%] my-[10px]">
@@ -112,22 +134,27 @@ function AdminMarket() {
                                     {/*  */}
                                     <p className="text-[12px]">Coin: <span className="text-[15px]">{Number(p?.coin).toLocaleString()} ta</span></p>
                                     {/*  */}
-                                    <span className="w-full h-[30px] border-[2px] rounded border-green-500 flex items-center justify-center uppercase tracking-[2px] mb-[10px]" onClick={() => setOpenFlow({ id: p?.pid, title: p?.title })}>
-                                        Oqim
-                                    </span>
+                                    <Button onClick={() => setOpenFlow({ id: p?.pid, title: p?.title })} color="green" className="mb-[10px] rounded flex items-center justify-center" fullWidth>
+                                        <FaKey />
+                                        Avto oqim
+                                    </Button>
                                     {/*  */}
-                                    <span className="w-full h-[30px] rounded bg-green-500 flex items-center justify-center uppercase tracking-[1px] mb-[10px] text-white shadow-md" onClick={() => getAds(p?.id)}>
+                                    <Button onClick={() => getAds(p?.id)} color="red" className="mb-[10px] rounded flex items-center justify-center" fullWidth>
+                                        <FaNewspaper />
                                         Reklama posti
-                                    </span>
-                                    <span className="w-full flex items-center justify-center h-[30px] uppercase tracking-[1px] mb-[10px] text-red-500 text-[12px] " onClick={() => setTargetApi(p?.pid)}>
-                                        TARGET API
-                                    </span>
+                                    </Button>
+                                    {/*  */}
+                                    <Button onClick={() => setCreateFlow({ id: p?.id, title: '', for_admin: p?.for_admins, price: p?.price, product: p?.title, sale: '' })} color="blue" className="mb-[10px] rounded flex items-center justify-center" fullWidth>
+                                        <FaNewspaper />
+                                        Oqim ochish
+                                    </Button>
                                 </div>
                             </div>
                         )
                     })}
                 </div>
             }
+            {/*  */}
             <Dialog open={openFlow?.id !== ''} className="p-[5px]">
                 <DialogHeader className="w-full flex items-center justify-between">
                     <h1 className="text-[14px]">{openFlow?.title}</h1>
@@ -142,7 +169,7 @@ function AdminMarket() {
                     <Button color="green" className="rounded" onClick={() => { navigator.clipboard.writeText(`https://sharqiy.uz/oqim/${uId}/${openFlow.id}`); toast.success("Nusxa olindi!", { autoClose: 1000 }) }}>Nusxa olish</Button>
                 </DialogFooter>
             </Dialog>
-
+            {/*  */}
             <Dialog open={targetApi !== ''} className="p-[5px]">
                 <DialogHeader className="w-full flex items-center justify-between">
                     <h1 className="text-[14px]">Target uchun API</h1>
@@ -164,9 +191,37 @@ function AdminMarket() {
                         </IconButton>
                     </div>
                 </DialogBody>
-                {/* <DialogFooter>
-                    <Button color="green" className="rounded" onClick={() => { navigator.clipboard.writeText(`https://k-ch.na4u.ru/target/${uId}/${targetApi}`); toast.success("Nusxa olindi!", { autoClose: 1000 }) }}>Nusxa olish</Button>
-                </DialogFooter> */}
+            </Dialog>
+            {/*  */}
+            <Dialog open={createFlow?.id !== ''} size="md">
+                <DialogHeader>
+                    <p className="text-[16px]">{createFlow?.product} - uchun oqim ochish</p>
+                </DialogHeader>
+                <DialogBody className="border-y">
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input disabled={wait} label="Oqim nomi" onChange={e => setCreateFlow({ ...createFlow, title: e.target.value })} value={createFlow?.title} icon={<FaT />} />
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input disabled={wait} type="number" label="Chegirma(So'm)" onChange={e => setCreateFlow({ ...createFlow, sale: e.target.value })} value={createFlow?.sale} icon={<FaMoneyBill />} />
+                    </div>
+                    {/*  */}
+                    <p className="text-[12px]">Chegirma admin uchun ajratilgan pul miqdoridan olinadi!</p>
+                    <p className="text-green-500"><s className="text-red-500">{Number(createFlow?.price)?.toLocaleString()} so'm</s> - {Number(createFlow?.price - createFlow?.sale)?.toLocaleString()} so'm</p>
+                    {/*  */}
+                    <p>Chegirma: -{Number(createFlow?.sale)?.toLocaleString()} so'm</p>
+                    {/*  */}
+                    <p>Admin puli: {Number(createFlow?.for_admin - createFlow?.sale)?.toLocaleString()} so'm</p>
+                    {/*  */}
+                </DialogBody>
+                <DialogFooter className="flex items-center justify-between">
+                    {/*  */}
+                    <Button disabled={wait} color="orange" className="rounded" onClick={() => setCreateFlow({ id: '', title: '', product: '', price: '', sale: '', for_admin: '' })}>Ortga</Button>
+                    {/*  */}
+                    <Button disabled={wait} color="green" className="rounded" onClick={SubmitCreateFlow}>Saqlash</Button>
+                    {/*  */}
+                </DialogFooter>
             </Dialog>
         </div>
     );

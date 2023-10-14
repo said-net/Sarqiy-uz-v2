@@ -41,7 +41,7 @@ function Categories() {
                                <div className="flex items-center justify-center w-[50px] overflow-hidden">
                                 <img src={c.image} alt="c" />
                                </div>
-                               <p className="text-[12px] mt-[25px] font-bold">{c.title}</p>
+                               <p className="text-[12px] mt-[25px] font-bold text-center">{c.title}</p>
                             </div>
                         )
                     })}

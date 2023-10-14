@@ -38,6 +38,7 @@ function SendedOrders() {
             toast.error("Aloqani tekshirib qayta urunib ko'ring!")
         })
     }, [refresh]);
+    
     function TransferOrder() {
         setDisable(true)
         axios.post(`${API_LINK}/shop/transfer-courier/${openTransfer?._id}/${openTransfer?.courier}`, {}, {

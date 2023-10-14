@@ -9,4 +9,5 @@ module.exports = require('express').Router()
     .delete(`/delete/:id`, authMiddleware.boss, raceController.delete)
     // 
     .get(`/get-all-to-users`, authMiddleware.user, raceController.getAllToUsers)
+    .get(`/shop-race/:id`, authMiddleware.user, raceController.shopRace)
 

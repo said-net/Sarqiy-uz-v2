@@ -11,3 +11,4 @@ module.exports = require('express').Router()
     .use('/race', require('./routers/race.router'))
     // 
     .use('/user', require('./routers/user.router'))
+    .use('/flow', require('./routers/flow.router'))

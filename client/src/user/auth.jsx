@@ -82,7 +82,7 @@ function Auth({ open, setOpen }) {
     }
     return (
         <Dialog open={open} size="xxl" className="flex items-center justify-center w-full h-[100vh] bg-[#000000ab] backdrop-blur-sm">
-            <div className="flex items-center justify-start flex-col w-[90%] rounded bg-white p-[5px]">
+            <div className="flex items-center justify-start flex-col w-[90%] sm:w-[500px] rounded bg-white p-[5px]">
                 <DialogHeader className="text-[15px] w-full relative">
                     <h1>Ro'yhatdan o'tish / Kirish </h1>
                 </DialogHeader>

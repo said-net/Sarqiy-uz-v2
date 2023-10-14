@@ -6,12 +6,15 @@ import { Link } from "react-router-dom";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
 import { FaFaceSadTear } from "react-icons/fa6";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setRefreshAuth } from "../managers/authManager";
 
 function CoinMarket() {
     const [races, setRaces] = useState([]);
     const [isLoad, setIsLoad] = useState(false);
-    const { coins } = useSelector(e => e.auth)
+    const { coins } = useSelector(e => e.auth);
+    const dp = useDispatch();
+    const [refresh, setRefresh] = useState(false);
     useEffect(() => {
         setIsLoad(false);
         axios(`${API_LINK}/race/get-all-to-users`, {
@@ -29,7 +32,26 @@ function CoinMarket() {
         }).catch(() => {
             toast.error("Aloqani tekshirib qayta urunib ko'ring!")
         })
-    }, [])
+    }, [refresh]);
+
+    function ShopRace(id) {
+        axios(`${API_LINK}/race/shop-race/${id}`, {
+            headers: {
+                'x-user-token': `Bearer ${localStorage.getItem('access')}`
+            }
+        }).then((res) => {
+            const { ok, msg } = res.data;
+            if (!ok) {
+                toast.error(msg);
+            } else {
+                toast.success(msg);
+                setRefresh(!refresh);
+                dp(setRefreshAuth());
+            }
+        }).catch(() => {
+            toast.error("Aloqani tekshirib qayta urunib ko'ring!")
+        })
+    }
     return (
         <div className="flex items-center justify-start flex-col w-full p-[10px]">
             <Link to={`/dashboard`} className="w-full underline ">Ortga</Link>
@@ -72,18 +94,23 @@ function CoinMarket() {
                                         <s>{r?.old_price} Coin</s>
                                     </p>
                                     <p className="text-[15px]">{r?.price} Coin</p>
-                                    {!coins < r?.price &&
-                                        <Popover animate={{
-                                            mount: { scale: 1, y: 0 },
-                                            unmount: { scale: 0, y: 25 },
-                                        }} placement="top">
-                                            <PopoverHandler>
-                                                <Button className="rounded w-full" color="red">Sotib olish</Button>
-                                            </PopoverHandler>
-                                            <PopoverContent>
-                                                Sizda {r?.title} uchun yetarli coin mavjud emas!
-                                            </PopoverContent>
-                                        </Popover>
+                                    {!r?.user ?
+                                        coins < r?.price ?
+                                            <Popover animate={{
+                                                mount: { scale: 1, y: 0 },
+                                                unmount: { scale: 0, y: 25 },
+                                            }} placement="top">
+                                                <PopoverHandler>
+                                                    <Button className="rounded w-full" color="red">Sotib olish</Button>
+                                                </PopoverHandler>
+                                                <PopoverContent>
+                                                    Sizda {r?.title} uchun yetarli coin mavjud emas!
+                                                </PopoverContent>
+                                            </Popover>
+                                            :
+                                            <Button className="rounded w-full" color="red" onClick={() => ShopRace(r?._id)}>Sotib olish</Button>
+                                        :
+                                        <p className="text-[13px] text-green-500">{r?.user} - Sotib olgan!</p>
                                     }
                                 </div>
                             </div>

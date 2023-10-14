@@ -85,7 +85,16 @@ function Product() {
             {isLoad && product?.title &&
                 <>
                     <div className="flex items-center justify-center w-full relative" onDoubleClick={() => setLike(p?.id)}>
-                        <Carousel autoplay loop navigation={false} className="rounded-xl">
+                        <div className="md:grid grid-cols-3 gap-[10px] hidden">
+                            {product?.images?.map((image, i) => {
+                                return (
+                                    <div className="flex items-center justify-center w-[250px] h-[250px] rounded-[10px] border overflow-hidden" key={i}>
+                                        <img src={image} alt="i" />
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <Carousel autoplay loop navigation={false} className="rounded-xl sm:w-[500px] md:hidden">
                             {product?.images?.map((i, k) => {
                                 return (<img src={i} alt={k} key={k} className="h-full w-full object-cover" />)
                             })}
@@ -98,7 +107,8 @@ function Product() {
                             <AiOutlinePlayCircle className="text-[25px] mr-[10px]" /> Video
                         </div>
                     </div>
-                    <div className="flex items-start justify-start flex-col w-[95%]">
+                    <div className="h-[2px] bg-gray-200 w-full my-[20px]"></div>
+                    <div className="flex items-start justify-start flex-col w-[90%]">
                         {/*  */}
                         <h1 className="font-bold text-[22px]">{p?.title}</h1>
                         <p className="text-[14px] font-bold mt-[10px]">Narx:</p>
@@ -112,7 +122,7 @@ function Product() {
                             Mahsulot tavsifi
                         </p>
                         {!showMore ? <p className="leading-7" dangerouslySetInnerHTML={{ __html: p?.about?.slice(0, 150)?.replaceAll('\n', '</br>') + '...' }}></p> : <p className="leading-7" dangerouslySetInnerHTML={{ __html: p?.about?.replaceAll('\n', '</br>') }}></p>}
-                        
+
                         {!showMore && <p onClick={() => setShowMore(true)} className="text-[17px] uppercase text-red-500 font-bold mt-[10px]">Batfsil ...</p>}
 
                         {showMore && <p onClick={() => setShowMore(false)} className="text-[17px] uppercase text-red-500 font-bold mt-[10px]">Qisqartma</p>}

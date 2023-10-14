@@ -7,10 +7,11 @@ const competitionModel = require("../models/competition.model");
 const { SERVER_LINK } = require("../configs/env");
 const operatorModel = require("../models/operator.model");
 const courierModel = require("../models/courier.model");
+const flowModel = require("../models/flow.model");
 
 module.exports = {
     create: async (req, res) => {
-        const { id, name, phone, flow } = req.body;
+        const { id, name, phone, flow, flow_id } = req.body;
         if (!id) {
             res.send({
                 ok: false,
@@ -65,6 +66,7 @@ module.exports = {
                                 competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
                                 week: moment().week(),
                                 flow: !flow ? null : flow,
+                                flow_id: flow_id || null,
                                 month: new Date().getMonth(),
                                 day: new Date().getDate(),
                                 year: new Date().getFullYear()
@@ -280,8 +282,8 @@ module.exports = {
             try {
                 const $operator = await operatorModel.findById(operator);
                 for (let l of list) {
-                    const $order = await shopModel.findById(l);
                     if (l !== undefined) {
+                        const $order = await shopModel.findById(l);
                         $order.set({ operator, up_time: moment.now() / 1000 }).save();
                     }
                 }

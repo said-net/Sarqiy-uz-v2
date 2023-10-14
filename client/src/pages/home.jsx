@@ -74,12 +74,12 @@ function Home() {
             {!isLoad && <Spinner />}
             {/*  */}
             {isLoad && state?.main[0] &&
-                <div className="flex items-center justify-center w-full bg-white shadow-md mb-[20px]">
-                    <Carousel autoplay loop>
+                <div className="flex items-center justify-center w-full bg-white mb-[20px]">
+                    <Carousel autoplay loop className="rounded-[20px] overflow-hidden">
                         {state?.main?.map((m, key) => {
                             return (
-                                <div onClick={() => nv('/product/' + m.id)} key={key} className="flex items-center justify-center w-full h">
-                                    <img src={m?.image} alt={key} />
+                                <div onClick={() => nv('/product/' + m.id)} key={key} className="flex items-center justify-center w-full h-[250px] md:h-[400px]">
+                                    <img src={m?.image} alt={key} className="w-full" />
                                 </div>
                             )
                         })}
@@ -87,11 +87,12 @@ function Home() {
                 </div>
             }
             {/*  */}
-            {isLoad && state?.products[0] && <div className="flex items-center justify-start w-full flex-col p-[0_2%]">
-                <div className="md:flex md:items-center md:justify-center md:flex-wrap grid grid-cols-2 gap-[10px] ">
-                    {state?.products?.slice(0, 8)?.map((p, i) => {
+            {isLoad && state?.products[0] && <div className="flex items-center justify-start w-full flex-col p-[0_2%] mt-[30px]">
+                <p className="text-[20px] font-bold w-full mb-[30px]">So'nggi mahsulotlar</p>
+                <div className="grid grid-cols-2 gap-[10px] md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                    {state?.products?.slice(0, 10)?.map((p, i) => {
                         return (
-                            <div key={i} className="flex items-center justify-start flex-col sm:w-[250px] mb-[20px] mx-[5px] rounded shadow-md overflow-hidden relative h-[350px]">
+                            <div key={i} className="flex items-center justify-start flex-col sm:w-[200px] mb-[20px] mx-[5px] rounded shadow-md overflow-hidden relative h-[350px]">
 
                                 {!likes?.includes(p?.id) && <FaRegHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}
 
@@ -144,7 +145,7 @@ function Home() {
             }
             {/*  */}
             {isLoad && state?.videos[0] &&
-                <div className="flex items-center justify-start w-full h-[300px] p-[0_10px] sm:hidden mb-[20px] shadow-md overflow-x-scroll">
+                <div className="hidden items-center justify-start w-full h-[300px] p-[0_10px] sm:hidden mb-[20px] shadow-md overflow-x-scroll">
                     {state?.videos?.map((v, i) => {
                         return (
                             <div key={i} className="flex relative mr-[20px] w-[200px]" onClick={() => { setOpenVideo(v.video); setVideoDetail({ id: v.pid, title: v.product }) }}>
@@ -159,11 +160,27 @@ function Home() {
                 </div>
             }
             {/*  */}
-            {isLoad && state?.products[0] && <div className="flex items-start justify-between w-full p-[0_2%]">
-                <div className="md:flex md:items-center md:justify-center md:flex-wrap grid grid-cols-2 gap-[10px]">
-                    {state?.products?.slice(8,)?.map((p, i) => {
+            {isLoad && state?.main[0] &&
+                <div className="flex items-center justify-center w-full bg-white mb-[20px]">
+                    <Carousel autoplay loop className="rounded-[20px] overflow-hidden">
+                        {state?.main?.reverse()?.map((m, key) => {
+                            return (
+                                <div onClick={() => nv('/product/' + m.id)} key={key} className="flex items-center justify-center w-full h-[250px] md:h-[400px]">
+                                    <img src={m?.image} alt={key} className="w-full" />
+                                </div>
+                            )
+                        })}
+                    </Carousel>
+                </div>
+            }
+            {/*  */}
+            {isLoad && state?.products[0] && <div className="flex items-center justify-start w-full flex-col p-[0_2%] mt-[30px]">
+                <p className="text-[20px] font-bold w-full mb-[30px]">Barcha mahsulotlar</p>
+                <div className="grid grid-cols-2 gap-[10px] md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                    {state?.products?.slice(10, )?.map((p, i) => {
                         return (
-                            <div key={i} className="flex items-center justify-start flex-col sm:w-[250px] mb-[20px] mx-[5px] rounded shadow-md overflow-hidden relative h-[350px]">
+                            <div key={i} className="flex items-center justify-start flex-col sm:w-[200px] mb-[20px] mx-[5px] rounded shadow-md overflow-hidden relative h-[350px]">
+
                                 {!likes?.includes(p?.id) && <FaRegHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}
 
                                 {likes?.includes(p?.id) && <FaHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}
@@ -188,7 +205,7 @@ function Home() {
                 {/* <div className="flex items-center justify-center w-[49%] flex-col">
                     {state?.products?.map((p, i) => {
                         return (
-                            (i % 2) !== 0 && <div key={i} className="flex items-center justify-start flex-col w-[100%] mb-[20px]  rounded shadow-md overflow-hidden relative h-[350px]">
+                            i === 1 && <div key={i} className="flex items-center justify-start flex-col w-[100%] mb-[20px]  rounded shadow-md overflow-hidden relative h-[350px]">
                                 {!likes?.includes(p?.id) && <FaRegHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}
 
                                 {likes?.includes(p?.id) && <FaHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}

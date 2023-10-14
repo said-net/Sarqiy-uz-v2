@@ -2,6 +2,9 @@ const md5 = require("md5");
 const raceModel = require("../models/race.model");
 const { SERVER_LINK } = require("../configs/env");
 const fs = require("fs");
+const cointransferModel = require("../models/cointransfer.model");
+const shopModel = require("../models/shop.model");
+const userModel = require("../models/user.model");
 module.exports = {
     create: async (req, res) => {
         const { title, old_price, price } = req.body;
@@ -40,7 +43,7 @@ module.exports = {
         }
     },
     getAll: async (req, res) => {
-        const $races = await raceModel.find({ hidden: false });
+        const $races = await raceModel.find({ hidden: false })
         const mod = [];
         $races.forEach((r) => {
             mod.push({
@@ -49,7 +52,7 @@ module.exports = {
                 title: r?.title,
                 image: SERVER_LINK + r?.image,
                 price: r.price,
-                old_price: r.old_price
+                old_price: r.old_price,
             });
         });
         res.send({
@@ -108,7 +111,7 @@ module.exports = {
         })
     },
     getAllToUsers: async (req, res) => {
-        const $races = await raceModel.find({ hidden: false });
+        const $races = await raceModel.find({ hidden: false }).populate('user');
         const mod = [];
         $races.forEach((r) => {
             mod.push({
@@ -117,12 +120,37 @@ module.exports = {
                 title: r?.title,
                 image: SERVER_LINK + r?.image,
                 price: r.price,
-                old_price: r.old_price
+                old_price: r.old_price,
+                user: r?.user?.name
             });
         });
         res.send({
             ok: true,
             data: mod
         });
+        console.log(mod);
+    },
+    shopRace: async (req, res) => {
+        const { id } = req?.params;
+        const race = await raceModel.findById(id);
+        if (req?.user?.coins < race?.price) {
+            res.send({
+                ok: false,
+                msg: "Sizda yetarli coin mavjud emas!"
+            });
+        } else {
+            const $user = await userModel.findById(req?.user?.id);
+            race.set({ user: $user?._id }).save().then(() => {
+                new cointransferModel({
+                    from: $user?._id,
+                    coin: -race?.price
+                }).save().then(() => {
+                    res.send({
+                        ok: true,
+                        msg: "Tabriklaymiz siz " + race?.title + " ni sotib oldingiz!"
+                    });
+                })
+            });
+        }
     }
 }

@@ -11,12 +11,12 @@ import YoutubePlayer from "../components/videoplayer";
 import { useSelector } from "react-redux";
 import Auth from "../user/auth";
 import { FaHeart, FaRegHeart } from "react-icons/fa6";
-function Flow() {
-    const { id, flow } = useParams();
+function ShopByFlow() {
+    const { id } = useParams();
     const [isLoad, setIsLoad] = useState(false);
     const [product, setProduct] = useState({});
     const [showMore, setShowMore] = useState(false);
-    const [openShop, setOpenShop] = useState({ id: '', title: '', count: 1, price: 0, bonus: false, bonus_given: 0, bonus_count: 0, name: '', phone: '+998', region: '', flow: flow });
+    const [openShop, setOpenShop] = useState({ id: '', title: '', count: 1, price: 0, bonus: false, bonus_given: 0, bonus_count: 0, name: '', phone: '+998', region: '', flow_id: '', flow: '' });
     const [openVideo, setOpenVideo] = useState('');
     const [openAuth, setOpenAuth] = useState(false);
     const { id: userId, name, phone, location } = useSelector(e => e.auth);
@@ -30,11 +30,7 @@ function Flow() {
     useEffect(() => {
         setIsLoad(false);
         setProduct({});
-        axios(`${API_LINK}/product/get-one/${id}`, {
-            headers: {
-                flow: flow
-            }
-        }).then((res) => {
+        axios(`${API_LINK}/flow/get-flow/${id}`).then((res) => {
             const { ok, data } = res.data;
             if (ok) {
                 setProduct(data);
@@ -132,7 +128,7 @@ function Flow() {
                         {showMore && <p onClick={() => setShowMore(false)} className="text-[17px] uppercase text-red-500 font-bold mt-[10px]">Qisqartma</p>}
                     </div>
                     <div className="flex items-center justify-center w-full fixed bottom-[60px] left-0">
-                        <Button onClick={() => (setOpenShop({ ...openShop, id: p?.id, title: p?.title, bonus: p?.bonus, bonus_count: p?.bonus_count, bonus_given: p?.bonus_given }))} className="w-[98%] h-[50px] rounded-full text-[16px] z-[9999999]" color="red">Sotib olish</Button>
+                        <Button onClick={() => (setOpenShop({ ...openShop, id: p?.id, title: p?.title, bonus: p?.bonus, bonus_count: p?.bonus_count, bonus_given: p?.bonus_given, flow_id: p?.flow_id || '', flow: p?.flow || '' }))} className="w-[98%] h-[50px] rounded-full text-[16px] z-[9999999]" color="red">Sotib olish</Button>
                     </div>
                 </>
             }
@@ -143,4 +139,4 @@ function Flow() {
     );
 }
 
-export default Flow;
+export default ShopByFlow;

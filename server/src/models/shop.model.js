@@ -76,6 +76,10 @@ const schema = new Schema({
     status: {
         type: String,
         default: 'pending'
-    }//copy, archive, reject, wait, pending,success, sended, delivered,
+    },//copy, archive, reject, wait, pending,success, sended, delivered,
+    flow_id: {
+        type: Types.ObjectId,
+        ref: 'Flow'
+    }
 })
 module.exports = model('ShopHistory', schema)

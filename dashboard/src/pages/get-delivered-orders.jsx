@@ -111,6 +111,7 @@ function DeliveredOrders() {
         setTotalCourierPrice(cp)
     }, [selecteds]);
     const [checked, setChecked] = useState(false);
+
     useEffect(() => {
         setSelecteds([]);
         setChecked(false);
@@ -119,7 +120,7 @@ function DeliveredOrders() {
     function SelectAllOrders(checked) {
         if (checked) {
             const arr = [];
-            orders?.forEach(o => {
+            orders?.filter(o => o?.courier_id === courier)?.forEach(o => {
                 arr.push(o?._id)
             })
             setSelecteds(arr);
@@ -157,7 +158,7 @@ function DeliveredOrders() {
                 <div className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
                     <div className="flex items-center justify-between">
                         <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
-                            <Checkbox disabled={!courier || !orders?.filter(e => e?.courier_id === courier)[0]} onChange={e => SelectAllOrders(e.target.checked)} checked={checked} />
+                            <Checkbox id={"id--0"} disabled={!courier || !orders?.filter(e => e?.courier_id === courier)[0]} onChange={e => SelectAllOrders(e.target.checked)} checked={checked} />
                         </div>
                         <p className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">ID</p>
                         <p className="w-[140px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">RASMI</p>
@@ -180,7 +181,7 @@ function DeliveredOrders() {
                             <div key={i} className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
                                 <div className="flex items-center justify-between">
                                     <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
-                                        <Checkbox onChange={e => SelectOrder(o?._id, e.target.checked)} checked={selecteds?.includes(o?._id)} />
+                                        <Checkbox id={"id-"+i} onChange={e => SelectOrder(o?._id, e.target.checked)} checked={selecteds?.includes(o?._id)} />
                                     </div>
                                     <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
                                         <Chip color="red" value={o?.id} className="rounded" />

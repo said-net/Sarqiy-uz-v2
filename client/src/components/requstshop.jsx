@@ -20,15 +20,15 @@ function RequestShop({ openShop, setOpenShop }) {
     // 
     function Submit() {
         setDisablet(true);
-        const { name, phone, region, flow } = openShop;
-        axios.post(`${API_LINK}/shop/create`, { id: openShop.id, name, phone, flow: flow ? flow : '' }).then(res => {
+        const { name, phone, region, flow, flow_id } = openShop;
+        axios.post(`${API_LINK}/shop/create`, { id: openShop.id, name, phone, flow: flow ? flow : '', flow_id }).then(res => {
             const { ok, msg } = res.data;
             setDisablet(false);
             if (!ok) {
                 toast.error(msg);
             } else {
                 toast.success(msg);
-                setOpenShop({ id: '', title: '', count: 1, price: 0, bonus: false, bonus_given: 0, bonus_count: 0, name: '', phone: '+998', city: '', flow: '' });
+                setOpenShop({ id: '', title: '', count: 1, price: 0, bonus: false, bonus_given: 0, bonus_count: 0, name: '', phone: '+998', city: '', flow: '', flow_id:'' });
             }
         }).catch(() => {
             toast.warning("Aloqani tekshirib qayta urunib ko'ring!");
@@ -38,7 +38,7 @@ function RequestShop({ openShop, setOpenShop }) {
     // 
     return (
         <Dialog open={openShop?.id !== ''} size="xxl" className="flex items-center justify-center w-full h-[100vh] bg-[#000000ab] backdrop-blur-sm">
-            <div className="flex items-center justify-start flex-col w-[90%] rounded bg-white p-[5px]">
+            <div className="flex items-center justify-start flex-col w-[90%] sm:w-[500px] rounded bg-white p-[5px]">
                 <DialogHeader className="text-[15px] w-full relative">
                     Mahsulot: {openShop?.title}
                     <div className="absolute  top-[-20px] right-[-20px]">
@@ -57,7 +57,7 @@ function RequestShop({ openShop, setOpenShop }) {
                         <Input value={openShop.phone} label="Raqamingiz" onChange={e => setOpenShop({ ...openShop, phone: e.target.value.trim() })} required icon={<FaPhone />} />
                     </div>
                     <div className="flex items-center justify-start w-full">
-                        <p className="text-[14px]">Yetkazib berish hududga qarab 25 000 so'mgacha</p>
+                        <p className="text-[14px]">Yetkazib berish hududga qarab 35 000 so'mgacha</p>
                     </div>
                     {/* <div className="flex items-center justify-center w-full mb-[10px]">
                         <Select label="Viloyat" onChange={e => setOpenShop({ ...openShop, region: e })} value={String(openShop.region)}>

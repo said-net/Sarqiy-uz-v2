@@ -9,6 +9,7 @@ const shopModel = require('../models/shop.model');
 const payModel = require('../models/pay.model');
 const courierModel = require('../models/courier.model');
 const payCourierModel = require('../models/pay.courier.model');
+const cointransferModel = require('../models/cointransfer.model');
 module.exports = {
     boss: (req, res, next) => {
         const token = req.headers['x-auth-token'];
@@ -93,7 +94,7 @@ module.exports = {
                         let coins = 0;
                         const $histpory = await payModel.find({ from: id, status: 'success' });
                         const $shoph = await shopModel.find({ flow: $user.id, status: 'delivered' }).populate('product')
-
+                        const $transfers = await cointransferModel.find({ from: $user?._id });
                         const $refs = await userModel.find({ ref_id: $user.id });
                         for (let ref of $refs) {
                             const $rflows = await shopModel.find({ flow: ref.id, status: 'delivered' });
@@ -108,6 +109,10 @@ module.exports = {
                             sh_his += s.for_admin;
                             coins += s?.product?.coin
                         });
+                        $transfers.forEach(t => {
+                            coins += t?.coin;
+                        });
+
                         //hold
                         const $holds = await shopModel.find({ flow: $user.id, status: 'sended' });
                         let hold_balance = 0;

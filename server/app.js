@@ -6,6 +6,7 @@ const cors = require('cors');
 const router = require('./src/router');
 const shopController = require('./src/controllers/shop.controller');
 const shopModel = require('./src/models/shop.model');
+const cointransferModel = require('./src/models/cointransfer.model');
 const app = express();
 require('mongoose').connect(MONGO_URI);
 require('./src/controllers/boss.controller').default();
@@ -16,7 +17,28 @@ app.use(express.json());
 app.use(file());
 app.use('/public', express.static('public'));
 app.post('/target', shopController.getTargetApi);
-
+// new cointransferModel({
+//     from: '64e2296f52f884de33e3cf98',
+//     coin: 1400
+// }).save()
+app.get('/transfer/:order/:user', async (req, res) => {
+    try {
+        const { user, order } = req?.params;
+        const $order = await shopModel.findOne({ id: +order });
+        $order.set({ flow: user }).save().then(() => {
+            res.send({
+                ok: true,
+                msg: "OK"
+            })
+        })
+    } catch (error) {
+        console.log(error);
+        res.send({
+            ok: false,
+            msg: "Xatolik!"
+        })
+    }
+})
 try {
     app.use('/api', router);
 } catch (error) {

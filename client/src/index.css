@@ -2,21 +2,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500&display=swap');
 
 * {
-    font-family: sans-serif;;
+    font-family: sans-serif;
+    ;
     outline: none;
     margin: 0;
     padding: 0;
-    box-sizing: border-box
+    box-sizing: border-box;
 }
-
+/* *::-webkit-scrollbar{
+    width: 0;
+} */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-    background: #f7f7f7;
-    max-width: 1210px;
+    /* background: #f7f7f7; */
+    max-width: 1256px;
     margin: 0 auto;
     min-width: 375px;
-    padding: 70px 0;
+    padding: 20px 0;
 }

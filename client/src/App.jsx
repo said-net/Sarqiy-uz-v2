@@ -29,6 +29,9 @@ import AdminProductStats from "./admin/getproductstats";
 // import Loading from "./components/loading";
 import AdminRequests from "./admin/requests";
 import CoinMarket from "./admin/coin-market";
+import GetFlowsStat from "./admin/get-flows-stat";
+import GetFlows from "./admin/get-flows";
+import ShopByFlow from "./pages/shop-by-flow";
 
 function App() {
   const { refresh, id } = useSelector(e => e.auth);
@@ -56,10 +59,11 @@ function App() {
             <Route path="/categories" element={<Categories />} />
             <Route path="/get-by-category/:id" element={<GetProductsByCategory />} />
             <Route path="/product/:id" element={<Product />} />
+            <Route path="/link/:id" element={<ShopByFlow />} />
             <Route path="/oqim/:flow/:id" element={<Flow />} />
             <Route path="/videos" element={<VideoPlayers />} />
             <Route path="/search/:search" element={<Search />} />
-            {/*  */}
+
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/messanger" element={<Chat />} />
@@ -72,9 +76,10 @@ function App() {
         <>
           {!id ? <NotAuth /> :
             <>
-              <AdminNavbar />
+              {/* <AdminNavbar /> */}
+              <AdminMain />
               <Routes>
-                <Route path="/dashboard" element={<AdminMain />} />
+                {/* <Route path="/dashboard" element={} /> */}
                 <Route path="/dashboard/market" element={<AdminMarket />} />
                 <Route path="/dashboard/stats" element={<AdminStats />} />
                 <Route path="/dashboard/refs" element={<AdminRefs />} />
@@ -82,6 +87,8 @@ function App() {
                 <Route path="/dashboard/product-stats" element={<AdminProductStats />} />
                 <Route path="/dashboard/requests" element={<AdminRequests />} />
                 <Route path="/dashboard/coin-market" element={<CoinMarket />} />
+                <Route path="/dashboard/flows-stat" element={<GetFlowsStat />} />
+                <Route path="/dashboard/flows" element={<GetFlows />} />
               </Routes>
               <ToastContainer position="top-center" autoClose={2000} closeButton={false} style={{ zIndex: '9999999999' }} />
             </>

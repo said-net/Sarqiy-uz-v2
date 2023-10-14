@@ -5,7 +5,7 @@ import { FaCalendar, FaCartShopping, FaGear, FaHeart, FaLocationDot, FaPhone, Fa
 import { BiLogOut } from 'react-icons/bi'
 import { setInformations, setRefreshAuth } from "../managers/authManager";
 import Regions from '../components/regions.json'
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
@@ -13,13 +13,15 @@ import { Chip, Spinner } from "@material-tailwind/react";
 import { MdRemoveShoppingCart } from 'react-icons/md'
 import Loading from "../components/loading";
 function Profile() {
+    const { search } = useLocation();
     const { id, name, phone, telegram, location, created } = useSelector(e => e.auth);
-    const [type, setType] = useState('profile');
+    const [type, setType] = useState(search?.replace('?page=', '') || 'profile');
     const [isLoad, setIsLoad] = useState(false);
     const [history, setHistory] = useState([]);
     const [products, setProducts] = useState([]);
     const [refreshLikes, setRefreshLikes] = useState(false);
     const [loadLikes, setLoadLikes] = useState(false);
+
     const dp = useDispatch();
     const nv = useNavigate();
     function LogOut() {
@@ -101,7 +103,7 @@ function Profile() {
 
 
     return (
-        <div className="flex items-center justify-start flex-col w-full p-[10px]">
+        <div className="flex items-center justify-start flex-col w-full p-[10px] mt-[40px]">
             {!load && <Loading />}
             {load &&
                 <>
@@ -111,7 +113,7 @@ function Profile() {
                     {
                         id && <>
                             {/* NAV */}
-                            <div className="flex items-center justify-around w-full bg-white h-[60px] rounded shadow-sm mb-[20px]">
+                            <div className="flex items-center justify-around w-full bg-white h-[60px] rounded mb-[20px] border">
                                 {/*  */}
                                 <p onClick={() => setType('profile')} className={`text-[12px] flex items-center justify-center flex-col ${type === 'profile' ? 'text-black underline' : 'text-gray-500'}`}><FaUser className="text-[16px]" />Profilim</p>
                                 {/*  */}
@@ -123,7 +125,7 @@ function Profile() {
                             </div>
                             {/* PROFILE */}
                             {type === 'profile' &&
-                                <div className="flex items-start justify-start flex-col w-full bg-white shadow-sm p-[10px] rounded">
+                                <div className="flex items-start justify-start flex-col w-full bg-white shadow-sm p-[10px] rounded border">
                                     {/*  */}
                                     <h1 className="text-[25px] font-bold mb-[10px]">Salom {name}!</h1>
                                     {/*  */}
@@ -155,16 +157,17 @@ function Profile() {
                                             {history?.map((e, i) => {
                                                 return (
                                                     <div key={i} className={`flex items-center justify-between  w-full h-[50px] border ${(i + 1) % 2 == 0 ? 'bg-white' : 'bg-gray-200'}`}>
-                                                        <div className="flex items-center justify-center">
+                                                        <div className="flex items-center justify-start w-[30%]">
                                                             <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full border overflow-hidden">
                                                                 <img src={e?.image} alt="rasm" />
                                                             </div>
                                                             <p>{e?.product?.title?.slice(0, 12)}...</p>
                                                         </div>
-                                                        <p>{e?.count ? e?.count : 0} ta</p>
+                                                        <p className="w-[15%] flex items-center justify-start">{e?.count ? e?.count : 0} ta</p>
                                                         {e?.status === 'reject' && <Chip className="font-light text-[11px] rounded" color="red" value={'Rad etildi'} />}
 
-                                                        <p>{e?.count ? e?.count : 0} ta</p>
+                                                        {e?.status === 'copy' && <Chip className="font-light text-[11px] rounded" color="deep-orange" value={'Rad etildi'} />}
+
                                                         {e?.status === 'archive' && <Chip className="font-light text-[11px] rounded" color="deep-orange" value={'Arxivlandi'} />}
 
                                                         {(e?.status === 'pending') && <Chip className="font-light text-[11px] rounded" color="blue" value={'Kutulmoqda'} />}
@@ -189,11 +192,11 @@ function Profile() {
                                     {!loadLikes && <Spinner />}
                                     {loadLikes && !products[0] && <h1>Saqlangan mahsulotlar mavjud emas</h1>}
                                     {loadLikes && products[0] &&
-                                        <div className="flex items-start justify-between w-full p-[0_2%]">
-                                            <div className="flex items-center justify-center w-[49%] flex-col">
+                                        <div className="flex items-start justify-start w-full flex-col p-[0_2%]">
+                                            <div className="grid grid-cols-2 gap-[10px] md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                                                 {products.map((p, i) => {
                                                     return (
-                                                        (i + 1) % 2 !== 0 && <div key={i} className="flex items-center justify-start flex-col w-[100%] mb-[20px]  rounded shadow-md overflow-hidden relative h-[350px]">
+                                                        <div key={i} className="flex items-center justify-start flex-col w-[100%] mb-[20px]  rounded shadow-md overflow-hidden relative h-[350px]">
                                                             <FaHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />
 
                                                             {p?.bonus && <span className="absolute top-[5px] left-[5px] bg-red-500 px-[5px] rounded text-[12px] text-white">{p?.bonus_about}</span>}
@@ -214,30 +217,7 @@ function Profile() {
                                                     )
                                                 })}
                                             </div>
-                                            <div className="flex items-center justify-center w-[49%] flex-col">
-                                                {products.map((p, i) => {
-                                                    return (
-                                                        (i + 1) % 2 === 0 && <div key={i} className="flex items-center justify-start flex-col w-[100%] mb-[20px]  rounded shadow-md overflow-hidden relative h-[350px]">
-                                                            <FaHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />
 
-                                                            {p?.bonus && <span className="absolute top-[5px] left-[5px] bg-red-500 px-[5px] rounded text-[12px] text-white">{p?.bonus_about}</span>}
-                                                            <div onClick={() => nv('/product/' + p?.pid)} className="flex items-start justify-center w-full overflow-hidden h-[250px]">
-                                                                <img src={p.image} alt="c" />
-                                                            </div>
-                                                            <div className="flex items-start justify-start flex-col w-full" onClick={() => nv('/product/' + p?.pid)}>
-                                                                <p className="w-full p-[0_2%] my-[10px]">
-                                                                    {p?.title?.slice(0, 15) + '...'}
-
-                                                                </p>
-                                                                {p?.old_price &&
-                                                                    <p className="text-gray-700 text-[12px] font-normal w-full px-[2%]"><s>{Number(p?.old_price).toLocaleString()} so'm</s> -<span className="text-[red]">{String((p?.old_price - p?.price) / (p?.old_price) * 100).slice(0, 5)}%</span></p>
-                                                                }
-                                                                <p className=" absolute bottom-[10px] w-full p-[0_2%] font-bold text-[16px] text-black">{Number(p.price).toLocaleString()} so'm</p>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
                                         </div>
                                     }
                                 </>

@@ -9,7 +9,6 @@ const userModel = require("../models/user.model");
 const bot = require("../bot/app");
 const payOperatorModel = require("../models/pay.operator.model");
 const region = require('../configs/regions.json');
-const { default: axios } = require("axios");
 module.exports = {
     create: async (req, res) => {
         const { name, phone, password } = req.body;
@@ -158,7 +157,6 @@ module.exports = {
             })
         }
     },
-    // 
     getStats: async (req, res) => {
         const new_orders = await shopModel.find({ status: 'pending', operator: req?.operator?.id }).countDocuments();
         const re_contacts = await shopModel.find({ status: 'wait', operator: req?.operator?.id }).countDocuments();
@@ -242,7 +240,7 @@ module.exports = {
         const { bonus_gived: bonus, about, city, region, status, count, price, recontact, delivery, name, title } = req.body;
         const $order = await shopModel.findById(id);
         if (status === 'archive') {
-            if (!about || !title) {
+            if (!about) {
                 res.send({
                     ok: false,
                     msg: "Izoh yoki mahsulot nomini kiriting!"
@@ -421,7 +419,6 @@ module.exports = {
             data: myOrders
         });
     },
-    // 
     getInfoOrder: async (req, res) => {
         const { id } = req.params;
         console.log(id);
@@ -466,7 +463,6 @@ module.exports = {
     editOrder: async (req, res) => {
         const { id } = req?.params;
         const { title, name, status, price, delivery_price, count, about, region, city } = req?.body;
-        console.log(title);
         if (!title || !name || !status || !about) {
             res.send({
                 ok: false,
