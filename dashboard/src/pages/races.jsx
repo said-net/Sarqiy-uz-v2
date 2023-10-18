@@ -133,13 +133,14 @@ function Races() {
             <div className="flex items-center justify-center w-full h-[50px] mb-[10px]">
                 <h1 className=" bg-white shadow-sm rounded-b-[10px] flex items-center justify-center p-[10px] h-[50px]">POYGALAR</h1>
             </div>
-            <div className="flex items-start justify-start flex-col w-full overflow">
+            <div className="flex items-start justify-start flex-col w-full">
                 <div className="flex items-center justify-start h-[70px] border bg-white">
                     <p className="w-[70px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">ID</p>
                     <p className="w-[120px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">RASMI</p>
                     <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">NOMI</p>
                     <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">ESKI NARX</p>
                     <p className="w-[200px] text-center border-l h-[70px] flex items-center justify-center text-[12px]">HOZIRGI NARX</p>
+                    <p className="w-[200px] text-center border-l h-[70px] flex items-center justify-center text-[12px]">SOTIB OLDI</p>
                     <p className="w-[70px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">MENU</p>
                     <p className="w-[70px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">
                         <IconButton onClick={() => setState({ ...state, open: true })} className="text-[30px] rounded-full" color="blue-gray">
@@ -170,6 +171,15 @@ function Races() {
                             </p>
                             <p className="w-[200px] text-center border-l h-[70px] flex items-center justify-center text-[12px]">
                                 {r?.price} coin
+                            </p>
+                            <p className="w-[200px] text-center border-l h-[70px] flex items-center justify-center text-[12px] flex-col">
+                                {r?.user &&
+                                    <>
+                                        <b className="font-normal">ID: {r?.user?.id}</b>
+                                        <b className="font-normal">{r?.user?.name}</b>
+                                        <b className="font-normal">{r?.user?.phone}</b>
+                                    </>
+                                }
                             </p>
                             <div className="w-[70px] text-center border-x h-[70px] flex items-center justify-center text-[20px] cursor-pointer">
                                 <Menu>

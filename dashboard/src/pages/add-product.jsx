@@ -8,7 +8,7 @@ import { setRefresh } from "../managers/refresh.manager";
 import { useDispatch } from "react-redux";
 
 function AddProduct() {
-    const [state, setState] = useState({ title: '', about: '', images: '', value: '', category: '', original_price: '', coin: '', video: '', price: '', for_admins: '', for_operators: '' });
+    const [state, setState] = useState({ title: '', about: '', images: '', value: '', category: '', original_price: '', coin: '', video: '', price: '', for_admins: '', for_operators: '', delivery_price: '0' });
     const [categories, setCategories] = useState([]);
     const [disable, setDisable] = useState(false);
     const dp = useDispatch();
@@ -21,8 +21,8 @@ function AddProduct() {
         })
     }, []);
     function Submit() {
-        const { title, category, images, about, price, original_price, value, video, for_admins, for_operators, coin } = state;
-        if (!title || !category || ![...images][0] || !about || !price || !original_price || !value || !video || !for_admins || !for_operators || !coin) {
+        const { title, category, images, about, price, original_price, value, video, for_admins, for_operators, coin, delivery_price } = state;
+        if (!title || !category || ![...images][0] || !about || !price || !original_price || !value || !video || !for_admins || !for_operators || !coin || !delivery_price) {
             toast.error("Qatorlarni to'ldiring!")
         } else {
             setDisable(true);
@@ -38,6 +38,7 @@ function AddProduct() {
             form.append('coin', coin);
             form.append('for_admins', for_admins);
             form.append('for_operators', for_operators);
+            form.append('delivery_price', delivery_price);
 
             [...images].forEach(image => {
                 form.append('images', image)
@@ -55,7 +56,7 @@ function AddProduct() {
                 } else {
                     toast.success(msg);
                     dp(setRefresh());
-                    setState({ title: '', about: '', images: '', video: '', price: 0, original_price: 0, category: '', value: '', for_admins: '', for_operators: '', coin: '' });
+                    setState({ title: '', about: '', images: '', video: '', price: 0, original_price: 0, category: '', value: '', for_admins: '', for_operators: '', coin: '', delivery_price: '0' });
                 }
             }).catch(() => {
                 setDisable(false)
@@ -116,6 +117,15 @@ function AddProduct() {
                                     </Option>
                                 )
                             })}
+                        </Select>
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Select disabled={disable} label="Dostavka narxi" variant="standard" onChange={e => setState({ ...state, delivery_price: e })} value={state.delivery_price}>
+                            <Option value="0">Be'pul</Option>
+                            <Option value="25000">25 000 so'm</Option>
+                            <Option value="30000">30 000 so'm</Option>
+                            <Option value="35000">35 000 so'm</Option>
                         </Select>
                     </div>
                     {/*  */}

@@ -14,6 +14,10 @@ const schema = new Schema({
     for_admin: Number,
     created: Number,
     views: Number,
+    delivery: {
+        type: Boolean,
+        default: false
+    },
     hidden: {
         type: Boolean,
         default: false

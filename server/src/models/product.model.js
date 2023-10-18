@@ -27,6 +27,7 @@ const schema = new Schema({
     bonus_given: Number,
     bonus_duration: Number,
     created: Number,
+    delivery_price: Number,
     coin: {
         type: Number,
         default: 0

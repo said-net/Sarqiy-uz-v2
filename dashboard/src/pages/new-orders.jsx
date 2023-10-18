@@ -87,7 +87,7 @@ function NewOrders() {
 
     function TransferSelecteds() {
         setDisable(true)
-        axios.post(`${API_LINK}/shop/transfer-selected-orders`, {list: selecteds, operator}, {
+        axios.post(`${API_LINK}/shop/transfer-selected-orders`, { list: selecteds, operator }, {
             headers: {
                 'x-auth-token': `Bearer ${localStorage.getItem('access')}`
             }
@@ -124,7 +124,7 @@ function NewOrders() {
                 <div className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
                     <div className="flex items-center justify-between">
                         <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
-                            <Checkbox onChange={e => SelectAllOrders(e.target.checked)} />
+                            <Checkbox id="id--0" onChange={e => SelectAllOrders(e.target.checked)} />
                         </div>
                         <p className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">ID</p>
                         <p className="w-[140px] text-center border-x h-[70px] flex items-center justify-center text-[13px]">RASMI</p>
@@ -151,7 +151,7 @@ function NewOrders() {
                             <div key={i} className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
                                 <div className="flex items-center justify-between">
                                     <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
-                                        <Checkbox onChange={e => SelectOrder(o?._id, e.target.checked)} checked={selecteds?.includes(o?._id)} />
+                                        <Checkbox id={`id-${i}`} onChange={e => SelectOrder(o?._id, e.target.checked)} checked={selecteds?.includes(o?._id)} />
                                     </div>
                                     <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
                                         <Chip color="red" value={o?.id} className="rounded" />
@@ -209,7 +209,7 @@ function NewOrders() {
 
             <Dialog size="md" open={open}>
                 <DialogHeader>
-                    <p>Kuryerni tanlang!</p>
+                    <p>Operatorni tanlang!</p>
                 </DialogHeader>
                 <DialogBody>
                     <Select disabled={disable} label="Operator tanlang" variant="standard" value={operator} onChange={e => setOperator(e)}>

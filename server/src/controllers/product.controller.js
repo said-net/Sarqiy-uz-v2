@@ -14,10 +14,10 @@ const path = require("path");
 // const { Input } = require("telegraf");
 module.exports = {
     create: async (req, res) => {
-        const { title, for_operators, about, price, original_price, category, value, for_admins, coin } = req.body;
+        const { title, for_operators, about, price, original_price, category, value, for_admins, coin, delivery_price } = req.body;
         const video = req?.files?.video;
         const images = !req?.files?.images[0] ? [req?.files?.images] : [...req?.files?.images];
-        if (!title || !about || !price || !video || !category || !original_price || !value || !for_admins || !for_operators) {
+        if (!title || !about || !price || !video || !category || !original_price || !value || !for_admins || !for_operators || !delivery_price) {
             res.send({
                 ok: false,
                 msg: "Qatorlarni to'ldiring!"
@@ -55,6 +55,7 @@ module.exports = {
                 coin,
                 for_admins,
                 for_operators,
+                delivery_price,
                 created: moment.now() / 1000
             }).save().then(($saved) => {
                 new valuehistoryModel({
@@ -257,6 +258,7 @@ module.exports = {
                 price: $p?.price,
                 for_admins: $p?.for_admins,
                 for_operators: $p?.for_operators,
+                delivery_price: String($p?.delivery_price),
                 coin: $p?.coin,
                 images: [...$p.images.map(e => {
                     return SERVER_LINK + e
@@ -368,20 +370,23 @@ module.exports = {
         try {
             const $product = await productModel.findOne({ id, hidden: false }).populate('category', 'title background image');
             const product = {
-                ...$product._doc,
-                id: $product._id,
-                images: [...$product.images.map(e => {
+                ...$product?._doc,
+                id: $product?._id,
+                images: [...$product?.images?.map(e => {
                     return SERVER_LINK + e
                 })],
                 video: SERVER_LINK + $product?.video,
                 original_price: 0,
                 price: $product?.price,
-                value: $product.value - $product.solded,
+                delivery_price: $product?.delivery_price,
+                delivery_free: $product?.delivery_price === 0 ? true : false,
+                value: $product?.value - $product?.solded,
                 old_price: $product?.old_price ? $product?.old_price : 0,
-                bonus: $product.bonus && $product.bonus_duration > moment.now() / 1000,
-                bonus_duration: $product.bonus ? moment.unix($product.bonus_duration).format('DD.MM.YYYY HH:mm') : 0,
-                bonus_count: $product.bonus ? $product.bonus_count : 0,
-                bonus_given: $product.bonus ? $product.bonus_given : 0,
+                bonus: $product?.bonus && $product?.bonus_duration > moment.now() / 1000,
+                bonus_duration: $product?.bonus ? moment.unix($product?.bonus_duration).format('DD.MM.YYYY HH:mm') : 0,
+                bonus_count: $product?.bonus ? $product?.bonus_count : 0,
+                bonus_given: $product?.bonus ? $product?.bonus_given : 0,
+                delivery_price: $product?.delivery_price
             }
             res.send({
                 ok: true,

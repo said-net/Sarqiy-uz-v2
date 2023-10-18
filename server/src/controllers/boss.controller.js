@@ -20,6 +20,7 @@ const courierModel = require("../models/courier.model");
 const raceModel = require("../models/race.model");
 const bossModel = require("../models/boss.model");
 const mainModel = require("../models/main.model");
+const competitionModel = require("../models/competition.model");
 module.exports = {
     default: async () => {
         const $admin = await adminModel.findOne({ id: 1 });
@@ -90,6 +91,7 @@ module.exports = {
         // 
         const race = await raceModel.find({ hidden: false }).countDocuments()
         const main = await mainModel.find().countDocuments();
+        const comps = await competitionModel.find()?.countDocuments()
         let inoperator = 0;
         $inoperator?.forEach(i => {
             if (i?.operator) {
@@ -116,7 +118,8 @@ module.exports = {
                 race,
                 history_orders,
                 owners,
-                main
+                main,
+                comps
             }
         });
     },
@@ -542,7 +545,7 @@ module.exports = {
             });
         });
         const $modlist = [];
-        for (let o of $orders) {
+        for (let o of $orders?.reverse()) {
             const $admin = await userModel.findOne({ id: o?.flow });
             $modlist.push({
                 id: o?.id,
@@ -586,7 +589,7 @@ module.exports = {
             });
         });
         const $modlist = [];
-        for (let o of $orders?.slice(startIndex, endIndex)) {
+        for (let o of $orders?.reverse()?.slice(startIndex, endIndex)) {
             const $admin = await userModel.findOne({ id: o?.flow });
             $modlist.push({
                 id: o?.id,
@@ -637,7 +640,7 @@ module.exports = {
             });
         });
         const $modlist = [];
-        for (let o of $orders?.slice(startIndex, endIndex)) {
+        for (let o of $orders?.reverse()?.slice(startIndex, endIndex)) {
             const $admin = await userModel.findOne({ id: o?.flow });
             $modlist.push({
                 id: o?.id,
@@ -718,7 +721,7 @@ module.exports = {
         }
         res.send({
             ok: true,
-            data: $modlist,
+            data: $modlist?.reverse(),
             operators: $modopers
         })
     },

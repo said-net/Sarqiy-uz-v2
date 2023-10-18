@@ -43,7 +43,7 @@ module.exports = {
         }
     },
     getAll: async (req, res) => {
-        const $races = await raceModel.find({ hidden: false })
+        const $races = await raceModel.find({ hidden: false }).populate('user')
         const mod = [];
         $races.forEach((r) => {
             mod.push({
@@ -53,6 +53,7 @@ module.exports = {
                 image: SERVER_LINK + r?.image,
                 price: r.price,
                 old_price: r.old_price,
+                user: r?.user
             });
         });
         res.send({

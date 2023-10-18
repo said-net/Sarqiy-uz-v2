@@ -103,7 +103,7 @@ function MyOrders() {
                             {/*  */}
                             {/* <p className="text-[15px]"><b>Qayta aloqa:</b> {o?.recontact}</p> */}
                             <div className="flex items-center justify-between w-full mt-[10px]">
-                                <Button color="red" className="rounded w-[200px]" onClick={() => setEdit({ ...edit, _id: o?._id, name: o?.name, title: o?.product, price: o?.price, current_price: o?.price, bonus: o?.bonus, bonus_count: o?.bonus_count, bonus_given: o?.bonus_given })}>Taxrirlash</Button>
+                                <Button color="red" className="rounded w-[200px]" onClick={() => setEdit({ ...edit, _id: o?._id, name: o?.name, title: o?.product, price: o?.price, current_price: o?.price, bonus: o?.bonus, bonus_count: o?.bonus_count, bonus_given: o?.bonus_given, delivery: o?.delivery })}>Taxrirlash</Button>
                                 <Button color="blue-gray" className="flex items-center justify-center text-[15px] p-[0] w-[70px] h-[35px] roundsed" onClick={() => setOpenHistory(o?.phone)}>
                                     <BiHistory />
                                     {o?.history}

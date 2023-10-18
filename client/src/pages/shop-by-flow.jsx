@@ -16,12 +16,13 @@ function ShopByFlow() {
     const [isLoad, setIsLoad] = useState(false);
     const [product, setProduct] = useState({});
     const [showMore, setShowMore] = useState(false);
-    const [openShop, setOpenShop] = useState({ id: '', title: '', count: 1, price: 0, bonus: false, bonus_given: 0, bonus_count: 0, name: '', phone: '+998', region: '', flow_id: '', flow: '' });
+    const [openShop, setOpenShop] = useState({ id: '', title: '', count: 1, price: 0, bonus: false, bonus_given: 0, bonus_count: 0, name: '', phone: '+998', region: '', flow_id: '', flow: '', delivery_price: '' });
     const [openVideo, setOpenVideo] = useState('');
     const [openAuth, setOpenAuth] = useState(false);
     const { id: userId, name, phone, location } = useSelector(e => e.auth);
     const [likes, setLikes] = useState([]);
     const [refreshLikes, setRefreshLikes] = useState(false);
+    // 
     useEffect(() => {
         if (userId) {
             setOpenShop({ ...openShop, name, region: location, phone })
@@ -113,9 +114,11 @@ function ShopByFlow() {
                         <h1 className="font-bold text-[22px]">{p?.title}</h1>
                         <p className="text-[14px] font-bold mt-[10px]">Narx:</p>
                         {/*  */}
-                        <p className="text-[25px] font-bold">{Number(p?.price).toLocaleString()} so'm {p?.old_price > 0 &&
-                            <span className="ml-[10px] text-[12px] font-normal"><s>{Number(p?.old_price).toLocaleString()} so'm</s> <span className="text-[red]">-{String((p?.old_price - p?.price) / (p?.old_price) * 100).slice(0, 5)}%</span></span>
-                        }</p>
+                        <p className="text-[25px] font-bold">
+                            {Number(p?.price).toLocaleString()} so'm {p?.old_price > 0 && p?.old_price > p?.price &&
+                                <span className="ml-[10px] text-[12px] font-normal"><s>{Number(p?.old_price).toLocaleString()} so'm</s> <span className="text-[red]">-{String((p?.old_price - p?.price) / (p?.old_price) * 100).slice(0, 5)}%</span></span>
+                            }
+                        </p>
                         {/*  */}
                         <p className="my-[10px]">
                             <BsQuestionCircleFill className="inline mr-[10px] text-blue-gray-500" />
@@ -128,7 +131,7 @@ function ShopByFlow() {
                         {showMore && <p onClick={() => setShowMore(false)} className="text-[17px] uppercase text-red-500 font-bold mt-[10px]">Qisqartma</p>}
                     </div>
                     <div className="flex items-center justify-center w-full fixed bottom-[60px] left-0">
-                        <Button onClick={() => (setOpenShop({ ...openShop, id: p?.id, title: p?.title, bonus: p?.bonus, bonus_count: p?.bonus_count, bonus_given: p?.bonus_given, flow_id: p?.flow_id || '', flow: p?.flow || '' }))} className="w-[98%] h-[50px] rounded-full text-[16px] z-[9999999]" color="red">Sotib olish</Button>
+                        <Button onClick={() => (setOpenShop({ ...openShop, id: p?.id, title: p?.title, bonus: p?.bonus, bonus_count: p?.bonus_count, bonus_given: p?.bonus_given, flow_id: p?.flow_id || '', flow: p?.flow || '', delivery_price: p?.delivery_price }))} className="w-[98%] h-[50px] rounded-full text-[16px] z-[9999999]" color="red">Sotib olish</Button>
                     </div>
                 </>
             }

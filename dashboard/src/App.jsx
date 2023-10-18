@@ -39,6 +39,8 @@ import Owners from "./pages/owners";
 import GetStatUsers from "./pages/get-stat-users";
 import GetStatOpers from "./pages/get-stat-opers";
 import MainMenu from "./pages/main";
+import Competitions from "./pages/competitions";
+import CompetitionGetOne from "./pages/get-competition-one";
 function App() {
   const { refresh, phone, owner } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -103,6 +105,8 @@ function App() {
             <Route path="/stat-users" element={<GetStatUsers />} />
             <Route path="/stat-opers" element={<GetStatOpers />} />
             <Route path="/race" element={<Races />} />
+            <Route path="/competitions" element={<Competitions />} />
+            <Route path="/get-comp-one/:id" element={<CompetitionGetOne />} />
             <Route path="/main" element={<MainMenu />} />
             {owner && <Route path="/owners" element={<Owners />} />}
           </Routes>

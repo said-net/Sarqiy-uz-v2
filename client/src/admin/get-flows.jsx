@@ -4,6 +4,7 @@ import { useState } from "react";
 import { API_LINK } from "../config";
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Spinner } from "@material-tailwind/react";
 import { BiCopy, BiNews, BiTrash } from "react-icons/bi";
+import { FaEye } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 function GetFlows() {
@@ -93,6 +94,10 @@ function GetFlows() {
                                     {/*  */}
                                     <div className="flex items-center justify-center w-[40px] cursor-pointer bg-gray-100 h-[40px] rounded-[6px] border border-gray-400 hover:bg-blue-gray-100 duration-300" onClick={() => { navigator.clipboard.writeText(`https://sharqiy.uz/link/${f?.id}`); toast.success("Nusxa olindi!", { autoClose: 1000 }) }}>
                                         <BiCopy className="text-[30px] text-blue-gray-500" />
+                                    </div>
+                                    {/*  */}
+                                    <div className="flex items-center justify-center w-[40px] cursor-pointer bg-gray-100 h-[40px] rounded-[6px] border border-gray-400 hover:bg-blue-gray-100 duration-300" onClick={() => window.open(`https://sharqiy.uz/link/${f?.id}`)}>
+                                        <FaEye className="text-[30px] text-green-500" />
                                     </div>
                                     {/*  */}
                                     <div className="flex items-center justify-center w-[40px] cursor-pointer bg-gray-100 h-[40px] rounded-[6px] border border-gray-400 hover:bg-blue-gray-100 duration-300" onClick={() => GetAds(f?._id)}>

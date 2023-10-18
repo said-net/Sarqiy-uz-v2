@@ -141,13 +141,13 @@ module.exports = {
                     ok: false,
                     msg: "Xatolik"
                 });
-            })
+            });
         } catch (error) {
             console.log(error);
             res.send({
                 ok: false,
                 msg: "Xatolik!"
-            })
+            });
         }
     },
     signInWithPassword: async (req, res) => {

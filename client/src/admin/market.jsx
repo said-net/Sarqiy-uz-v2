@@ -4,10 +4,10 @@ import { useSelector } from "react-redux";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
 import { FaCopy, FaKey, FaMoneyBill, FaNewspaper } from "react-icons/fa";
-import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, IconButton, Input } from "@material-tailwind/react";
+import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, IconButton, Input, Option, Radio, Select } from "@material-tailwind/react";
 import { FaT, FaX } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-
+// 
 function AdminMarket() {
     const [state, setState] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -16,13 +16,14 @@ function AdminMarket() {
     const { uId } = useSelector(e => e.auth);
     const [openFlow, setOpenFlow] = useState({ id: '', title: '' });
     const [targetApi, setTargetApi] = useState('');
-    const [createFlow, setCreateFlow] = useState({ id: '', title: '', product: '', price: '', sale: '', for_admin: '' });
+    const [createFlow, setCreateFlow] = useState({ id: '', title: '', product: '', price: '', sale: '', for_admin: '', type: 'minus', delivery: false });
     const [wait, setWait] = useState(false);
     const nv = useNavigate();
+    // 
     function SubmitCreateFlow() {
         setWait(true)
-        const { title, id, sale } = createFlow;
-        axios.post(`${API_LINK}/flow/create`, { title, product: id, sale }, {
+        const { title, id, sale, type } = createFlow;
+        axios.post(`${API_LINK}/flow/create`, { title, product: id, sale: type === 'minus' ? sale : -sale, delivery: createFlow?.delivery }, {
             headers: {
                 'x-user-token': `Bearer ${localStorage.getItem('access')}`
             }
@@ -42,6 +43,7 @@ function AdminMarket() {
             toast.error("Aloqani tekshirib qayta urunib ko'ring!");
         })
     }
+    // 
     useEffect(() => {
         setIsLoad(false);
         axios(`${API_LINK}/category/getall`).then(res => {
@@ -54,7 +56,7 @@ function AdminMarket() {
             toast.error("Aloqani tekshirib qayta urunib koring!")
         });
     }, []);
-
+    // 
     useEffect(() => {
         axios(`${API_LINK}/product/get-for-admins/${category}`, {
             headers: {
@@ -70,7 +72,7 @@ function AdminMarket() {
             toast.error("Aloqani tekshirib qayta urunib koring!")
         });
     }, [category]);
-
+    // 
     function getAds(id) {
         axios(`${API_LINK}/product/get-ads-post/${id}`, {
             headers: {
@@ -88,7 +90,7 @@ function AdminMarket() {
             toast.error("Aloqani tekshirib qayta urunib koring!")
         });
     }
-
+    // 
     return (
         <div className="flex items-center justify-start flex-col w-full p-[30px_10px] mt-[20px]">
             <div className="flex items-center justify-start w-full min-h-[50px] bg-white rounded border px-[10px] flex-wrap p-[5px]">
@@ -144,7 +146,7 @@ function AdminMarket() {
                                         Reklama posti
                                     </Button>
                                     {/*  */}
-                                    <Button onClick={() => setCreateFlow({ id: p?.id, title: '', for_admin: p?.for_admins, price: p?.price, product: p?.title, sale: '' })} color="blue" className="mb-[10px] rounded flex items-center justify-center" fullWidth>
+                                    <Button onClick={() => setCreateFlow({ id: p?.id, title: '', for_admin: p?.for_admins, price: p?.price, product: p?.title, sale: '', type: 'minus' })} color="blue" className="mb-[10px] rounded flex items-center justify-center" fullWidth>
                                         <FaNewspaper />
                                         Oqim ochish
                                     </Button>
@@ -207,17 +209,35 @@ function AdminMarket() {
                         <Input disabled={wait} type="number" label="Chegirma(So'm)" onChange={e => setCreateFlow({ ...createFlow, sale: e.target.value })} value={createFlow?.sale} icon={<FaMoneyBill />} />
                     </div>
                     {/*  */}
-                    <p className="text-[12px]">Chegirma admin uchun ajratilgan pul miqdoridan olinadi!</p>
-                    <p className="text-green-500"><s className="text-red-500">{Number(createFlow?.price)?.toLocaleString()} so'm</s> - {Number(createFlow?.price - createFlow?.sale)?.toLocaleString()} so'm</p>
+                    <p className="text-[12px] mb-[10px]">Chegirma admin uchun ajratilgan pul miqdoridan olinadi yoki qo'shiladi!</p>
                     {/*  */}
-                    <p>Chegirma: -{Number(createFlow?.sale)?.toLocaleString()} so'm</p>
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Select label="Chegirma turi" onChange={e => setCreateFlow({ ...createFlow, type: e })} value={createFlow?.type}>
+                            <Option value="minus">ADMIN PULIDAN CHEGIRMA</Option>
+                            <Option value="plus">ADMIN PULIGA QO'SHISH</Option>
+                        </Select>
+                    </div>
+                    <div className="flex items-center justify-start w-full mb-[10px]">
+                        <Checkbox defaultChecked={createFlow?.delivery} onChange={e => setCreateFlow({ ...createFlow, delivery: e?.target?.checked })} label={"Dostavka ichida"} />
+                    </div>
+                    {createFlow?.type === 'minus' ?
+                        <p className="text-green-500"><s className="text-red-500">{Number(createFlow?.price)?.toLocaleString()} so'm</s> - {Number(createFlow?.price - createFlow?.sale)?.toLocaleString()} so'm</p>
+                        :
+                        <p className="text-green-500"><s className="text-red-500">{Number(createFlow?.price)?.toLocaleString()} so'm</s> - {Number(createFlow?.price + Number(createFlow?.sale))?.toLocaleString()} so'm</p>
+                    }
                     {/*  */}
-                    <p>Admin puli: {Number(createFlow?.for_admin - createFlow?.sale)?.toLocaleString()} so'm</p>
+                    <p>Chegirma: {createFlow?.type === 'minus' ? '-' : '+'}{Number(createFlow?.sale)?.toLocaleString()} so'm</p>
+                    {/*  */}
+                    {createFlow?.type === 'minus' ?
+                        <p>Admin puli: {Number(createFlow?.for_admin - createFlow?.sale)?.toLocaleString()} so'm</p>
+                        :
+                        <p>Admin puli: {Number(createFlow?.for_admin + Number(createFlow?.sale))?.toLocaleString()} so'm</p>
+                    }
                     {/*  */}
                 </DialogBody>
                 <DialogFooter className="flex items-center justify-between">
                     {/*  */}
-                    <Button disabled={wait} color="orange" className="rounded" onClick={() => setCreateFlow({ id: '', title: '', product: '', price: '', sale: '', for_admin: '' })}>Ortga</Button>
+                    <Button disabled={wait} color="orange" className="rounded" onClick={() => setCreateFlow({ id: '', title: '', product: '', price: '', sale: '', for_admin: '', type: 'minus' })}>Ortga</Button>
                     {/*  */}
                     <Button disabled={wait} color="green" className="rounded" onClick={SubmitCreateFlow}>Saqlash</Button>
                     {/*  */}

@@ -181,7 +181,7 @@ function DeliveredOrders() {
                             <div key={i} className="flex items-center justify-between w-full h-[70px] shadow-sm bg-white  border-b p-[0_5px]">
                                 <div className="flex items-center justify-between">
                                     <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
-                                        <Checkbox id={"id-"+i} onChange={e => SelectOrder(o?._id, e.target.checked)} checked={selecteds?.includes(o?._id)} />
+                                        <Checkbox id={"id-" + i} onChange={e => SelectOrder(o?._id, e.target.checked)} checked={selecteds?.includes(o?._id)} />
                                     </div>
                                     <div className="w-[50px] text-center border-r h-[70px] flex items-center justify-center text-[13px]">
                                         <Chip color="red" value={o?.id} className="rounded" />

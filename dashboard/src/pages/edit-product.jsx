@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 
 function EditProduct() {
     const { id } = useParams();
-    const [state, setState] = useState({ title: '', about: '', images: '', value: '', category: '', original_price: '', coin: '', video: '', price: '', for_admins: '', for_operators: '', });
+    const [state, setState] = useState({ title: '', about: '', images: '', value: '', category: '', original_price: '', coin: '', video: '', price: '', for_admins: '', for_operators: '', delivery_price: '' });
     const [isLoad, setIsLoad] = useState(false);
     const [categories, setCategories] = useState([]);
     const [disable, setDisable] = useState(false);
@@ -94,12 +94,12 @@ function EditProduct() {
         })
     }
     function Submit() {
-        const { title, category, about, price, original_price, for_admins, for_operators, coin } = state;
-        if (!title || !category || !about || !price || !original_price || !for_admins || !for_operators || !coin) {
+        const { title, category, about, price, original_price, for_admins, for_operators, coin, delivery_price } = state;
+        if (!title || !category || !about || !price || !original_price || !for_admins || !for_operators || !coin || !delivery_price) {
             toast.error("Qatorlarni to'ldiring!")
         } else {
             setDisable(true);
-            axios.put(API_LINK + '/product/edit/' + id, { title, category, about, price, original_price, for_admins, for_operators, coin }, {
+            axios.put(API_LINK + '/product/edit/' + id, { title, category, about, price, original_price, for_admins, for_operators, coin, delivery_price }, {
                 headers: {
                     'x-auth-token': `Bearer ${localStorage.getItem('access')}`
                 }
@@ -163,6 +163,15 @@ function EditProduct() {
                                     </Option>
                                 )
                             })}
+                        </Select>
+                    </div>
+                    {/*  */}
+                    <div className="flex items-center justify-center w-full lg:w-[300px] my-[10px] lg:m-[10px]">
+                        <Select disabled={disable} label="Dostavka narxi" variant="standard" onChange={e => setState({ ...state, delivery_price: e })} value={state.delivery_price}>
+                            <Option value="0">Be'pul</Option>
+                            <Option value="25000">25 000 so'm</Option>
+                            <Option value="30000">30 000 so'm</Option>
+                            <Option value="35000">35 000 so'm</Option>
                         </Select>
                     </div>
                     {/*  */}

@@ -8,7 +8,7 @@ const bot = require("../bot/app");
 const path = require('path')
 module.exports = {
     create: async (req, res) => {
-        const { title, sale, product } = req?.body;
+        const { title, sale, product, delivery } = req?.body;
         if (!title) {
             res.send({
                 ok: false,
@@ -31,7 +31,8 @@ module.exports = {
                         from: req?.user?.id,
                         price: $p?.price - sale,
                         for_admin: ($p?.for_admins - sale),
-                        created: moment.now() / 1000
+                        created: moment.now() / 1000,
+                        delivery
                     }).save().then(() => {
                         res.send({
                             ok: true,
@@ -47,7 +48,8 @@ module.exports = {
                     from: req?.user?.id,
                     price: $p?.price,
                     for_admin: $p?.for_admins,
-                    created: moment.now() / 1000
+                    created: moment.now() / 1000,
+                    delivery
                 }).save().then(() => {
                     res.send({
                         ok: true,
@@ -187,7 +189,9 @@ module.exports = {
                     video: SERVER_LINK + f?.product?.video,
                     about: f?.product?.about,
                     old_price: f?.product?.price,
-                    price: f?.price,
+                    price: f?.delivery ? (f?.price + f?.product?.delivery_price) : f?.price,
+                    delivery_price: f?.product?.delivery_price,
+                    delivery: f?.delivery
                 }
             });
             f.set({ views: f?.views + 1 || 1 }).save();

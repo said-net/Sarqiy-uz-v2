@@ -182,6 +182,7 @@ module.exports = {
                 id: e?.id,
                 name: e?.name,
                 phone: e?.phone,
+                delivery: String(e?.product?.delivery_price),
                 location: '-',
                 product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,

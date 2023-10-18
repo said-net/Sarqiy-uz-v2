@@ -16,7 +16,7 @@ function Product() {
     const [isLoad, setIsLoad] = useState(false);
     const [product, setProduct] = useState({});
     const [showMore, setShowMore] = useState(false);
-    const [openShop, setOpenShop] = useState({ id: '', title: '', count: 1, price: 0, bonus: false, bonus_given: 0, bonus_count: 0, name: '', phone: '+998', region: '' });
+    const [openShop, setOpenShop] = useState({ id: '', title: '', count: 1, price: 0, bonus: false, bonus_given: 0, bonus_count: 0, name: '', phone: '+998', region: '', delivery_price: '' });
     const [openVideo, setOpenVideo] = useState('');
     const [openAuth, setOpenAuth] = useState(false);
     const { id: userId, name, phone, location } = useSelector(e => e.auth);
@@ -128,7 +128,7 @@ function Product() {
                         {showMore && <p onClick={() => setShowMore(false)} className="text-[17px] uppercase text-red-500 font-bold mt-[10px]">Qisqartma</p>}
                     </div>
                     <div className="flex items-center justify-center w-full fixed bottom-[60px] left-0">
-                        <Button onClick={() => (setOpenShop({ ...openShop, id: p?.id, title: p?.title, bonus: p?.bonus, bonus_count: p?.bonus_count, bonus_given: p?.bonus_given }))} className="w-[98%] h-[50px] rounded-full text-[16px] z-[9999999]" color="red">Sotib olish</Button>
+                        <Button onClick={() => (setOpenShop({ ...openShop, id: p?.id, title: p?.title, bonus: p?.bonus, bonus_count: p?.bonus_count, bonus_given: p?.bonus_given, delivery_price: p?.delivery_price }))} className="w-[98%] h-[50px] rounded-full text-[16px] z-[9999999]" color="red">Sotib olish</Button>
                     </div>
                 </>
             }

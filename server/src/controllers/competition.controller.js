@@ -6,10 +6,10 @@ const userModel = require('../models/user.model');
 const { SERVER_LINK } = require('../configs/env');
 module.exports = {
     createCompetition: async (req, res) => {
-        const { title, about, duration } = req.body;
+        const { title, about, duration, start } = req.body;
         const image = req?.files?.image;
-        const start = moment.now() / 1000;
-        const end = (moment.now() / 1000) + (duration * 86400);
+        // const start = moment.now() / 1000;
+        const end = ((moment.now() / 1000) + (start * 86400)) + (duration * 86400);
 
         if (!title || !about || !duration || !image) {
             res.send({
@@ -26,7 +26,7 @@ module.exports = {
                 title,
                 about,
                 image: filePath,
-                start,
+                start: (moment.now()/1000 + (start * 86400)),
                 end
             }).save().then(() => {
                 image.mv(`.${filePath}`);
@@ -44,8 +44,8 @@ module.exports = {
             c.push({
                 id: e._id,
                 title: e.title,
-                about: e.about,
-                // image: SERVER_LINK + e.image,
+                // about: e.about,
+                image: SERVER_LINK + e.image,
                 start: moment.unix(e.start).format("DD.MM.YYYY"),
                 end: moment.unix(e.end).format("DD.MM.YYYY"),
                 ended: e.end < moment.now() / 1000 ? true : false,
@@ -81,7 +81,7 @@ module.exports = {
                     start: moment.unix($c.start).format('DD.MM.YYYY'),
                     end: moment.unix($c.end).format('DD.MM.YYYY'),
                 },
-                data: $modlist.sort((a, b) => b - a).slice(0, 50)
+                data: $modlist.sort((a, b) => b?.flows - a?.flows).slice(0, 50)
             });
         } catch (error) {
             console.log(error);
