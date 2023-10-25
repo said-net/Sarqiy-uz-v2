@@ -16,6 +16,7 @@ import { IconButton } from "@material-tailwind/react";
 import { BiRefresh } from "react-icons/bi";
 import { setRefresh } from "./managers/refresh.manager";
 function App() {
+
   const { id, refresh, name } = useSelector(e => e.auth);
   const dp = useDispatch();
   document.title = name ? `Kuryer: ${name}` : 'Kirish';
@@ -30,7 +31,8 @@ function App() {
         dp(setInfoAuth(data));
       }
     })
-  }, [refresh])
+  }, [refresh]);
+
   if (!id) {
     return (
       <>
@@ -56,6 +58,7 @@ function App() {
           </Routes>
         </div>
         <ToastContainer autoClose={2000} closeButton={false} position="top-center" style={{ zIndex: '9999999' }} />
+
       </div>
     );
   }

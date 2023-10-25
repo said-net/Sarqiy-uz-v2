@@ -128,7 +128,7 @@ function AdminRequests() {
                                     {/*  */}
                                     {e?.status === 'wait' && <p className="text-[12px] text-orange-500  w-[24%] text-center relative">
                                         Qayta qo'ng'iroq
-                                        <BiRefresh onClick={() => setStatusOne(e?.id)} className="absolute top-[-15px] text-[20px] right-0" />
+                                        {/* <BiRefresh onClick={() => setStatusOne(e?.id)} className="absolute top-[-15px] text-[20px] right-0" /> */}
                                     </p>}
                                     {/*  */}
                                     {e?.status === 'success' && <p className="text-[12px] text-blue-500  w-[24%] text-center">Tayyor</p>}

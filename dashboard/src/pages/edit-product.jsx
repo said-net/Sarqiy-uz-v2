@@ -9,10 +9,12 @@ import { useParams } from "react-router-dom";
 function EditProduct() {
     const { id } = useParams();
     const [state, setState] = useState({ title: '', about: '', images: '', value: '', category: '', original_price: '', coin: '', video: '', price: '', for_admins: '', for_operators: '', delivery_price: '' });
+    // 
     const [isLoad, setIsLoad] = useState(false);
     const [categories, setCategories] = useState([]);
     const [disable, setDisable] = useState(false);
     const [refresh, setRefresh] = useState(false);
+    // 
     useEffect(() => {
         setIsLoad(false)
         axios(`${API_LINK}/category/getall`).then((res) => {
@@ -34,6 +36,7 @@ function EditProduct() {
             })
         })
     }, [refresh]);
+    // 
     function editVideo(video) {
         setDisable(true);
         axios.putForm(API_LINK + '/product/edit-video/' + id, { video }, {
@@ -53,6 +56,7 @@ function EditProduct() {
             toast.error("Aloqani tekshirib qayta urunib ko'ring!")
         })
     }
+    // 
     function editPhoto(photo, index) {
         setDisable(true);
         axios.putForm(API_LINK + '/product/edit-image/' + id + '/' + index, { image: photo }, {
@@ -73,6 +77,7 @@ function EditProduct() {
             toast.error("Aloqani tekshirib qayta urunib ko'ring!")
         })
     }
+    // 
     function newImage(photo) {
         setDisable(true);
         axios.putForm(API_LINK + '/product/new-image/' + id, { image: photo }, {
@@ -93,6 +98,7 @@ function EditProduct() {
             toast.error("Aloqani tekshirib qayta urunib ko'ring!")
         })
     }
+    // 
     function Submit() {
         const { title, category, about, price, original_price, for_admins, for_operators, coin, delivery_price } = state;
         if (!title || !category || !about || !price || !original_price || !for_admins || !for_operators || !coin || !delivery_price) {
@@ -117,6 +123,7 @@ function EditProduct() {
             })
         }
     }
+    // 
     return (
         <div className="flex items-center justify-start w-full flex-col">
             <div className="flex items-center justify-center p-[10px_20px] rounded-b bg-white mb-[20px]">

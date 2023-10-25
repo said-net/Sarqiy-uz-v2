@@ -160,7 +160,7 @@ module.exports = {
     getStats: async (req, res) => {
         const new_orders = await shopModel.find({ status: 'pending', operator: req?.operator?.id }).countDocuments();
         const re_contacts = await shopModel.find({ status: 'wait', operator: req?.operator?.id }).countDocuments();
-        const rejecteds = await shopModel.find({ status: 'sended', operator: req?.operator?.id, courier_status: 'reject' }).countDocuments();
+        const rejecteds = await (req?.operator?.sp ? shopModel.find({ status: 'sended', courier_status: 'reject' }) : shopModel.find({ status: 'sended', operator: req?.operator?.id, courier_status: 'reject' })).countDocuments();
         const waiting = await shopModel.find({ status: 'pending', operator: null })
         res.send({
             ok: true,
@@ -173,7 +173,7 @@ module.exports = {
         })
     },
     getMyOrders: async (req, res) => {
-        const $orders = await shopModel.find({ operator: req.operator.id, status: 'pending' }).populate('product');
+        const $orders = await shopModel.find({ operator: req.operator.id, status: 'pending' }).populate('product flow_id');
         const myOrders = [];
         for (let e of $orders) {
             const history = await shopModel.find({ phone: e?.phone })?.countDocuments()
@@ -182,20 +182,15 @@ module.exports = {
                 id: e?.id,
                 name: e?.name,
                 phone: e?.phone,
-                delivery: String(e?.product?.delivery_price),
+                delivery: e?.flow_id?.delivery ? '0' : String(e?.product?.delivery_price),
                 location: '-',
                 product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,
                 about: e?.about || "Yangi lid",
                 count: e?.count,
                 history,
-                // bonus_about: e?.product?.bonus_about,
-                // bonus_count: e?.product?.bonus_count,
-                // bonus_given: e?.product?.bonus_given,
-                // bonus: e?.product?.bonus_duration > moment.now() / 1000,
-                price: e?.product?.price,
+                price: !e?.flow_id ? e?.product?.price : e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
-                // recontact: e?.reconnect ? moment.unix(e?.reconnect).format('DD-MM-YYYY') : 'KK-OO-YYYY'
             });
         }
         res.send({
@@ -204,7 +199,7 @@ module.exports = {
         });
     },
     getHistoryOrders: async (req, res) => {
-        const $orders = await shopModel.find({ operator: req.operator.id }).populate('product');
+        const $orders = await shopModel.find({ operator: req.operator.id }).populate('product flow_id');
         const myOrders = [];
         for (let e of $orders) {
             myOrders.push({
@@ -218,7 +213,7 @@ module.exports = {
                 about: e?.about || '',
                 courier_comment: e?.courier_comment || '',
                 count: e?.count || 0,
-                price: e?.price || 0,
+                price: e?.price || !e?.flow_id ? e?.product?.price : e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price,
                 region: `${e?.region || ''}`,
                 city: `${e?.city || ''}`,
                 status: e?.status,
@@ -239,7 +234,7 @@ module.exports = {
     setStatus: async (req, res) => {
         const { id } = req.params;
         const { bonus_gived: bonus, about, city, region, status, count, price, recontact, delivery, name, title } = req.body;
-        const $order = await shopModel.findById(id);
+        const $order = await shopModel.findById(id)?.populate('courier operator');
         if (status === 'archive') {
             if (!about) {
                 res.send({
@@ -250,7 +245,8 @@ module.exports = {
                 $order.set({
                     title,
                     status: 'archive',
-                    about
+                    about,
+                    up_time: moment.now() / 1000
                 }).save().then(async () => {
                     res.send({
                         ok: true,
@@ -270,7 +266,10 @@ module.exports = {
                     status: 'wait',
                     recontact: moment.utc(recontact).unix(),
                     about,
-                    name
+                    price,
+                    delivery_price: delivery,
+                    name,
+                    up_time: moment.now() / 1000
                 }).save().then(async () => {
                     res.send({
                         ok: true,
@@ -282,7 +281,10 @@ module.exports = {
             $order.set({
                 status: 'success',
                 title,
-                about, city, region, bonus, count, price, delivery_price: delivery, name
+                about,
+                city,
+                region, bonus, count, price, delivery_price: delivery, name,
+                up_time: moment.now() / 1000
             }).save().then(async () => {
                 res.send({
                     ok: true,
@@ -298,6 +300,22 @@ module.exports = {
                 }
 
             });
+        } else if (status === 'to_delivery') {
+            $order.set({
+                status: 'success',
+                up_time: moment.now() / 1000,
+                name,
+                about,
+                courier: null,
+                courier_status: 'sended',
+                courier_comment: '',
+                verified: false
+            }).save().then(() => {
+                res.send({
+                    ok: true,
+                    msg: "Buyrtma dostavkaga tayyor"
+                });
+            })
         } else if (status === 'spam') {
             $order.set({
                 status: 'archive',
@@ -325,7 +343,8 @@ module.exports = {
         } else if (status === 'copy') {
             $order.set({
                 status: 'copy',
-                about
+                about,
+                up_time: moment.now() / 1000
             }).save().then(async () => {
                 res.send({
                     ok: true,
@@ -352,17 +371,20 @@ module.exports = {
                 status: 'sended',
                 about,
                 courier_status: 'sended',
-                name
+                name,
+                up_time: moment.now() / 1000,
+                verified: false,
             }).save().then(async () => {
                 res.send({
                     ok: true,
                     msg: "Kuryerga qayta yuborildi!"
                 });
+                bot?.telegram?.sendMessage($order?.courier?.telegram, `sharqiy.uz\n✅Operator bog'landi.\n🚚Buyurtmani buyurtmachiga yetkazing!\n🆔Buyurtma id: #${$order?.id}\n👤Mijoz: ${$order?.name} | ${$order?.phone}\n📞Operator: ${$order?.operator?.phone}\n☎️Call-center: +998339306464`, { parse_mode: "HTML" }).catch(() => { });
             });
         }
     },
     getWaitOrders: async (req, res) => {
-        const $orders = await shopModel.find({ operator: req.operator.id }).populate('product')
+        const $orders = await shopModel.find({ operator: req.operator.id }).populate('product flow_id')
         const myOrders = [];
         for (let e of $orders) {
             if (e?.status === 'wait') {
@@ -381,7 +403,7 @@ module.exports = {
                     // bonus_count: e?.product?.bonus_count,
                     // bonus_given: e?.product?.bonus_given,
                     // bonus: e?.product?.bonus_duration > moment.now() / 1000,
-                    price: e?.product?.price,
+                    price: e?.price || !e?.flow_id ? e?.product?.price : e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price,
                     created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                     recontact: e?.recontact ? moment.unix(e?.recontact).format('YYYY-MM-DD') : 'KK-OO-YYYY',
                     history
@@ -394,7 +416,7 @@ module.exports = {
         });
     },
     getRejectedOrders: async (req, res) => {
-        const $orders = await shopModel.find({ operator: req.operator.id, status: 'sended', courier_status: 'reject' }).populate('product courier');
+        const $orders = await (!req?.operator?.sp ? shopModel.find({ operator: req.operator.id, status: 'sended', courier_status: 'reject' }) : shopModel.find({ status: 'sended', courier_status: 'reject' })).populate('product courier operator flow_id');
         const myOrders = [];
         $orders.forEach(e => {
             myOrders.push({
@@ -402,7 +424,7 @@ module.exports = {
                 id: e?.id,
                 name: e?.name,
                 phone: e?.phone,
-                location: region?.find(r => r?.id === e?.region).name + ', ' + e?.city,
+                location: region?.find(r => r?.id === e?.region)?.name + ', ' + e?.city,
                 product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,
                 about: e?.about,
@@ -410,9 +432,12 @@ module.exports = {
                 courier_comment: e?.courier_comment,
                 courier_name: e?.courier?.name,
                 courier_phone: e?.courier?.phone,
-                price: e?.price,
+                operator_name: e?.operator?.name,
+                operator_phone: e?.operator?.phone,
+                price: e?.price || !e?.flow_id ? e?.product?.price : e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
-                up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm")
+                up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm"),
+                on_base: e?.verified ? true : false
             });
         });
         res.send({
@@ -633,7 +658,7 @@ module.exports = {
                     id: e?.id,
                     name: e?.name,
                     phone: e?.phone,
-                    location: !e?.region ? '-' : region?.find(r => r?.id === e?.region).name + e?.city,
+                    location: !e?.region ? '-' : region?.find(r => r?.id === e?.region)?.name + " - " + e?.city,
                     product: e?.title || e?.product?.title,
                     product_id: e?.product?.id,
                     about: e?.about,
@@ -681,4 +706,64 @@ module.exports = {
             })
         }
     },
+    setNewOrder: async (req, res) => {
+        const { orderId, newId } = req?.body;
+        if (!orderId || !newId) {
+            res.send({
+                ok: false,
+                msg: "Qatorlarni to'ldiring!"
+            })
+        } else if (!req?.operator?.sp) {
+            res.send({
+                ok: false,
+                msg: "Sizda huquq mavjud emas!"
+            })
+        } else {
+            const $order = await shopModel.findOne({ id: orderId });
+            const $newOrder = await shopModel.findOne({ id: newId });
+            if ($newOrder?.status !== 'success') {
+                res.send({
+                    ok: false,
+                    msg: "Ushbu mahsulot dostavkaga tayyor emas!"
+                });
+            } else {
+                $order?.set({
+                    status: 'archive',
+                    courier_status: 'reject',
+                    courier_comment: "Atkaz"
+                }).save().then(() => {
+                    $newOrder.set({
+                        status: 'sended',
+                        courier_status: 'sended',
+                        old_order: $order?.id,
+                        courier: $order?.courier
+                    }).save().then(() => {
+                        res.send({
+                            ok: true,
+                            msg: "Saqlandi!"
+                        });
+                        bot?.telegram?.sendMessage($order?.courier?.telegram, `sharqiy.uz\n✅Yangi buyurtma(Chek)\n🚚Buyurtmani buyurtmachiga yetkazing!\n🆔Buyurtma id: #${$order?.id} o'rniga #${newId}\n👤Mijoz: ${$newOrder?.name} | ${$newOrder?.phone}\n📞Operator: ${$newOrder?.operator?.phone}\n☎️Call-center: +998339306464`, { parse_mode: "HTML" }).catch(() => { });
+                    }).catch(err => {
+                        console.log(err);
+                        res.send({
+                            ok: false,
+                            msg: "Xatolik!"
+                        })
+                    }).catch(err => {
+                        console.log(err);
+                        res.send({
+                            ok: false,
+                            msg: "Xatolik!"
+                        })
+                    });
+                }).catch((err) => {
+                    console.log(err)
+                    res.send({
+                        ok: false,
+                        msg: "Xatolik!"
+                    })
+                })
+            }
+        }
+    }
 }

@@ -13,6 +13,7 @@ function AdminProductStats() {
     const [isLoad, setIsLoad] = useState(false);
     const { uId } = useSelector(e => e.auth);
     const [openFlow, setOpenFlow] = useState({ id: '', title: '' });
+    const [select, setSelect] = useState('');
 
     useEffect(() => {
         axios(`${API_LINK}/product/get-stats-for-admins`, {
@@ -53,52 +54,55 @@ function AdminProductStats() {
             <div className="flex items-center justify-center border border-gray-500">
                 <p className="w-[50px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">ID</p>
                 <p className="w-[80px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">RASMI</p>
-                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">MAHSULOT</p>
-                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">TASHRIF</p>
-                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">YANGI BUYURTMA</p>
-                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">ARXIVLANGAN</p>
-                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">RAD ETILGAN</p>
-                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">KOPIYA</p>
-                <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">UPAKOVKADA</p>
-                <p className="w-[150px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">YETKAZILMOQDA YO'LDA</p>
-                <p className="w-[150px] h-[50px] flex items-center justify-center text-center text-[11px] border-r border-gray-500">YETKAZILGAN</p>
+                <p className="w-[180px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">MAHSULOT</p>
+                <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">TASHRIF</p>
+                <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">YANGI</p>
+                <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">ARXIVLANGAN</p>
+                <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">RAD ETILGAN</p>
+                <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">KOPIYA</p>
+                <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 flex-col text-center text-[11px]">
+                    <span>DOSTAVKAGA</span>
+                    <span>TAYYOR</span>
+                </p>
+                <p className="w-[100px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">YETKAZILMOQDA</p>
+                <p className="w-[100px] h-[50px] flex items-center justify-center text-center text-[11px] border-r border-gray-500">YETKAZILGAN</p>
                 <p className="w-[180px] h-[50px] flex items-center justify-center text-center text-[11px]">FOYDA(SO'M)</p>
             </div>
             {isLoad && state[0] &&
                 state?.map((p, i) => {
                     return (
-                        <div className="flex items-center justify-center border border-gray-500 border-t-0">
+                        <div onClick={() => setSelect(String(i))} className={`flex items-center justify-center border border-gray-500 border-t-0 ${select === String(i) && 'bg-gray-300'} cursor-pointer`}>
                             <p className="w-[50px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 {i + 1}
                             </p>
                             <div className="w-[80px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 <img src={p?.image} alt="i" className="w-[30px] rounded-[10px]" />
                             </div>
-                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                            <p className="w-[180px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 {p?.title}
                             </p>
-                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                            <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 {p?.views}
                             </p>
-                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                            <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 {p?.pending}
                             </p>
-                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                            <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 {p?.archived}
                             </p>
-                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                            <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 {p?.rejected}
                             </p>
-                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                            <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 {p?.copy}
                             </p>
-                            <p className="w-[110px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                            <p className="w-[85px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 {p?.success}
                             </p>
-                            <p className="w-[150px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
+                            <p className="w-[100px] h-[50px] flex items-center justify-center border-r border-gray-500 text-center text-[11px]">
                                 {p?.sended}
                             </p>
-                            <p className="w-[150px] h-[50px] flex items-center justify-center text-center text-[11px] border-r border-gray-500">
+                            <p className="w-[100px] h-[50px] flex items-center justify-center text-center text-[11px] border-r border-gray-500">
                                 {p?.delivered}
                             </p>
                             <p className="w-[180px] h-[50px] flex items-center justify-center text-center text-[11px]">

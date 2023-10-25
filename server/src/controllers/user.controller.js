@@ -318,7 +318,7 @@ module.exports = {
                     refProfit,
                     pending,
                     archive,
-                    all: $shops.length,
+                    // all: $shops.length,
                     refferals: $refs.length
                 }
             })
@@ -544,14 +544,14 @@ module.exports = {
     },
     setStatusMySale: async (req, res) => {
         try {
-            const { id } = req.params;
-            const $shop = await shopModel.findOne({ id });
-            $shop.set({ status: 'pending' }).save().then(() => {
+            // const { id } = req.params;
+            // const $shop = await shopModel.findOne({ id });
+            // $shop.set({ status: 'pending' }).save().then(() => {
                 res.send({
                     ok: true,
                     msg: "Bajarildi!"
                 });
-            });
+            // });
         } catch (error) {
             console.log(error);
             res.send({

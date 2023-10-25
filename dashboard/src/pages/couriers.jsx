@@ -33,6 +33,7 @@ function Couriers() {
                     <p className="w-[100px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">ID</p>
                     <p className="w-[250px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">ISMI</p>
                     <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">RAQAMI</p>
+                    <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">TELEGRAM ID</p>
                     <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">HUDUDI</p>
                     <p className="w-[100px] text-center border-l h-[70px] flex items-center justify-center text-[12px]">MENU</p>
                 </div>
@@ -52,7 +53,10 @@ function Couriers() {
                                     {c?.phone}
                                 </p>
                                 <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">
-                                    {Region?.find(r=>r?.id === c?.region).name}
+                                    {c?.telegram}
+                                </p>
+                                <p className="w-[200px] text-center border-x h-[70px] flex items-center justify-center text-[12px]">
+                                    {Region?.find(r => r?.id === c?.region).name}
                                 </p>
                                 <div className="flex items-center justify-center w-[100px] border-l h-[70px]">
                                     <Menu>
@@ -62,7 +66,7 @@ function Couriers() {
                                             </IconButton>
                                         </MenuHandler>
                                         <MenuList>
-                                            <MenuItem onClick={() => nv(`/edit-courier/${c?.id}/${c?.name}/${c?.phone}/${c?.region}`)} className="flex items-center justify-start">
+                                            <MenuItem onClick={() => nv(`/edit-courier/${c?.id}/${c?.name}/${c?.phone}/${c?.region}/${c?.telegram}`)} className="flex items-center justify-start">
                                                 <BiPencil className="mr-[10px]" />
                                                 Taxrirlash
                                             </MenuItem>

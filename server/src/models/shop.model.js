@@ -80,6 +80,7 @@ const schema = new Schema({
     flow_id: {
         type: Types.ObjectId,
         ref: 'Flow'
-    }
+    },
+    old_order: Number
 })
 module.exports = model('ShopHistory', schema)

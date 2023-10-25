@@ -12,11 +12,11 @@ import axios from "axios";
 import { API_LINK } from "./config";
 import { setInformations } from "./managers/authManager";
 import Settings from "./user/settings";
-import VideoPlayers from "./pages/video";
+// import VideoPlayers from "./pages/video";
 import Search from './pages/search'
 import Chat from "./pages/chat";
 import Home from "./pages/home";
-import AdminNavbar from "./admin/navbar";
+// import AdminNavbar from "./admin/navbar";
 import NotAuth from "./user/notauth";
 import AdminMain from "./admin/main";
 import AdminMarket from "./admin/market";
@@ -61,7 +61,7 @@ function App() {
             <Route path="/product/:id" element={<Product />} />
             <Route path="/link/:id" element={<ShopByFlow />} />
             <Route path="/oqim/:flow/:id" element={<Flow />} />
-            <Route path="/videos" element={<VideoPlayers />} />
+            {/* <Route path="/videos" element={<VideoPlayers />} /> */}
             <Route path="/search/:search" element={<Search />} />
 
             <Route path="/profile" element={<Profile />} />

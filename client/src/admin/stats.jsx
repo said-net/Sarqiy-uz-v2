@@ -2,9 +2,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { Spinner } from "@material-tailwind/react";
-import { FaBoxes, FaCheckCircle, FaMoneyBill, FaMoneyBillWave, FaNewspaper, FaPhone, FaShoppingCart, FaTaxi } from "react-icons/fa";
+import { FaBoxes, FaCheckCircle, FaMoneyBill, FaMoneyBillWave, FaNewspaper, FaPhone, FaTaxi } from "react-icons/fa";
 import { FaBox, FaUsers, FaX } from "react-icons/fa6";
 
 function AdminStats() {
@@ -47,13 +47,13 @@ function AdminStats() {
             }
             {isLoad &&
                 <div className="md:grid flex items-center justify-start flex-col w-full md:w-auto md:gap-[10px] md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                    <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
+                    {/* <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-blue-50 mr-[20px]">
                             <FaShoppingCart className="text-[20px] text-blue-500" />
                         </div>
                         <p className="text-blue-500 absolute top-[5px] right-[5px] text-[12px]">Sotuvlar</p>
                         <p className="text-[20px]">{state?.all}<sub className="ml-[10px] text-blue-gray-500">ta</sub></p>
-                    </div>
+                    </div> */}
                     {/*  */}
                     <div className="flex items-center justify-start w-[90%] md:w-[300px] h-[80px] bg-gray-50 mb-[10px] md:mb-[0] border rounded-[10px] p-[5px] relative">
                         <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-cyan-50 mr-[20px]">

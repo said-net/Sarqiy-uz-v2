@@ -7,7 +7,8 @@ import { API_LINK } from "../config";
 import { toast } from "react-toastify";
 import { BsCheck2Circle } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-
+import InputMask from 'react-input-mask';
+import { BiPhone } from "react-icons/bi";
 function RequestShop({ openShop, setOpenShop }) {
     const [disabled, setDisablet] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -25,7 +26,7 @@ function RequestShop({ openShop, setOpenShop }) {
     function Submit() {
         setDisablet(true);
         const { name, phone, region, flow, flow_id } = openShop;
-        axios.post(`${API_LINK}/shop/create`, { id: openShop.id, name, phone, flow: flow ? flow : '', flow_id }).then(res => {
+        axios.post(`${API_LINK}/shop/create`, { id: openShop.id, name, phone: phone?.replaceAll(' ', '')?.replace('(', '')?.replace(')', ''), flow: flow ? flow : '', flow_id }).then(res => {
             const { ok, msg } = res.data;
             setDisablet(false);
             if (!ok) {
@@ -68,13 +69,8 @@ function RequestShop({ openShop, setOpenShop }) {
                         </div>
                         {/*  */}
                         <div className="flex items-center justify-center w-full mb-[10px]">
-                            <Input value={openShop.phone} label="Raqamingiz" onChange={e => setOpenShop({ ...openShop, phone: e.target.value.trim() })} required icon={<FaPhone />} />
+                            <Input value={openShop.phone} label="Raqamingiz" type="phone" onChange={e => setOpenShop({ ...openShop, phone: e.target.value })} required icon={<FaPhone />} />
                         </div>
-                        {/*  */}
-                        {/* <div className="flex items-center justify-start w-full">
-                            <p className="text-[14px]">Yetkazib berish hududga qarab {} so'm gacha</p>
-                        </div> */}
-                        {/*  */}
                         <div className="flex items-center justify-center w-full p-[10px]  border-red-500 rounded-[10px] border-[3px]">
                             {openShop?.delivery_price === 0 ?
                                 <p className="text-red-500 font-bold uppercase">Tekin dostavka!</p>

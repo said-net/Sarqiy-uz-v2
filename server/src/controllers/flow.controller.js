@@ -190,7 +190,7 @@ module.exports = {
                     about: f?.product?.about,
                     old_price: f?.product?.price,
                     price: f?.delivery ? (f?.price + f?.product?.delivery_price) : f?.price,
-                    delivery_price: f?.product?.delivery_price,
+                    delivery_price: f?.delivery ? 0 : f?.product?.delivery_price,
                     delivery: f?.delivery
                 }
             });

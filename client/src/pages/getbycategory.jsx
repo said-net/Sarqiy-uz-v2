@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { Spinner } from "@material-tailwind/react";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { IconButton, Spinner } from "@material-tailwind/react";
+import { FaHeart, FaRegHeart, FaShoppingCart } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import Auth from "../user/auth";
 function GetProductsByCategory() {
@@ -84,15 +84,15 @@ function GetProductsByCategory() {
                         <div className="grid grid-cols-2 gap-[10px] md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                             {products?.map((p, i) => {
                                 return (
-                                    <div key={i} className="flex items-center justify-start flex-col sm:w-[200px] mb-[20px] mx-[5px] rounded shadow-md overflow-hidden relative h-[350px]">
+                                    <div key={i} className="flex items-center justify-start flex-col sm:w-[200px] mb-[20px] mx-[5px] rounded-[10px] border shadow-md overflow-hidden relative h-[350px]">
 
                                         {!likes?.includes(p?.id) && <FaRegHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}
 
                                         {likes?.includes(p?.id) && <FaHeart onClick={() => setLike(p?.id)} className={`absolute top-[5px] right-[5px] text-red-500`} />}
 
                                         {p?.bonus && <span className="absolute top-[5px] left-[5px] bg-red-500 px-[5px] rounded text-[12px] text-white">{p?.bonus_about}</span>}
-                                        <div onClick={() => nv('/product/' + p?.pid)} className="flex items-start justify-center w-full overflow-hidden h-[250px]">
-                                            <img src={p.image} alt="c" />
+                                        <div onClick={() => nv('/product/' + p?.pid)} className="flex items-start justify-center w-full overflow-hidden h-[250px] rounded-[10px]">
+                                            <img src={p.image} alt="c" className=" rounded-[10px]" />
                                         </div>
                                         <div className="flex items-start justify-start flex-col w-full" onClick={() => nv('/product/' + p?.pid)}>
                                             <p className="w-full p-[0_2%] my-[10px]">
@@ -101,7 +101,12 @@ function GetProductsByCategory() {
                                             {p?.old_price &&
                                                 <p className="text-gray-700 text-[12px] font-normal w-full px-[2%]"><s>{Number(p?.old_price).toLocaleString()} so'm</s> -<span className="text-[red]">{String((p?.old_price - p?.price) / (p?.old_price) * 100).slice(0, 5)}%</span></p>
                                             }
-                                            <p className=" absolute bottom-[10px] w-full p-[0_2%] font-bold text-[16px] text-black">{Number(p.price).toLocaleString()} so'm</p>
+                                            <div className="flex items-center justify-between w-full absolute bottom-[10px] p-[0_10px_0_2%]">
+                                                <p className=" font-bold text-[16px] text-black">{Number(p.price).toLocaleString()} so'm</p>
+                                                <IconButton color="red" className="rounded-full text-[20px]">
+                                                    <FaShoppingCart />
+                                                </IconButton>
+                                            </div>
                                         </div>
                                     </div>
                                 )

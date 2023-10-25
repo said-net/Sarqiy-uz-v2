@@ -47,7 +47,7 @@ module.exports = {
     getStats: async (req, res) => {
         const new_orders = await shopModel.find({ courier: req?.courier?.id, status: 'sended', courier_status: 'sended', verified: false }).countDocuments();
         const re_contacts = await shopModel.find({ courier: req?.courier?.id, status: 'sended', courier_status: 'wait' }).countDocuments();
-        const rejecteds = await shopModel.find({ courier: req?.courier?.id, status: 'sended', courier_status: 'reject', verified: false }).countDocuments();
+        const rejecteds = await shopModel.find({ courier: req?.courier?.id, verified: false, courier_status: 'reject', }).countDocuments();
         const delivereds = await shopModel.find({ courier: req?.courier?.id, status: 'delivered', courier_status: 'delivered', verified: false }).countDocuments();
         res.send({
             ok: true,
@@ -70,7 +70,7 @@ module.exports = {
                 phone: e?.phone,
                 operator_name: e?.operator?.name,
                 operator_phone: e?.operator?.phone,
-                location: regions?.find(r => r?.id === e?.region).name + ' ' + e?.city,
+                location: regions?.find(r => r?.id === e?.region)?.name + ' ' + e?.city,
                 product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,
                 about: e?.about || "Opertor izoh qo'ymagan",
@@ -79,6 +79,7 @@ module.exports = {
                 delivery_price: e?.delivery_price,
                 courier_comment: e?.courier_comment,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
+                old_order: e?.old_order
             });
         });
         res.send({
@@ -148,7 +149,7 @@ module.exports = {
                 phone: e?.phone,
                 operator_name: e?.operator?.name,
                 operator_phone: e?.operator?.phone,
-                location: regions?.find(r => r?.id === e?.region).name + ' ' + e?.city,
+                location: regions?.find(r => r?.id === e?.region)?.name + ' ' + e?.city,
                 product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,
                 about: e?.about || "Opertor izoh qo'ymagan",
@@ -157,7 +158,8 @@ module.exports = {
                 delivery_price: e?.delivery_price,
                 courier_comment: e?.courier_comment,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
-                up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm")
+                up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm"),
+                old_order: e?.old_order
             });
         });
         res.send({
@@ -176,7 +178,7 @@ module.exports = {
                 phone: e?.phone,
                 operator_name: e?.operator?.name,
                 operator_phone: e?.operator?.phone,
-                location: regions?.find(r => r?.id === e?.region).name + ' ' + e?.city,
+                location: regions?.find(r => r?.id === e?.region)?.name + ' ' + e?.city,
                 product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,
                 about: e?.about || "Operator izoh yozmagan",
@@ -186,7 +188,8 @@ module.exports = {
                 courier_comment: e?.courier_comment,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                 up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm"),
-                recontact: moment.unix(e?.recontact).format("DD.MM.YYYY")
+                recontact: moment.unix(e?.recontact).format("DD.MM.YYYY"),
+                old_order: e?.old_order
             });
         });
         res.send({
@@ -205,7 +208,7 @@ module.exports = {
                 phone: e?.phone,
                 operator_name: e?.operator?.name,
                 operator_phone: e?.operator?.phone,
-                location: regions?.find(r => r?.id === e?.region).name + ' ' + e?.city,
+                location: regions?.find(r => r?.id === e?.region)?.name + ' ' + e?.city,
                 product: e?.title || e?.product?.title,
                 product_id: e?.product?.id,
                 about: e?.about || "Operator izoh yozmagan",
@@ -215,7 +218,8 @@ module.exports = {
                 courier_comment: e?.courier_comment,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                 up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm"),
-                recontact: moment.unix(e?.recontact).format("DD.MM.YYYY")
+                recontact: moment.unix(e?.recontact).format("DD.MM.YYYY"),
+                old_order: e?.old_order
             });
         });
         res.send({

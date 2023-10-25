@@ -26,7 +26,7 @@ module.exports = {
                 title,
                 about,
                 image: filePath,
-                start: (moment.now()/1000 + (start * 86400)),
+                start: (moment.now() / 1000 + (start * 86400)),
                 end
             }).save().then(() => {
                 image.mv(`.${filePath}`);
@@ -91,12 +91,12 @@ module.exports = {
         try {
             const c = (await competitionModel.find()).reverse()
             const $c = c[0];
-            if (!$c) {
+            if (!$c || $c?.end < (moment.now() / 1000)) {
                 res.send({
                     pk: true,
                     competition: {},
                     data: []
-                })
+                });
             } else {
                 const $users = await userModel.find();
                 const $modlist = [];

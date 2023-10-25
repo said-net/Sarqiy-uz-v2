@@ -2,20 +2,22 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
-import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, Input, Option, Select, Spinner, Textarea } from "@material-tailwind/react";
+import { Button, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, IconButton, Input, Option, Select, Spinner, Textarea } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "../managers/refresh.manager";
-import { BiUser } from "react-icons/bi";
+import { BiNews, BiTransfer, BiUser } from "react-icons/bi";
 function RejectedOrders() {
     const [orders, setOrders] = useState([]);
     const [isLoad, setIsLoad] = useState(false);
     const dp = useDispatch();
     const { refresh } = useSelector(e => e.refresh)
-    const [edit, setEdit] = useState({ _id: '', status: '', about: '', name: '' });
+    const [edit, setEdit] = useState({ _id: '', status: '', about: '', name: '', on_base: false, });
     const [checked, setChecked] = useState(false);
+
     function Close() {
-        setEdit({ _id: '', status: '', about: '' })
+        setEdit({ _id: '', status: '', about: '', on_base: false, })
     }
+    // 
     useEffect(() => {
         setIsLoad(false);
         axios(`${API_LINK}/operator/get-rejected-orders`, {
@@ -34,6 +36,7 @@ function RejectedOrders() {
             toast.error("Aloqani tekshirib qayta urinib ko'ring!")
         })
     }, [refresh]);
+    // 
     function Submit() {
         axios.post(`${API_LINK}/operator/set-status/${edit?._id}`, edit, {
             headers: {
@@ -45,10 +48,29 @@ function RejectedOrders() {
                 toast.error(msg);
             } else {
                 toast.success(msg);
-                setEdit({ _id: '', status: '', about: '', name: '' });
+                setEdit({ _id: '', status: '', about: '', name: '', on_base: false });
                 dp(setRefresh());
             }
         })
+    }
+    // 
+    const [newId, setNewId] = useState({ orderId: '', newId: '' });
+    // 
+    function Transfer() {
+        axios.post(`${API_LINK}/operator/set-new-order/`, newId, {
+            headers: {
+                'x-auth-token': `Bearer ${localStorage.getItem('access')}`
+            }
+        }).then((res) => {
+            const { ok, msg } = res.data;
+            if (!ok) {
+                toast.error(msg);
+            } else {
+                toast.success(msg);
+                setNewId({ orderId: '', newId: '' })
+                dp(setRefresh());
+            }
+        });
     }
     return (
         <div className="flex items-start justify-center flex-wrap w-full">
@@ -63,6 +85,14 @@ function RejectedOrders() {
                 orders?.map((o, i) => {
                     return (
                         <div key={i} className="flex items-start justify-start flex-col w-[90%] sm:w-[300px] m-[5px] overflow-hidden p-[10px] bg-white shadow-sm hover:shadow-md rounded">
+                            <div className="flex items-center justify-between w-full">
+                                <Button className="rounded p-[5px_10px]" color={o?.on_base ? 'red' : 'green'}>
+                                    {o?.on_base ? "Bazada" : "Kuryerda"}
+                                </Button>
+                                {!o?.on_base && <IconButton onClick={() => setNewId({ newId: '', orderId: String(o?.id) })} className="w-[30px] h-[30px] rounded-full text-[18px]" color="red">
+                                    <BiTransfer />
+                                </IconButton>}
+                            </div>
                             {/*  */}
                             <p className="text-[15px]"><b>#id:</b> {o?.id} /<b>Sana:</b>  {o?.created}</p>
                             {/*  */}
@@ -78,6 +108,8 @@ function RejectedOrders() {
                             {/*  */}
                             <p className="text-[15px]"><b>Narxi:</b> {Number(o?.price)?.toLocaleString()} so'm</p>
                             {/*  */}
+                            <p className="text-[15px]"><b>Operator:</b> <span>{o?.operator_name} | {o?.operator_phone}</span></p>
+                            {/*  */}
                             <p className="text-[15px]"><b>Izoh:</b> <span className="text-green-500">{o?.about}</span></p>
                             <p className="text-[15px]"><b>Kuryer:</b> <span>{o?.courier_name} | {o?.courier_phone}</span></p>
                             {/*  */}
@@ -85,11 +117,12 @@ function RejectedOrders() {
                             {/*  */}
                             <p className="text-[15px]"><b>Yangilanish:</b> <span >{o?.up_time}</span></p>
                             {/*  */}
-                            <Button color="red" fullWidth className="rounded" onClick={() => setEdit({ ...edit, _id: o?._id, name: o?.name })}>Taxrirlash</Button>
+                            <Button color="red" fullWidth className="rounded" onClick={() => setEdit({ ...edit, _id: o?._id, name: o?.name, on_base: o?.on_base })}>Taxrirlash</Button>
                         </div>
                     )
                 })
             }
+            {/*  */}
             <Dialog size="xxl" open={edit?._id !== ''} className="flex items-center justify-center flex-col bg-[#0b091c86] backdrop-blur-sm">
                 <div className="flex items-center justify-start flex-col w-[90%] sm:w-[500px] bg-white p-[10px] rounded ">
                     <DialogHeader className="w-full">
@@ -99,7 +132,7 @@ function RejectedOrders() {
                         <div className="flex items-center justify-center w-full mb-[10px]">
                             <Select label="Buyurtma holatini tanlang!" variant="standard" onChange={(e) => setEdit({ ...edit, status: e })} value={edit?.status}>
                                 <Option value="archive">Arxiv</Option>
-                                <Option value="sended">Dostavkaga</Option>
+                                <Option value={`${edit?.on_base ? 'to_delivery' : 'sended'}`}>Dostavkaga</Option>
                             </Select>
                         </div>
                         <div className="flex items-center justify-center w-full mb-[10px]">
@@ -117,6 +150,27 @@ function RejectedOrders() {
                         <Button className="rounded" disabled={!checked || !edit?.about} color="green" onClick={Submit}>Saqlash</Button>
                     </DialogFooter>
                 </div>
+            </Dialog>
+            {/*  */}
+            <Dialog size="md" open={newId?.orderId !== ''}>
+                <DialogHeader>
+                    <p className="text-[16px]">Yangi ID biriktirish</p>
+                </DialogHeader>
+                <DialogBody>
+                    <div className="flex items-center justify-center w-full mb-[10px]">
+                        <Input label="Order ID" value={newId?.orderId} variant="standard" color="red" icon={<BiNews />} />
+                    </div>
+                    <div className="flex items-center justify-center w-full">
+                        <Input label="Yangi ID" value={newId?.newId} variant="standard" color="red" type="number" onChange={(e => setNewId({ ...newId, newId: e?.target?.value?.trim() }))} icon={<BiNews />} />
+                    </div>
+                </DialogBody>
+                <DialogFooter className="flex items-center justify-between">
+                    {/*  */}
+                    <Button className="rounded" color="orange" onClick={() => setNewId({ newId: '', orderId: '' })}>Ortga</Button>
+                    {/*  */}
+                    <Button className="rounded" color="green" disabled={!newId?.orderId || !newId?.newId} onClick={Transfer}>Saqlash</Button>
+                    {/*  */}
+                </DialogFooter>
             </Dialog>
         </div>
     );

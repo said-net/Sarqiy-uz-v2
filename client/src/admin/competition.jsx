@@ -36,7 +36,7 @@ function Competition() {
                 {isLoad && competiton?.title &&
                     <>
                         <div className="flex items-center justify-start flex-col w-full mb-[10px]">
-                            <img src={competiton?.image} alt="rasm" />
+                            <img src={competiton?.image} alt="rasm" className="rounded-[10px]" />
                             <p className="text-[25px] w-full text-start border-b">{competiton.title}</p>
                             <p className="w-full text-start border-b text-[14px]">{competiton.about}</p>
                         </div>

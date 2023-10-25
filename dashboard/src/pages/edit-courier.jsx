@@ -1,6 +1,6 @@
 import { Button, Input, Option, Select } from "@material-tailwind/react";
 import { useState } from "react";
-import { FaLock, FaPhone, FaUser } from "react-icons/fa";
+import { FaLock, FaPhone, FaTelegram, FaUser } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -8,9 +8,9 @@ import { API_LINK } from "../config";
 import Regions from '../components/regions.json';
 import { useNavigate, useParams } from "react-router-dom";
 function EditCourier() {
-    const { name, phone, region, id } = useParams();
+    const { name, phone, region, id, telegram } = useParams();
     console.log(region);
-    const [state, setState] = useState({ name, phone, password: '', region, id });
+    const [state, setState] = useState({ name, phone, password: '', region, id, telegram: telegram === 'undefined' ? '' : telegram });
     const nv = useNavigate();
     function Submit() {
         const { name, phone } = state
@@ -50,6 +50,9 @@ function EditCourier() {
                 </div>
                 <div className="flex items-center justify-start w-full mb-[10px]">
                     <Input label="Parol kiriting!" variant="standard" onChange={e => setState({ ...state, password: e.target.value.trim() })} value={state.password} icon={<FaLock />} required />
+                </div>
+                <div className="flex items-center justify-start w-full mb-[10px]">
+                    <Input label="Telegram ID" variant="standard" onChange={e => setState({ ...state, telegram: e.target.value.trim() })} value={state.telegram} icon={<FaTelegram />} required />
                 </div>
                 <div className="flex items-center justify-start w-full mb-[10px]">
                     <Select label="Hududni tanlang" value={state?.region} variant="standard" onChange={e => setState({ ...state, region: e })}>

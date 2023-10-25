@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { API_LINK } from "../config";
 import { toast } from "react-toastify";
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Input, Option, Select, Spinner, Textarea } from "@material-tailwind/react";
-import { BiSearch } from "react-icons/bi";
+import { BiRightArrowCircle, BiSearch } from "react-icons/bi";
 import { setRefresh } from "../managers/refresh.manager";
 
 function GetMyOrders() {
@@ -73,6 +73,13 @@ function GetMyOrders() {
                             orders?.filter(o => !search ? o : o?.id === +search || o?.phone?.includes(search))?.map((o, i) => {
                                 return (
                                     <div key={i} className="flex items-start justify-start flex-col w-[100%] sm:w-[300px] bg-white shadow-sm p-[10px] rounded m-[5px] relative">
+                                        {o?.old_order &&
+                                            <Button color="green" className="p-[5px_10px] flex items-center justify-center">
+                                                {o?.old_order}
+                                                {" -> "}
+                                                {o?.id}
+                                            </Button>
+                                        }
                                         <p className="text-[14px]"><b>ID:</b> {o?.id} / <b>Sana:</b> {o?.created}</p>
                                         <p className="text-[14px]"><b>Mijoz:</b> {o?.name} | {o?.phone}</p>
                                         <p className="text-[14px]"><b>Manzili:</b> {o?.location}</p>

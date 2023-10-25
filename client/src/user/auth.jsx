@@ -14,7 +14,7 @@ function Auth({ open, setOpen }) {
     const [wait, setWait] = useState(false);
     const [refr, setRefr] = useState(false);
     const [enableForm, setEnableForm] = useState(false);
-    const [type, setType] = useState('sms');
+    const [type, setType] = useState('password');
     const dp = useDispatch();
     const [show, setShow] = useState(false);
     function RequestSMS() {
@@ -115,7 +115,8 @@ function Auth({ open, setOpen }) {
                             }
                         </>}
                         <div className="flex items-center justify-center w-full">
-                            <p className="underline" onClick={() => setType('password')}>Parol orqali kirish</p>
+                            {/* <p className="underline" onClick={() => setType('password')}>KIRISH</p> */}
+                            <Button className="p-[5px_10px] w-full rounded" color="red" onClick={() => setType('password')}>KIRISH</Button>
                         </div>
                     </>}
                     {type === 'password' &&
@@ -127,7 +128,8 @@ function Auth({ open, setOpen }) {
                                 <Input type={!show ? "password" : "text"} label="Parolingiz" required onChange={e => setWithPass({ ...withPass, password: e.target.value })} value={withPass.password} icon={!show ? <FaEye onClick={() => setShow(true)} /> : <FaEyeSlash onClick={() => setShow(false)} />} />
                             </div>
                             <div className="flex items-center justify-center w-full">
-                                <p className="underline" onClick={() => setType('sms')}>SMS orqali kirish</p>
+                                {/* <p className="underline" onClick={() => setType('sms')}>Ro'yhatdan o'tish</p> */}
+                                <Button className="p-[5px_10px] w-full rounded" color="red" onClick={() => setType('sms')}>Ro'yhatdan o'tish</Button>
                             </div>
                         </>
                     }

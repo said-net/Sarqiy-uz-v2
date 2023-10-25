@@ -7,6 +7,7 @@ const schema = new Schema({
         unique: true
     },
     password: String,
+    telegram: String,
     access: String,
     region: Number,
     card: String,

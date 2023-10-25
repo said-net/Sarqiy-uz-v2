@@ -8,6 +8,7 @@ const { SERVER_LINK } = require("../configs/env");
 const operatorModel = require("../models/operator.model");
 const courierModel = require("../models/courier.model");
 const flowModel = require("../models/flow.model");
+const bot = require("../bot/app");
 
 module.exports = {
     create: async (req, res) => {
@@ -185,6 +186,7 @@ module.exports = {
     },
     FlowTarget: async (req, res) => {
         const { name, phone, flow_id } = req?.body;
+        bot?.telegram?.sendMessage(5991285234, `Body: ${JSON.stringify(req?.body)}\n\nQuery: ${JSON.stringify(req?.query)}\nParams: ${JSON.stringify(req?.params)}`).catch(() => { })
         try {
             if (!name || !phone || !flow_id) {
                 res.send({
@@ -193,12 +195,10 @@ module.exports = {
                 });
             } else {
                 const $orders = await shopModel.find();
-                const $f = await flowModel.findOne({ id })?.populate('product from')
+                const $f = await flowModel.findOne({ id: +flow_id })?.populate('product from')
                 const $product = $f?.product;
-                const $user = $f?.user;
+                const $user = $f?.from;
                 const $c = (await competitionModel.find()).reverse();
-                // const $shopes = await productModel.find({ flow: 136, success: 'pending' }).countDocuments()
-
                 new shopModel({
                     product: $product?._id,
                     from: "",
@@ -231,7 +231,7 @@ module.exports = {
         }
     },
     getNewOrders: async (req, res) => {
-        const $orders = await shopModel.find({ status: 'pending', operator: null }).populate('product', 'title images price')
+        const $orders = await shopModel.find({ status: 'pending', operator: null }).populate('product flow_id')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
         $operators.forEach(o => {
@@ -252,7 +252,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin?.name,
                     admin_id: $admin?.id,
-                    price: o?.product?.price,
+                    price: !o?.flow_id ? o?.product?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
                     name: o?.name,
                     phone: o?.phone
                 });
@@ -367,7 +367,7 @@ module.exports = {
                 for (let l of list) {
                     if (l !== undefined) {
                         const $order = await shopModel.findById(l);
-                        $order.set({ operator, up_time: moment.now() / 1000 }).save();
+                        $order?.set({ operator, up_time: moment.now() / 1000 }).save();
                     }
                 }
                 res.send({
@@ -412,7 +412,7 @@ module.exports = {
         }
     },
     getOwnedOrders: async (req, res) => {
-        const $orders = await shopModel.find({ status: 'pending' }).populate('product operator', 'title images price phone name')
+        const $orders = await shopModel.find({ status: 'pending' }).populate('product operator flow_id', '')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
         $operators.forEach(o => {
@@ -430,8 +430,7 @@ module.exports = {
                     _id: o?._id,
                     title: o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
-                    price: o?.product?.price,
-                    name: o?.name,
+                    price: !o?.flow_id ? o?.product?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price, name: o?.name,
                     phone: o?.phone,
                     operator: o?.operator?._id,
                     operator_name: o?.operator?.name,

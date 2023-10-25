@@ -94,11 +94,16 @@ function Product() {
                                 )
                             })}
                         </div>
-                        <Carousel autoplay loop navigation={false} className="rounded-xl sm:w-[500px] md:hidden">
+                        {/* <Carousel autoplay loop navigation={false} className="rounded-xl sm:w-[500px] md:hidden">
                             {product?.images?.map((i, k) => {
                                 return (<img src={i} alt={k} key={k} className="h-full w-full object-cover" />)
                             })}
-                        </Carousel>
+                        </Carousel> */}
+                        <div className="flex items-center justify-start sm:w-[500px] md:hidden rounded-xl overflow-x-scroll snap-x snap-mandatory">
+                            {product?.images?.map((i, k) => {
+                                return (<img src={i} alt={k} key={k} className="h-full w-full object-cover snap-starts" />)
+                            })}
+                        </div>
                         {!likes?.includes(p?.id) && <FaRegHeart onClick={() => setLike(p?.id)} className={`absolute top-[10px]  right-[10px] text-red-500 text-[20px]`} />}
 
                         {likes?.includes(p?.id) && <FaHeart onClick={() => setLike(p?.id)} className={`absolute top-[10px] right-[10px]  text-red-500 text-[20px]`} />}

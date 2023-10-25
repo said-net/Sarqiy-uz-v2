@@ -43,8 +43,8 @@ function Navbar() {
     }, []);
     return (
         <>
-            <div className="h-[70px] mb-[60px] md:mb-[0]"></div>
-            <div className="flex items-center justify-start w-full h-[150px] md:h-[90px] fixed top-0 left-0 z-[2] flex-col">
+            <div className={`h-[70px] mb-[60px] md:mb-[0]  ${pathname?.includes('link') ? 'hidden' : 'flex'}`}></div>
+            <div className={`${pathname?.includes('link') ? 'hidden' : 'flex'} items-center justify-start w-full h-[150px] md:h-[90px] fixed top-0 left-0 z-[2] flex-col`}>
                 <div className="flex items-center justify-center w-full h-[30px] bg-gray-100"></div>
                 {/* KOMP */}
                 <nav className="bg-white w-full h-[60px] flex items-center justify-between p-[0_2%] rounded-[0_0_10px_10px] max-w-[1256px]">
@@ -60,7 +60,7 @@ function Navbar() {
                     <div className="hidden md:flex items-center justify-center w-[55%]">
                         <Popover open={openPopover} handler={setOpenPopover}>
                             <PopoverHandler {...triggers}>
-                                <p className="flex items-center justify-center h-[40px] w-[120px] bg-red-50 rounded cursor-pointer hover:bg-red-100 duration-200 text-red-700">
+                                <p className="flex items-center justify-center h-[40px] w-[120px] bg-red-50 cursor-pointer hover:bg-red-100 duration-200 text-red-700 rounded-full">
                                     <BiCategory />
                                     Katalog
                                 </p>
@@ -82,8 +82,8 @@ function Navbar() {
                             </PopoverContent>
                         </Popover>
                         <div className="flex items-center justify-center relative w-full ">
-                            <input value={search} type="text" className="border border-gray-300 p-[0_30px_0_10px] h-[40px] rounded mx-[10px] w-full" placeholder="Qidiruv..." onChange={e => setSearch(e.target.value)} onKeyPress={e => e.key === 'Enter' && nv(`/search/${search}`)} />
-                            <button className="w-[60px] h-[38px] absolute right-[11px] rounded text-[16px] bg-gray-100 text-black flex items-center justify-center" onClick={() => nv('/search/' + search)}>
+                            <input value={search} type="text" className="border border-gray-300 p-[0_30px_0_10px] h-[40px] rounded-full mx-[10px] w-full" placeholder="Qidiruv..." onChange={e => setSearch(e.target.value)} onKeyPress={e => e.key === 'Enter' && nv(`/search/${search}`)} />
+                            <button className="w-[60px] h-[38px] absolute right-[11px] rounded-full text-[16px] bg-gray-100 text-black flex items-center justify-center" onClick={() => nv('/search/' + search)}>
                                 <FaSearch />
                             </button>
                         </div>
@@ -92,36 +92,36 @@ function Navbar() {
                     <div className="flex items-center justify-center">
                         {/* AUTH */}
                         {!id ?
-                            <p className="hover:bg-gray-100 p-[10px] rounded items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => setOpenAuth(true)}>
+                            <p className="hover:bg-gray-100 p-[10px] rounded-full items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => setOpenAuth(true)}>
                                 <BiUser className="text-[20px] mr-[10px] " />
                                 Kirish
                             </p>
                             :
-                            <p className="hover:bg-gray-100 p-[10px] rounded items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => nv('/profile')}>
+                            <p className="hover:bg-gray-100 p-[10px] rounded-full items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => nv('/profile')}>
                                 <BiUser className="text-[20px] mr-[10px] " />
                                 Profil
                             </p>
                         }
                         {/* SAVED */}
                         {!id ?
-                            <p className="hover:bg-gray-100 p-[10px] rounded items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => setOpenAuth(true)}>
+                            <p className="hover:bg-gray-100 p-[10px] rounded-full items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => setOpenAuth(true)}>
                                 <BiHeart className="text-[20px] mr-[10px] " />
                                 Saqlanganlar
                             </p>
                             :
-                            <p className="hover:bg-gray-100 p-[10px] rounded items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => nv('/profile?page=saved')}>
+                            <p className="hover:bg-gray-100 p-[10px] rounded-full items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => nv('/profile?page=saved')}>
                                 <BiHeart className="text-[20px] mr-[10px] " />
                                 Saqlanganlar
                             </p>
                         }
                         {/* DASHBOARD */}
                         {!id ?
-                            <p className="hover:bg-gray-100 p-[10px] rounded items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => setOpenAuth(true)}>
+                            <p className="hover:bg-gray-100 p-[10px] rounded-full items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => setOpenAuth(true)}>
                                 <BiShoppingBag className="text-[20px] mr-[10px] " />
                                 Admin
                             </p>
                             :
-                            <p className="hover:bg-gray-100 p-[10px] rounded items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => nv('/dashboard')}>
+                            <p className="hover:bg-gray-100 p-[10px] rounded-full items-center justify-center cursor-pointer text-[0] xl:text-[16px] flex" onClick={() => nv('/dashboard')}>
                                 <BiShoppingBag className="text-[20px] mr-[10px] " />
                                 Admin
                             </p>
@@ -137,7 +137,7 @@ function Navbar() {
                     </div>
                 </div>
             </div>
-            <div className="flex sm:hidden items-center justify-center w-full h-[50px] fixed bottom-0 left-0 z-[2]">
+            <div className={`sm:hidden items-center justify-center w-full h-[50px] fixed bottom-0 left-0 z-[2] ${pathname?.includes('link') ? 'hidden' : 'flex'}`}>
                 <div className="bg-white w-full h-[50px] flex items-center justify-between p-[0_2%] rounded-[10px_10px_0_0] border-t max-w-lg">
                     <div className="flex items-center justify-center flex-col">
                         {pathname !== '/' && <GoHome className="text-[30px] cursor-pointer" onClick={() => nv('/')} />}
@@ -145,11 +145,11 @@ function Navbar() {
                         <p className="text-[12px]">Asosiy</p>
                     </div>
                     {/*  */}
-                    <div className="flex items-center justify-center flex-col">
+                    {/* <div className="flex items-center justify-center flex-col">
                         {pathname !== '/videos' && <MdOutlineVideoLibrary className="text-[30px] cursor-pointer" onClick={() => nv('/videos')} />}
                         {pathname === '/videos' && <MdVideoLibrary className="text-[30px] cursor-pointer" onClick={() => nv('/videos')} />}
                         <p className="text-[12px]">Video</p>
-                    </div>
+                    </div> */}
                     {/*  */}
                     <div className="flex items-center justify-center flex-col">
                         {pathname !== '/categories' && <BiCategory className="text-[30px] cursor-pointer" onClick={() => nv('/categories')} />}
@@ -170,7 +170,7 @@ function Navbar() {
                 </div>
             </div>
             {/* MENU */}
-            <div className={`flex items-center justify-start flex-col w-[300px] h-[100vh] fixed top-0 ${openMenu ? "left-0" : "left-[-300px]"} duration-300 z-[999] bg-white`}>
+            <div className={`items-center justify-start flex-col w-[300px] h-[100vh] fixed top-0 ${openMenu ? "left-0" : "left-[-300px]"} duration-300 z-[999] bg-white ${pathname?.includes('link') ? 'hidden' : 'flex'}`}>
                 <div className="flex items-center justify-between w-full h-[70px] p-[10px] border-b">
                     <div className="flex items-center justify-center h-[50px] overflow-y-hidden w-[50%]">
                         <img src={Logo} alt="" />

@@ -411,7 +411,7 @@ module.exports = {
         })
     },
     createCourier: async (req, res) => {
-        const { name, phone, password, region } = req.body;
+        const { name, phone, password, region, telegram } = req.body;
         if (!name || !phone || !password || !region) {
             res.send({
                 ok: false,
@@ -434,7 +434,8 @@ module.exports = {
                 name,
                 phone,
                 password: md5(password),
-                region
+                region,
+                telegram
             }).save().then(() => {
                 res.send({
                     ok: true,
@@ -449,7 +450,7 @@ module.exports = {
         }
     },
     editCourier: async (req, res) => {
-        const { id, name, phone, password, region } = req.body;
+        const { id, name, phone, password, region, telegram } = req.body;
         if (!name || !phone || !region) {
             res.send({
                 ok: false,
@@ -463,7 +464,7 @@ module.exports = {
         } else {
             const $courier = await courierModel.findById(id);
             if (!password) {
-                $courier.set({ name, phone, region }).save().then(() => {
+                $courier.set({ name, phone, region, telegram }).save().then(() => {
                     res.send({
                         ok: true,
                         msg: "Bajarildi!"
@@ -475,7 +476,7 @@ module.exports = {
                     });
                 })
             } else {
-                $courier.set({ name, phone, region, password: md5(password) }).save().then(() => {
+                $courier.set({ name, phone, region, password: md5(password), telegram }).save().then(() => {
                     res.send({
                         ok: true,
                         msg: "Bajarildi!"
@@ -497,7 +498,8 @@ module.exports = {
                 id: c?._id,
                 name: c?.name,
                 phone: c?.phone,
-                region: c?.region
+                region: c?.region,
+                telegram: c?.telegram
             });
         });
         res.send({
@@ -534,7 +536,7 @@ module.exports = {
         }
     },
     getSendedOrders: async (req, res) => {
-        const $orders = await shopModel.find({ status: 'sended', courier_status: 'sended', verified: false }).populate('product operator courier', 'title images price name phone region')
+        const $orders = await shopModel.find({ status: 'sended', courier_status: 'sended', verified: false }).populate('product operator courier flow_id')
         const $couriers = await courierModel.find();
         const $mcouriers = [];
         $couriers.forEach(o => {
@@ -554,7 +556,7 @@ module.exports = {
                 image: SERVER_LINK + o?.product?.images[0],
                 admin: $admin?.name,
                 admin_id: $admin?.id,
-                price: o?.product?.price,
+                price: !o?.flow_id ? o?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
                 name: o?.name,
                 phone: o?.phone,
                 courier_id: o?.courier?._id,
@@ -572,7 +574,7 @@ module.exports = {
         })
     },
     getArchivedOrders: async (req, res) => {
-        const $orders = await shopModel.find({ status: 'archive' }).populate('product operator courier', 'title images price name phone region')
+        const $orders = await shopModel.find({ status: 'archive' }).populate('product operator courier flow_id')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
         // 
@@ -598,7 +600,7 @@ module.exports = {
                 image: SERVER_LINK + o?.product?.images[0],
                 admin: $admin?.name,
                 admin_id: $admin?.id,
-                price: o?.product?.price,
+                price: !o?.flow_id ? o?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
                 name: o?.name,
                 phone: o?.phone,
                 operator: o?.operator?.name,
@@ -612,7 +614,7 @@ module.exports = {
         })
     },
     getHistoryOrders: async (req, res) => {
-        const $orders = await shopModel.find().populate('product operator courier', 'title images price name phone region')
+        const $orders = await shopModel.find().populate('product operator courier flow_id')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
         // 
@@ -649,7 +651,7 @@ module.exports = {
                 image: SERVER_LINK + o?.product?.images[0],
                 admin: $admin?.name,
                 admin_id: $admin?.id,
-                price: o?.product?.price,
+                price: !o?.flow_id ? o?.product?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
                 name: o?.name,
                 phone: o?.phone,
                 courier: o?.courier?.name,
@@ -674,7 +676,7 @@ module.exports = {
         });
     },
     getRecontactOrders: async (req, res) => {
-        const $orders = await shopModel.find({ status: 'wait' }).populate('product operator', 'title images price name phone region')
+        const $orders = await shopModel.find({ status: 'wait' }).populate('product operator flow_id')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
         $operators.forEach(o => {
@@ -695,7 +697,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     // admin: $admin.name,
                     // admin_id: $admin.id,
-                    price: o?.product?.price,
+                    price: !o?.flow_id ? o?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
                     about: o?.about,
                     name: o?.name,
                     phone: o?.phone,
@@ -711,7 +713,7 @@ module.exports = {
                     // admin: '',
                     // admin_id: '',
                     about: o?.about,
-                    price: o?.product?.price,
+                    price: o?.price,
                     name: o?.name,
                     phone: o?.phone,
                     operator: o?.operator?.name,
@@ -726,7 +728,7 @@ module.exports = {
         })
     },
     getRejectedOrders: async (req, res) => {
-        const $orders = await shopModel.find({ courier_status: 'reject', verified: false }).populate('product operator courier', 'title images price name phone region')
+        const $orders = await shopModel.find({ courier_status: 'reject', verified: false }).populate('product operator courier flow_id')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
         $operators.forEach(o => {
@@ -756,7 +758,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin.name,
                     admin_id: $admin.id,
-                    price: o?.product?.price,
+                    price: !o?.flow_id ? o?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
                     name: o?.name,
                     phone: o?.phone,
                     courier_id: o?.courier?._id,
@@ -774,7 +776,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: '',
                     admin_id: '',
-                    price: o?.product?.price,
+                    price: o?.price,
                     name: o?.name,
                     phone: o?.phone,
                     courier_id: o?.courier?._id,
@@ -793,7 +795,7 @@ module.exports = {
         })
     },
     getDeliveredOrders: async (req, res) => {
-        const $orders = await shopModel.find({ courier_status: 'delivered', verified: false }).populate('product operator courier', 'title images price name phone region');
+        const $orders = await shopModel.find({ courier_status: 'delivered', verified: false }).populate('product operator courier flow_id');
         const $couriers = await courierModel.find();
         const $mcouriers = [];
         $couriers.forEach(o => {
@@ -814,7 +816,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin.name,
                     admin_id: $admin.id,
-                    price: o?.product?.price,
+                    price: !o?.flow_id ? o?.product?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price, name: o?.name,
                     name: o?.name,
                     phone: o?.phone,
                     delivery_price: o?.delivery_price,
@@ -833,7 +835,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: '',
                     admin_id: '',
-                    price: o?.product?.price,
+                    price: o?.price,
                     name: o?.name,
                     phone: o?.phone,
                     delivery_price: o?.delivery_price,
@@ -953,7 +955,7 @@ module.exports = {
     },
     searchHistoryOrders: async (req, res) => {
         const { type, search } = req?.params;
-        const $orders = await (type === 'id' ? shopModel.find({ id: +search }) : shopModel.find()).populate('product operator courier', 'title images price name phone region')
+        const $orders = await (type === 'id' ? shopModel.find({ id: +search }) : shopModel.find()).populate('product operator courier flow_id')
         const $operators = await operatorModel.find({ hidden: false });
         const $modopers = [];
 
@@ -989,7 +991,7 @@ module.exports = {
                         admin: $admin?.name,
                         admin_id: $admin?.id,
                         count: o?.count || 0,
-                        price: (o?.price || o?.product?.price) * (o?.count || 0),
+                        price: !o?.flow_id ? (o?.price || o?.product?.price) : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
                         name: o?.name,
                         phone: o?.phone,
                         about: o?.about,

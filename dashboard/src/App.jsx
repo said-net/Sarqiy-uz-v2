@@ -85,7 +85,7 @@ function App() {
             {/*  */}
             <Route path="/couriers" element={<Couriers />} />
             <Route path="/add-courier" element={<AddCourier />} />
-            <Route path="/edit-courier/:id/:name/:phone/:region" element={<EditCourier />} />
+            <Route path="/edit-courier/:id/:name/:phone/:region/:telegram" element={<EditCourier />} />
             {/*  */}
             <Route path="/new-orders" element={<NewOrders />} />
             <Route path="/wait-orders" element={<WaitOrders />} />

@@ -112,7 +112,6 @@ module.exports = {
                         $transfers.forEach(t => {
                             coins += t?.coin;
                         });
-
                         //hold
                         const $holds = await shopModel.find({ flow: $user.id, status: 'sended' });
                         let hold_balance = 0;

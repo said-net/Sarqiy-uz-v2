@@ -25,3 +25,5 @@ module.exports = require('express').Router()
     .put('/edit-order/:id', authMiddleware.operator, operatorController.editOrder)
     .get('/search-base/:search', authMiddleware.operator, operatorController.searchOrder)
     .get('/get-history-user/:phone', authMiddleware.operator, operatorController.getHistoryUser)
+    // 
+    .post('/set-new-order', authMiddleware.operator, operatorController.setNewOrder)

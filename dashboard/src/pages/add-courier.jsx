@@ -1,6 +1,6 @@
 import { Button, Input, Option, Select } from "@material-tailwind/react";
 import { useState } from "react";
-import { FaLock, FaPhone, FaUser } from "react-icons/fa";
+import { FaLock, FaPhone, FaTelegram, FaUser } from "react-icons/fa";
 import { setRefresh } from "../managers/refresh.manager";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ import axios from "axios";
 import { API_LINK } from "../config";
 import Regions from '../components/regions.json';
 function AddCourier() {
-    const [state, setState] = useState({ name: '', phone: '+998', password: '', region: '' });
+    const [state, setState] = useState({ name: '', phone: '+998', password: '', region: '', telegram: '' });
     const dp = useDispatch();
     function Submit() {
         const { name, phone, password } = state
@@ -23,7 +23,7 @@ function AddCourier() {
                 const { ok, msg } = res.data;
                 if (ok) {
                     dp(setRefresh());
-                    setState({ name: '', phone: '+998', password: '' });
+                    setState({ name: '', phone: '+998', password: '', telegram: '' });
                     toast.success(msg)
                 } else {
                     toast.error(msg)
@@ -47,6 +47,9 @@ function AddCourier() {
                 </div>
                 <div className="flex items-center justify-start w-full mb-[10px]">
                     <Input label="Parol kiriting!" variant="standard" onChange={e => setState({ ...state, password: e.target.value.trim() })} value={state.password} icon={<FaLock />} required />
+                </div>
+                <div className="flex items-center justify-start w-full mb-[10px]">
+                    <Input label="Telegram ID" variant="standard" onChange={e => setState({ ...state, telegram: e.target.value.trim() })} value={state.telegram} icon={<FaTelegram />} required />
                 </div>
                 <div className="flex items-center justify-start w-full mb-[10px]">
                     <Select label="Hududni tanlang" value={state?.region} variant="standard" onChange={e => setState({ ...state, region: e })}>
