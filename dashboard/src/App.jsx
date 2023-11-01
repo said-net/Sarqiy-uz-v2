@@ -41,6 +41,7 @@ import GetStatOpers from "./pages/get-stat-opers";
 import MainMenu from "./pages/main";
 import Competitions from "./pages/competitions";
 import CompetitionGetOne from "./pages/get-competition-one";
+import GetAdminPays from "./pages/get-admin-pays";
 function App() {
   const { refresh, phone, owner } = useSelector(e => e.auth);
   const dp = useDispatch();
@@ -102,6 +103,7 @@ function App() {
             <Route path="/pay-operators" element={<GetOperatorPays />} />
             {/*  */}
             <Route path="/users" element={<Users />} />
+            <Route path="/admin-pays" element={<GetAdminPays />} />
             <Route path="/stat-users" element={<GetStatUsers />} />
             <Route path="/stat-opers" element={<GetStatOpers />} />
             <Route path="/race" element={<Races />} />

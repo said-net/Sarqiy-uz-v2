@@ -79,7 +79,7 @@ function AdminMain() {
                         So'rovlar
                     </Link>
                     {/*  */}
-                    <Link onClick={() => window.open('https://t.me/Sharqiybot?start=pay')} className={`${linkClass}`}>
+                    <Link to='/dashboard/request-pay' className={`${linkClass} ${p === '/dashboard/request-pay' && linkActive}`}>
                         <FaMoneyBill1 className="mr-[10px]" />
                         To'lov
                     </Link>

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming, BiUserPlus, BiFlag, BiHistory, BiSearch, BiCheckDouble, BiLogOut, BiStats, BiCategory, BiGift } from 'react-icons/bi';
+import { BiSolidDashboard, BiSolidBox, BiPlusCircle, BiListUl, BiListPlus, BiPhone, BiPhoneCall, BiUser, BiMoneyWithdraw, BiCar, BiSolidTruck, BiXCircle, BiArchive, BiCheckCircle, BiRefresh, BiPrinter, BiMenu, BiShoppingBag, BiPhoneIncoming, BiUserPlus, BiFlag, BiHistory, BiSearch, BiCheckDouble, BiLogOut, BiStats, BiCategory, BiGift, BiMoney } from 'react-icons/bi';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_LINK } from "../config";
@@ -9,7 +9,7 @@ import { setRefresh } from "../managers/refresh.manager";
 import { setInfoAuth, setRefreshAuth } from "../managers/auth.manager";
 function Navbar() {
     const { pathname: path } = useLocation();
-    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0, couriers: 0, oper_pays: 0, race: 0, history_orders: 0, owners: 0, main: 0, comps:0 });
+    const [stats, setStats] = useState({ products: 0, categories: 0, operators: 0, wait_delivery: 0, sended: 0, reject: 0, delivered: 0, archive: 0, wait: 0, neworders: 0, inoperator: 0, users: 0, couriers: 0, oper_pays: 0, race: 0, history_orders: 0, owners: 0, main: 0, comps:0, admin_pays: 0 });
     const { refresh: { refresh }, auth: { owner } } = useSelector(e => e);
     const [open, setOpen] = useState(false);
     const dp = useDispatch();
@@ -140,6 +140,12 @@ function Navbar() {
                     <BiUser className="mr-[10px]" />
                     Foydalanuvchilar
                     <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.users}</span>
+                </Link>
+                {/*  */}
+                <Link onClick={() => setOpen(false)} to='/admin-pays' className={classLink + `${path === '/admin-pays' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>
+                    <BiMoney className="mr-[10px]" />
+                    Adminlar to'lovi
+                    <span className="absolute right-[10px] rounded-full p-[5px] bg-[#fff0]">{stats?.admin_pays}</span>
                 </Link>
                 {/*  */}
                 {/* <Link onClick={() => setOpen(false)} to='/admin-pays' className={classLink + `${path === '/admin-pays' && 'bg-gradient-to-r from-orange-500 to-red-500 text-white'}`}>

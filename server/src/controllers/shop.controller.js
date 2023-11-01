@@ -64,6 +64,7 @@ module.exports = {
                                         created: moment.now() / 1000,
                                         id: $orders?.length + 1,
                                         phone,
+                                        price: $product?.price,
                                         for_admin: flow ? $product?.for_admins : 0,
                                         for_operator: $product?.for_operators,
                                         competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
@@ -90,6 +91,7 @@ module.exports = {
                                         created: moment.now() / 1000,
                                         id: $orders?.length + 1,
                                         phone,
+                                        price: flow_id ? ($flow?.delivery ? ($flow?.price + $product?.delivery_price) : $flow?.price) : $product?.price,
                                         for_admin,
                                         for_operator: $product?.for_operators,
                                         competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
@@ -207,6 +209,7 @@ module.exports = {
                     created: moment.now() / 1000,
                     id: $orders?.length + 1,
                     phone,
+                    price: ($f?.delivery ? ($f?.price + $product?.delivery_price) : $f?.price),
                     for_admin: $f?.hidden ? 0 : $f?.for_admin,
                     for_operator: $product?.for_operators,
                     competition: !$c[0] || $c[0].end < (moment.now() / 1000) ? null : $c[0]._id,
@@ -252,7 +255,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin?.name,
                     admin_id: $admin?.id,
-                    price: !o?.flow_id ? o?.product?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
+                    price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price,
                     name: o?.name,
                     phone: o?.phone
                 });
@@ -430,7 +433,8 @@ module.exports = {
                     _id: o?._id,
                     title: o?.product?.title,
                     image: SERVER_LINK + o?.product?.images[0],
-                    price: !o?.flow_id ? o?.product?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price, name: o?.name,
+                    price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price,
+                    name: o?.name,
                     phone: o?.phone,
                     operator: o?.operator?._id,
                     operator_name: o?.operator?.name,
@@ -482,6 +486,23 @@ module.exports = {
                     msg: "Xatolik!"
                 })
             }
+        }
+    },
+
+    // CRON
+
+    waitToNew: async (req, res) => {
+        try {
+            await shopModel.updateMany({ status: 'wait' }, { $set: { status: 'pending' } }).then(() => {
+                res.send({
+                    ok: true,
+                    msg: "Wait to New Success"
+                });
+            }).catch(err => {
+                res.json(err)
+            })
+        } catch (error) {
+            res.json(error)
         }
     }
 }

@@ -6,7 +6,7 @@ const schema = new Schema({
     },
     count: Number,
     created: Number,
-    card: Number,
+    card: String,
     status: {
         type: String,
         default: 'pending'

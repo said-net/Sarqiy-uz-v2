@@ -19,3 +19,5 @@ module.exports = require('express').Router()
     .get('/get-requests', authMiddleware.user, userController.getRequests)
     .post('/set-status-my-sales', authMiddleware.user, userController.setStatusMySales)
     .post('/set-status-my-sale/:id', authMiddleware.user, userController.setStatusMySale)
+    // 
+    .post('/request-pay', authMiddleware.user, userController.requestPay)

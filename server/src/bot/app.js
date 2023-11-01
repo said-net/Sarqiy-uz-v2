@@ -30,37 +30,38 @@ try {
             if (!command) {
                 msg.replyWithHTML(`<b>📋Bosh sahifa</b>`, { ...btn.menu });
             } else {
-                if (command === 'pay') {
-                    let p_his = 0;
-                    let sh_his = 0;
-                    let r_his = 0;
-                    const $histpory = await payModel.find({ from: $user._id, status: 'success' });
-                    const $shoph = await shopModel.find({ flow: $user.id });
-                    const $refs = await userModel.find({ ref_id: $user.id });
-                    for (let ref of $refs) {
-                        const $rflows = await shopModel.find({ flow: ref.id });
-                        $rflows.forEach(rf => {
-                            r_his += rf.for_ref
-                        });
-                    }
-                    $histpory.forEach(h => {
-                        p_his += h.count;
-                    });
-                    $shoph.forEach(s => {
-                        sh_his += s.for_admin;
-                    });
-                    if ((sh_his + r_his) - p_his < 1000) {
-                        msg.replyWithHTML(`❗Pulni chiqarib olish <b>1 000</b> so'mdan boshlanadi!`)
-                    } else {
-                        const $pays = await payModel.findOne({ from: $user._id, status: 'pending' });
-                        if ($pays) {
-                            msg.replyWithHTML(`❗Sizda tekshiruvdagi <b>${$pays.count}</b> so'm lik to'lov mavjud!\n✉Iltimos tekshiruv tugashini kuting!`);
-                        } else {
-                            $user.set({ step: 'request_money' }).save();
-                            msg.replyWithHTML("💰<b>Necha pul chiqarib olmoqchisiz?</b>", { ...btn.back })
-                        }
-                    }
-                } else if (command === 'pay_history') {
+                // if (command === 'pay') {
+                //     let p_his = 0;
+                //     let sh_his = 0;
+                //     let r_his = 0;
+                //     const $histpory = await payModel.find({ from: $user._id, status: 'success' });
+                //     const $shoph = await shopModel.find({ flow: $user.id });
+                //     const $refs = await userModel.find({ ref_id: $user.id });
+                //     for (let ref of $refs) {
+                //         const $rflows = await shopModel.find({ flow: ref.id });
+                //         $rflows.forEach(rf => {
+                //             r_his += rf.for_ref
+                //         });
+                //     }
+                //     $histpory.forEach(h => {
+                //         p_his += h.count;
+                //     });
+                //     $shoph.forEach(s => {
+                //         sh_his += s.for_admin;
+                //     });
+                //     if ((sh_his + r_his) - p_his < 1000) {
+                //         msg.replyWithHTML(`❗Pulni chiqarib olish <b>1 000</b> so'mdan boshlanadi!`)
+                //     } else {
+                //         const $pays = await payModel.findOne({ from: $user._id, status: 'pending' });
+                //         if ($pays) {
+                //             msg.replyWithHTML(`❗Sizda tekshiruvdagi <b>${$pays.count}</b> so'm lik to'lov mavjud!\n✉Iltimos tekshiruv tugashini kuting!`);
+                //         } else {
+                //             $user.set({ step: 'request_money' }).save();
+                //             msg.replyWithHTML("💰<b>Necha pul chiqarib olmoqchisiz?</b>", { ...btn.back })
+                //         }
+                //     }
+                // } else
+                if (command === 'pay_history') {
                     const $pays = await payModel.find({ from: $user._id });
                     if (!$pays[0]) {
                         msg.replyWithHTML("❗Siz pul yechmagansiz!")
@@ -164,7 +165,9 @@ try {
                 // }
                 else {
                     if ($user.step === 'request_card') {
-                        if (tx.length < 16) {
+                        if (isNaN(tx?.replaceAll(' ', ''))) {
+                            msg.replyWithHTML("<i>❗Faqat raqamlarda!</i>");
+                        } else if (tx.length < 16) {
                             msg.replyWithHTML("<b>❗Karta raqamini to'g'ri kiriting!</b>");
                         } else {
                             let txt = `<b>💳Pul chiqarish uchun yangi so'rov!</b>\n\n👤Sotuvchi: <b>${$user.name}</b>\n🆔Sharqiy.uz: ${$user.id}\n📞Raqami: ${$user.phone}\n💳Karta: <code>${tx}</code>\n💰Miqdor: <code>${Number($user?.etc?.amount).toLocaleString()}</code> so'm\n\n👀To'lov qilgach <b>✅To'landi</b> tugmasini\n❗Bekor qilingan bo'lsa <b>❌Bekor qilindi</b> tugmasini bosing!`
@@ -438,32 +441,33 @@ try {
             }
             // 
             else if (data === 'request_pay') {
-                let p_his = 0;
-                let sh_his = 0;
-                let r_his = 0;
-                const $histpory = await payModel.find({ from: $user._id, status: 'success' });
-                const $shoph = await shopModel.find({ flow: $user.id });
-                const $refs = await shopModel.find({ ref_id: $user.id });
-                $histpory.forEach(h => {
-                    p_his += h.count;
-                });
-                $shoph.forEach(s => {
-                    sh_his += s.for_admin;
-                });
-                $refs.forEach(r => {
-                    r_his += r.for_ref
-                });
-                if ((sh_his + r_his) - p_his < 1000) {
-                    msg.replyWithHTML(`❗Pulni chiqarib olish <b>1 000</b> so'mdan boshlanadi!`)
-                } else {
-                    const $pays = await payModel.findOne({ from: $user._id, status: 'pending' });
-                    if ($pays) {
-                        msg.replyWithHTML(`❗Sizda tekshiruvdagi <b>${$pays.count}</b> so'm lik to'lov mavjud!\n✉Iltimos tekshiruv tugashini kuting!`);
-                    } else {
-                        $user.set({ step: 'request_money' }).save();
-                        msg.replyWithHTML("💰<b>Necha pul chiqarib olmoqchisiz?</b>", { ...btn.back })
-                    }
-                }
+                msg.replyWithHTML("🚀Barcha to'lovlar sharqiy.uz sayti orqali amalga oshiriladi!");
+                // let p_his = 0;
+                // let sh_his = 0;
+                // let r_his = 0;
+                // const $histpory = await payModel.find({ from: $user._id, status: 'success' });
+                // const $shoph = await shopModel.find({ flow: $user.id });
+                // const $refs = await shopModel.find({ ref_id: $user.id });
+                // $histpory.forEach(h => {
+                //     p_his += h.count;
+                // });
+                // $shoph.forEach(s => {
+                //     sh_his += s.for_admin;
+                // });
+                // $refs.forEach(r => {
+                //     r_his += r.for_ref
+                // });
+                // if ((sh_his + r_his) - p_his < 1000) {
+                //     msg.replyWithHTML(`❗Pulni chiqarib olish <b>1 000</b> so'mdan boshlanadi!`)
+                // } else {
+                //     const $pays = await payModel.findOne({ from: $user._id, status: 'pending' });
+                //     if ($pays) {
+                //         msg.replyWithHTML(`❗Sizda tekshiruvdagi <b>${$pays.count}</b> so'm lik to'lov mavjud!\n✉Iltimos tekshiruv tugashini kuting!`);
+                //     } else {
+                //         $user.set({ step: 'request_money' }).save();
+                //         msg.replyWithHTML("💰<b>Necha pul chiqarib olmoqchisiz?</b>", { ...btn.back })
+                //     }
+                // }
             } else if (data === 'payment_history') {
                 const $pays = await payModel.find({ from: $user._id });
                 if (!$pays[0]) {

@@ -10,6 +10,7 @@ const shopModel = require('../models/shop.model');
 const likeModel = require('../models/like.model');
 const productModel = require('../models/product.model');
 const settingModel = require('../models/setting.model');
+const payModel = require('../models/pay.model');
 module.exports = {
     requestSMS: async (req, res) => {
         const { phone, ref_id } = req.body;
@@ -547,10 +548,10 @@ module.exports = {
             // const { id } = req.params;
             // const $shop = await shopModel.findOne({ id });
             // $shop.set({ status: 'pending' }).save().then(() => {
-                res.send({
-                    ok: true,
-                    msg: "Bajarildi!"
-                });
+            res.send({
+                ok: true,
+                msg: "Bajarildi!"
+            });
             // });
         } catch (error) {
             console.log(error);
@@ -560,4 +561,59 @@ module.exports = {
             });
         }
     },
+    requestPay: async (req, res) => {
+        const { card, count } = req?.body;
+        if (!card || !count) {
+            res.send({
+                ok: false,
+                msg: "Qatorlarni to'ldiring!"
+            });
+        } else if (isNaN(count)) {
+            res.send({
+                ok: false,
+                msg: "Summani faqat raqamlarda kiriting!"
+            })
+        }else if(count<1000){
+            res.send({
+                ok: false,
+                msg: "Minimal 1 000 so'm!"
+            })
+        } else if (isNaN(card)) {
+            res.send({
+                ok: false,
+                msg: "Karta raqamini to'g'ri kiriting!"
+            });
+        } else if (req?.user?.balance < count) {
+            res.send({
+                ok: false,
+                msg: "Sizda yetarli summa mavjud emas!"
+            });
+        } else {
+            const $lastPay = await payModel.findOne({ from: req?.user?.id, status: 'pending' });
+            if ($lastPay) {
+                res.send({
+                    ok: false,
+                    msg: `Sizda ${$lastPay?.count} miqdorda tasdiqlanmagan to'lov mavjud! Iltimos kuting`
+                });
+            } else {
+                new payModel({
+                    from: req?.user?.id,
+                    count,
+                    card,
+                    created: moment.now() / 1000,
+                }).save().then(() => {
+                    res.send({
+                        ok: true,
+                        msg: "Qabul qilindi! Tez orada kartangizga pul o'tkaziladi!"
+                    });
+                }).catch((err) => {
+                    console.log(err);
+                    res.send({
+                        ok: false,
+                        msg: "Xatolik!"
+                    })
+                })
+            }
+        }
+    }
 }

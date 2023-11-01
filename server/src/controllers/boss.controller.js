@@ -92,6 +92,7 @@ module.exports = {
         const race = await raceModel.find({ hidden: false }).countDocuments()
         const main = await mainModel.find().countDocuments();
         const comps = await competitionModel.find()?.countDocuments()
+        const admin_pays = await payModel.find({ status: 'pending' })?.countDocuments()
         let inoperator = 0;
         $inoperator?.forEach(i => {
             if (i?.operator) {
@@ -119,7 +120,8 @@ module.exports = {
                 history_orders,
                 owners,
                 main,
-                comps
+                comps,
+                admin_pays
             }
         });
     },
@@ -556,7 +558,7 @@ module.exports = {
                 image: SERVER_LINK + o?.product?.images[0],
                 admin: $admin?.name,
                 admin_id: $admin?.id,
-                price: !o?.flow_id ? o?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
+                price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price,
                 name: o?.name,
                 phone: o?.phone,
                 courier_id: o?.courier?._id,
@@ -600,7 +602,7 @@ module.exports = {
                 image: SERVER_LINK + o?.product?.images[0],
                 admin: $admin?.name,
                 admin_id: $admin?.id,
-                price: !o?.flow_id ? o?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
+                price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price,
                 name: o?.name,
                 phone: o?.phone,
                 operator: o?.operator?.name,
@@ -651,7 +653,7 @@ module.exports = {
                 image: SERVER_LINK + o?.product?.images[0],
                 admin: $admin?.name,
                 admin_id: $admin?.id,
-                price: !o?.flow_id ? o?.product?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
+                price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price,
                 name: o?.name,
                 phone: o?.phone,
                 courier: o?.courier?.name,
@@ -697,7 +699,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     // admin: $admin.name,
                     // admin_id: $admin.id,
-                    price: !o?.flow_id ? o?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
+                    price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price,
                     about: o?.about,
                     name: o?.name,
                     phone: o?.phone,
@@ -758,7 +760,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin.name,
                     admin_id: $admin.id,
-                    price: !o?.flow_id ? o?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
+                    price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price,
                     name: o?.name,
                     phone: o?.phone,
                     courier_id: o?.courier?._id,
@@ -816,7 +818,7 @@ module.exports = {
                     image: SERVER_LINK + o?.product?.images[0],
                     admin: $admin.name,
                     admin_id: $admin.id,
-                    price: !o?.flow_id ? o?.product?.price : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price, name: o?.name,
+                    price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price, name: o?.name,
                     name: o?.name,
                     phone: o?.phone,
                     delivery_price: o?.delivery_price,
@@ -991,7 +993,7 @@ module.exports = {
                         admin: $admin?.name,
                         admin_id: $admin?.id,
                         count: o?.count || 0,
-                        price: !o?.flow_id ? (o?.price || o?.product?.price) : o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price,
+                        price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price,
                         name: o?.name,
                         phone: o?.phone,
                         about: o?.about,
@@ -1021,7 +1023,7 @@ module.exports = {
                     admin: $admin?.name,
                     admin_id: $admin?.id,
                     count: o?.count || 0,
-                    price: (o?.price || o?.product?.price) * (o?.count || 0),
+                    price: o?.price ? (o?.price) : o?.flow_id ? (o?.flow_id?.delivery ? (o?.flow_id?.price + o?.product?.delivery_price) : o?.flow_id?.price) : o?.product?.price,
                     name: o?.name,
                     phone: o?.phone,
                     about: o?.about,
@@ -1053,6 +1055,7 @@ module.exports = {
     editOrder: async (req, res) => {
         const { id } = req?.params;
         const { title, name, phone, status, price, delivery_price, count, about, region, city } = req?.body;
+        console.log(price);
         if (!title || !name || !phone || !status || !price || !count || !about) {
             res.send({
                 ok: false,
@@ -1067,6 +1070,7 @@ module.exports = {
                         msg: "Order topilmadi!"
                     });
                 } else {
+                    console.log(price);
                     $order.set({ title, phone, name, region, city, status, price, delivery_price, count, about, verified: status === 'sended' ? false : $order?.verified, courier_status: status === 'sended' ? 'sended' : status === 'delivered' ? 'delivered' : $order?.courier_status }).save().then(() => {
                         res.send({
                             ok: true,
@@ -1573,6 +1577,43 @@ module.exports = {
                 ok: false,
                 msg: "Xatolik"
             })
+        }
+    },
+    getNewAdminPays: async (req, res) => {
+        const $pays = await payModel.find({ status: 'pending' }).populate('from');
+        const data = [];
+        $pays?.forEach((p) => {
+            data.push({
+                _id: p?._id,
+                name: p?.from?.name,
+                user_id: p?.from?.id,
+                phone: p?.from?.phone,
+                card: p?.card,
+                count: p?.count,
+                created: moment.unix(p?.created).format('DD.MM.yyyy HH:mm')
+            });
+        });
+        res.send({
+            ok: true,
+            data
+        })
+    },
+    setStatusAdminPay: async (req, res) => {
+        const { id, status } = req?.body;
+        try {
+            const $pay = await payModel.findById(id);
+            $pay.set({ status }).save().then(() => {
+                res.send({
+                    ok: true,
+                    msg: status === 'success' ? "To'landi" : "Rad etildi!"
+                });
+            });
+        } catch (err) {
+            console.log(err)
+            res.send({
+                ok: false,
+                msg: "Xatolik!"
+            });
         }
     }
 }

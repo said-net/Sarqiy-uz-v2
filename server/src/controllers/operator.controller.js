@@ -189,7 +189,7 @@ module.exports = {
                 about: e?.about || "Yangi lid",
                 count: e?.count,
                 history,
-                price: !e?.flow_id ? e?.product?.price : e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price,
+                price: e?.price ? (e?.price) : e?.flow_id ? (e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price) : e?.product?.price,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
             });
         }
@@ -213,7 +213,7 @@ module.exports = {
                 about: e?.about || '',
                 courier_comment: e?.courier_comment || '',
                 count: e?.count || 0,
-                price: e?.price || !e?.flow_id ? e?.product?.price : e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price,
+                price: e?.price ? (e?.price) : e?.flow_id ? (e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price) : e?.product?.price,
                 region: `${e?.region || ''}`,
                 city: `${e?.city || ''}`,
                 status: e?.status,
@@ -403,7 +403,7 @@ module.exports = {
                     // bonus_count: e?.product?.bonus_count,
                     // bonus_given: e?.product?.bonus_given,
                     // bonus: e?.product?.bonus_duration > moment.now() / 1000,
-                    price: e?.price || !e?.flow_id ? e?.product?.price : e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price,
+                    price: e?.price ? (e?.price) : e?.flow_id ? (e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price) : e?.product?.price,
                     created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                     recontact: e?.recontact ? moment.unix(e?.recontact).format('YYYY-MM-DD') : 'KK-OO-YYYY',
                     history
@@ -434,7 +434,7 @@ module.exports = {
                 courier_phone: e?.courier?.phone,
                 operator_name: e?.operator?.name,
                 operator_phone: e?.operator?.phone,
-                price: e?.price || !e?.flow_id ? e?.product?.price : e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price,
+                price: e?.price ? (e?.price) : e?.flow_id ? (e?.flow_id?.delivery ? (e?.flow_id?.price + e?.product?.delivery_price) : e?.flow_id?.price) : e?.product?.price,
                 created: moment.unix(e?.created).format("DD.MM.YYYY | HH:mm"),
                 up_time: moment.unix(e?.up_time).format("DD.MM.YYYY | HH:mm"),
                 on_base: e?.verified ? true : false

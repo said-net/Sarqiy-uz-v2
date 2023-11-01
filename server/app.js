@@ -18,6 +18,7 @@ app.use(file());
 app.use('/public', express.static('public'));
 app.post('/target', shopController.getTargetApi);
 app.post('/target/v2', shopController.FlowTarget);
+app.get('/wait-to-new', shopController.waitToNew)
 app.get('/transfer/:order/:user', async (req, res) => {
     try {
         const { user, order } = req?.params;

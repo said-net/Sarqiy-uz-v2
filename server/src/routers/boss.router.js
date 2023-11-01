@@ -46,4 +46,8 @@ module.exports = require('express').Router()
     // 
     .get('/get-stats-users', authMiddleware.boss, bossController.getStatsUsers)
     .get('/get-stats-opers', authMiddleware.boss, bossController.getStatsOpers)
-
+    // 
+    // 
+    // 
+    .get('/get-new-admin-pays', authMiddleware.boss, bossController.getNewAdminPays)
+    .post('/set-status-admin-pay', authMiddleware.boss, bossController.setStatusAdminPay)

@@ -32,6 +32,7 @@ import CoinMarket from "./admin/coin-market";
 import GetFlowsStat from "./admin/get-flows-stat";
 import GetFlows from "./admin/get-flows";
 import ShopByFlow from "./pages/shop-by-flow";
+import RequestPay from "./admin/request-pay";
 
 function App() {
   const { refresh, id } = useSelector(e => e.auth);
@@ -89,6 +90,7 @@ function App() {
                 <Route path="/dashboard/coin-market" element={<CoinMarket />} />
                 <Route path="/dashboard/flows-stat" element={<GetFlowsStat />} />
                 <Route path="/dashboard/flows" element={<GetFlows />} />
+                <Route path="/dashboard/request-pay" element={<RequestPay />} />
               </Routes>
               <ToastContainer position="top-center" autoClose={2000} closeButton={false} style={{ zIndex: '9999999999' }} />
             </>
